@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+   <TITLE>EXAMPLE LAYERS POSITIONING</TITLE>
+   <meta http-equiv="Pragma" content="no-cache">
+   <script type="text/javascript" src="../../assets/api.js"></script>
+   <script type="text/javascript" src="../../assets/layer.js"></script>
+
+<script type="text/javascript">
+
+var layerCount = 6
+var layerSize = 80
+var windowSize = 600
+var layerRootId = "layer"
+var layerArray = new Array(layerCount);
+var layerText = "<table width="+layerSize+" height="+layerSize+" ><tr><td><font face=arial color=yellow><b>&nbsp;Hello DHTML World !&nbsp;</b></font></td></tr></table>";
+
+// Util: generate a random coordinate
+function randomCoord() {
+	return Math.round(Math.random()*(windowSize-layerSize));
+}
+
+function init() {
+ 	initDHTML();
+ 	for (var i=0; i < layerCount; i++) {
+        	layerArray[i] = new Layer(layerRootId+i, window);
+        }
+        
+        goAround();
+}
+
+function goAround() {
+	var layerNum = Math.round(Math.random()*(layerCount-1));
+	var layerId = layerRootId+layerNum;
+        
+        // Move the layer to random position within doc
+        layerArray[layerNum].shiftTo(randomCoord(), randomCoord());
+        
+        // Give the layer object random background color
+        layerArray[layerNum].setBGColor(Math.round(Math.random()*999999));
+        
+        // Write the text to the layer document
+        layerArray[layerNum].write(layerText);
+        
+        // Loop forever
+	setTimeout("goAround()",500);
+}
+
+</script>
+</HEAD>
+<BODY bgcolor="grey" onLoad="init()" >
+<script type="text/javascript">
+	// writes all <DIV> elements in document
+	document.write(createMultiLayerHTML(layerRootId, layerCount));
+</script>
+</BODY>
+</HTML>

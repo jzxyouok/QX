@@ -1,0 +1,25 @@
+(client to server: start session)
+GET /pushlet/pushlet.srv?p_event=join&p_format=xml HTTP/1.1
+
+(server to client: ack session create)
+HTTP/1.1 200 OK
+
+<event p_id="faruhofoja" p_event="join-ack" p_format="xml" />
+
+
+(client to server: open data stream)
+GET /pushlet/pushlet.srv?p_event=listen&p_id=faruhofoja&p_mode=stream&p_subject=/temperature HTTP/1.1
+
+(server to client: send data stream)
+HTTP/1.1 200 OK
+
+<event p_sid="dujut" p_id="faruhofoja" p_mode="stream" p_event="listen-ack" p_format="xml" />
+
+<event p_sid="dujut" p_subject="/temperature" p_event="data" city="twente" value="8" />
+
+<event p_sid="dujut" p_subject="/temperature" p_event="data" city="amsterdam"  value="8" />
+
+<event p_sid="dujut" p_subject="/temperature" p_event="data" city="leeuwarden" value="6" />
+
+<event p_sid="dujut" p_subject="/temperature" p_event="data" city="limburg"  value="12" />
+

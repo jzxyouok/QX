@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+   <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+
+<!-- 
+ Copyright (c) 2000 Just Objects B.V. <just@justobjects.nl>
+ Distributable under LGPL license. See terms of license at gnu.org.
+
+ This simplistic example illustrates the basics of Pushlets. 
+ This page has two frames, the Pushlet Frame and the Display Frame.
+ The Pushlet Frame is hidden (size 0) and contains a JSP (push-js-stream-pusher.jsp). 
+ Within the JSP a line of JavaScript is pushed every 3 seconds. This line calls
+ the function push() below (through parent.push()) with the new content as
+ argument. The function push() will refresh the content of the Display Frame
+ by writing to the Display Frame's document. 
+ 
+ You may try this on your JSP Engine. Let me know of any problems.
+-->
+     
+<script LANGUAGE="JavaScript">
+var pageStart="<HTML><HEAD></HEAD><BODY BGCOLOR=blue TEXT=white><H2>Server pushes: <P>";
+var pageEnd="</H2></BODY></HTML>";
+
+  // Callback function with message from server.
+  // This function is called from within the hidden JSP pushlet frame
+  function push(content) {
+ 
+    // Refresh the display frame with the content received
+    window.frames['displayFrame'].document.writeln(pageStart+content+pageEnd);
+    window.frames['displayFrame'].document.close();
+  }
+
+</script>
+</HEAD>
+
+<FRAMESET BORDER=0 COLS="*,0">
+     <!-- frame to display the content pushed by the pushlet -->
+     <FRAME SRC="push-js-stream-display.html" NAME="displayFrame"  BORDER=0  SCROLLING=no>
+     
+     <!-- Hidden frame with the pushlet that pushes lines of JavaScript-->
+     <FRAME SRC="push-js-stream-pusher.jsp" NAME="pushletFrame" BORDER=0  SCROLLING=no>
+</FRAMESET>
+
+</HTML>
+
+

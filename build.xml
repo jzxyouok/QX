@@ -1,0 +1,165 @@
+<!--
+
+ Build file for build/deploy of jars and webapp.
+
+- pushlet core + examples
+
+$Id: build.xml,v 1.19 2007/12/07 12:57:40 justb Exp $
+
+-->
+<project name="pushlet" default="war" basedir=".">
+
+	<!-- Initialization of properties (dirs, files) -->
+
+	<!-- Project global properties, overrule by modifying build.properties -->
+	<property file="build.properties"/>
+
+	<!-- Locations  -->
+	<property name="home" value="${basedir}"/>
+	<property name="home.class.dir" value="${home}/class"/>
+	<property name="home.lib.dir" value="${home}/lib"/>
+	<property name="home.webapps.dir" value="${home}/webapps"/>
+	<property name="home.src.dir" value="${home}/src"/>
+	<property name="deploy.webapp.dir" value="${deploy.dir}/pushlet"/>
+
+	<!-- base .jar and .war file names of project -->
+	<property name="pushlet.jar" value="${home.lib.dir}/pushlet.jar"/>
+	<property name="pushlet.war" value="${home.webapps.dir}/pushlet.war"/>
+	<property name="pushletclient.jar" value="${home.lib.dir}/pushletclient.jar"/>
+
+	<target name="init">
+		<tstamp/>
+	</target>
+
+	<!-- Build the .jars for the project -->
+	<target name="server" depends="init">
+		<echo message="Building server jar"/>
+
+		<delete dir="${home.class.dir}/server"/>
+		<mkdir dir="${home.class.dir}/server"/>
+		<mkdir dir="${home.lib.dir}"/>
+
+		<javac srcdir="${home.src.dir}"
+			   destdir="${home.class.dir}/server"
+			   debug="${javac.debug}"
+			   deprecation="${javac.deprecation}"
+			   optimize="${javac.optimize}"
+			   source="${javac.source}"
+			   target="${javac.target}"
+			   classpath="${servlet.jar}:${log4j.jar}"
+			   includes="nl/**/*.java"/>
+
+
+		<jar jarfile="${pushlet.jar}" basedir="${home.class.dir}/server">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="nl/justobjects/pushlet/">
+					<attribute name="Specification-Version" value="${project.version}"/>
+					<attribute name="Implementation-Title" value="Pushlets"/>
+					<attribute name="Implementation-Version" value="${DSTAMP}-${TSTAMP}"/>
+					<attribute name="Implementation-Vendor" value="www.justobjects.nl"/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Build the client jar for the project -->
+	<target name="client" depends="init">
+		<echo message="Building client jar"/>
+
+		<delete dir="${home.class.dir}/client"/>
+		<mkdir dir="${home.class.dir}/client"/>
+		<mkdir dir="${home.lib.dir}"/>
+
+		<javac srcdir="${home.src.dir}"
+			   destdir="${home.class.dir}/client"
+			   debug="${javac.debug}"
+			   deprecation="${javac.deprecation}"
+			   optimize="${javac.optimize}"
+			   source="${javac.source}"
+			   target="${javac.target}"
+			   includes="nl/justobjects/pushlet/client/*.java,
+			nl/justobjects/pushlet/core/Event.java,
+			nl/justobjects/pushlet/core/EventParser.java,
+			nl/justobjects/pushlet/core/Protocol.java,
+			nl/justobjects/pushlet/test/PushletApplet.java,
+			nl/justobjects/pushlet/util/PushletException.java,
+			nl/justobjects/pushlet/util/Rand.java,
+			nl/justobjects/pushlet/util/Sys.java"/>
+
+
+		<jar jarfile="${pushletclient.jar}" basedir="${home.class.dir}/client"
+			 includes="nl/justobjects/pushlet/client/*.class,
+			nl/justobjects/pushlet/core/Event.class,
+			nl/justobjects/pushlet/core/EventParser.class,
+			nl/justobjects/pushlet/core/Protocol.class,
+			nl/justobjects/pushlet/test/PushletApplet.class,
+			nl/justobjects/pushlet/util/PushletException.class,
+			nl/justobjects/pushlet/util/Sys.java">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="nl/justobjects/pushlet/">
+					<attribute name="Specification-Version" value="${project.version}"/>
+					<attribute name="Implementation-Title" value="Pushlets"/>
+					<attribute name="Implementation-Version" value="${DSTAMP}-${TSTAMP}"/>
+					<attribute name="Implementation-Vendor" value="www.justobjects.nl"/>
+				</section>
+			</manifest>
+		</jar>
+
+	</target>
+
+	<!-- Build the .wars for the project -->
+	<target name="war" depends="client,server">
+		<echo message="Building war file..."/>
+
+		<delete file="${pushlet.war}"/>
+
+		<mkdir dir="${home.webapps.dir}/pushlet/WEB-INF/lib"/>
+
+		<copy file="${pushlet.jar}" overwrite="true"
+			  todir="${home.webapps.dir}/pushlet/WEB-INF/lib"
+				/>
+
+		<copy file="${log4j.jar}" overwrite="true"
+			  todir="${home.webapps.dir}/pushlet/WEB-INF/lib"
+				/>
+
+		<copy file="${pushletclient.jar}" overwrite="true"
+			  todir="${home.webapps.dir}/pushlet/lib"
+				/>
+
+		<jar jarfile="${pushlet.war}">
+			<fileset dir="${home.webapps.dir}/pushlet">
+				<include name="**"/>
+			</fileset>
+		</jar>
+
+	</target>
+
+	<target name="deploy" depends="war">
+		<copy file="${pushlet.war}" todir="${deploy.dir}" overwrite="true"/>
+	</target>
+
+	<target name="deploy-now">
+		<copy file="${pushlet.war}" todir="${deploy.dir}" overwrite="true"/>
+	</target>
+
+	<!-- For quick testing of examples: copy webapp files to deplolyed webapp dir -->
+	<target name="deploy-raw">
+		<copy todir="${deploy.webapp.dir}" overwrite="true">
+			<fileset dir="${home.webapps.dir}/pushlet">
+				<include name="*/**"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${home.class.dir}"/>
+		<delete dir="${home.lib.dir}"/>
+		<delete file="${pushlet.war}"/>
+		<delete dir="${home.webapps.dir}/pushlet/WEB-INF/lib"/>
+		<delete file="${home.webapps.dir}/pushlet/lib/pushletclient.jar"/>
+	</target>
+
+</project>

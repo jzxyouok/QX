@@ -1,0 +1,60 @@
+<!--
+  Join form window.
+
+  $Id: wcqjoin.html,v 1.7 2006/05/15 11:52:53 justb Exp $
+  author: Just van den Broecke
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+    <style type="text/css">
+     body, p {
+       background-color: #000000;
+       font-family: Verdana, Helvetica, Arial, sans-serif;
+       color: yellow;
+       font-size: 10pt;
+     }
+
+   </style>
+
+<script type="text/javascript">
+
+function doSetLocalUser() {
+  var userName = document.forms[0].user.value;
+  if (userName.length > 0) {
+	opener.setLocalUser(userName);
+	window.close();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+</script>
+</head>
+
+<body>
+<p>
+Join WCQ - type a nick name
+</p>
+
+<table width="300" border="0" cellspacing="0" cellpadding="4">
+  <form name="joinForm" onsubmit="return doSetLocalUser();">
+    <tr>
+      <td>
+        <input type="text" name="user" size="10" >
+      </td>
+    </tr>
+  </form>
+</table>
+
+<script type="text/javascript">
+  document.forms[0].user.focus();
+</script>
+
+</body>
+</html>
+
+

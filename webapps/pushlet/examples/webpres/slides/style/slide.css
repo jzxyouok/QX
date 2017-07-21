@@ -1,0 +1,189 @@
+/* 
+ * Slide text style for 1000x768 resolution.
+ * $Id: slide.css,v 1.2 2006/05/25 10:47:04 justb Exp $
+ * $Log: slide.css,v $
+ * Revision 1.2  2006/05/25 10:47:04  justb
+ * replaced JSP js-pushlet-client.jsp with JS js-pushlet-client.js
+ *
+ * Revision 1.1  2003/04/30 22:14:31  justb
+ * ok
+ *
+ * Revision 1.2  2002/05/22 20:08:21  just
+ * table1 should get slide body format and notes in black on white
+ *
+ * Revision 1.1  2001/08/01 15:22:59  kstroke
+ * new
+ *
+ * Revision 1.5  2001/01/05 21:36:14  just
+ * changed notes-slide style that it displays in 11pt iso huge
+ *
+ * Revision 1.4  2000/11/24 13:15:15  just
+ * no message
+ *
+ * Revision 1.3  2000/03/01 01:28:10  just
+ * changes for note popup in slides
+ *
+ * Revision 1.1  2000/02/17 14:28:21  gerald
+ * moved to this server
+ *
+ * Revision 1.2  1999/09/01 23:37:17  just
+ * fixes for many things
+ *
+ * Revision 1.1  1999/08/29 20:57:52  just
+ * new
+ *
+ */
+
+BODY, .BODY, .DEFLIST, .table1, .TABLE1 {
+  color: white;
+  background: #000060;
+  font-size: 18pt;
+  font-family: Helvetica, serif;
+}
+
+.SLIDE-BODY {
+  color: white;
+  font-size: 18pt;
+  font-family: Helvetica, serif;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+ul, ol {
+  font-size: 18pt;
+  line-height: 125%;
+}
+
+/* decrease font for sublists */
+ul ul, ol ol, ol ul, ul ol  {
+  font-size: 15pt;
+  line-height: 110%;
+}
+
+P {
+  font-size: 18pt;
+}
+
+A {   
+  color: white; 
+}
+
+A.EXTLINK {   
+  color: white; 
+}
+
+.NOTES-BODY {
+  color: white;
+  font-size: 11pt;
+  font-family: Helvetica, serif;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.NOTES-SLIDE, .NOTES-SLIDE P, .NOTES-SLIDE A {
+  color: black;
+  background: white;
+  font-size: 11pt;
+  font-family: Helvetica, serif;
+}
+
+.SLIDELIST {
+  font-size: 14pt;
+  line-height: normal;
+}
+
+.PageBreak {
+  page-break-after: always;
+}
+
+
+.INDENT {
+  margin-left: 20%;
+}
+
+.em {
+  color: #FFBBBB ;
+  text-decoration: underline;
+}
+
+
+PRE {
+  font-size: 90%;
+  font-family: "Courier New", Courier, monospace;
+}
+
+
+.SMALL {
+  font-size: 50%;
+}
+
+.CODE {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 90%;
+}
+
+TD.LISTING {
+  color: black;
+  background: #FFF000;
+}
+
+
+
+
+.box {
+  font-size: 100%;
+  font-family: Helvetica, serif;
+}
+
+
+/* General Page Settings */
+
+div.sign { 
+  font-size: small; 
+}
+
+.topLeft {
+  font-weight: normal;
+  font-style: normal;
+  font-size: small;
+  font-family: Helvetica, serif;
+  text-decoration: none;
+  color: yellow;
+}
+
+.topCenter {
+  font-weight: bold;
+  font-style: normal;
+  font-size: 160%; 
+  font-family: Helvetica, serif;
+  text-decoration: none;
+  color: yellow;
+}
+
+
+.topRight {
+  font-weight: normal;
+  font-style: normal;
+  font-size: small;
+  font-family: Helvetica, serif;
+  text-decoration: none;
+}
+
+.bottomLeft {
+  font-weight: normal;
+  font-style: normal;
+  font-size: small;
+  font-family: Helvetica, serif;
+  text-decoration: none;
+  color: yellow;
+}
+
+.bottomRight {
+  font-weight: normal;
+  font-style: normal;
+  font-size: normal;
+  font-family: Helvetica, serif;
+  text-decoration: none;
+  color: yellow;
+}
+

@@ -1,0 +1,92 @@
+<!--
+  Demo for using Pushlets to display real-time stock updates.
+  author: Just van den Broecke
+  $Id: aex.html,v 1.10 2006/05/25 10:47:03 justb Exp $
+-->
+<html>
+<head>
+   <TITLE>StockDemo</TITLE>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+
+<style type="text/css" ID="PageStyle">
+
+	body, td
+	{
+	     background: #000000;
+	     color: #dddddd;
+	     font-size: 10px;
+	     font-family : verdana, sans-serif;
+	}
+
+	body {
+	    margin-left: 8px;
+	    margin-right: 0px;
+	}
+
+	.head {
+	    color: #111111;
+	}
+
+</style>
+
+	<script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+   <script type="text/javascript" src="../../assets/api.js"></script>
+
+<script type="text/javascript">
+	// init method called by display frame
+	function init() {
+		initDHTML();
+		p_join_listen('/stocks/aex');
+	}
+
+	// onData method called by pushlet frame
+	function onData(pushletEvent) {
+		var valueLayer = getRawObject(pushletEvent.get('name'));
+		layerWrite(valueLayer, pushletEvent.get('rate'));
+	}
+
+</script>
+</head>
+<body onLoad="init()">
+
+<table width="100%" border="0" cellpadding="0">
+	<tr>
+		<td class="head" ><b>name</b></td>
+		<td class="head" ><b>value</b></td>
+	</tr>
+   <tr><td>abn amro</td><td><div id="abn amro">wait...</div></td></tr>
+   <tr><td>aegon</td><td><div id="aegon">wait...</div></td></tr>
+   <tr><td>ahold</td><td><div id="ahold">wait...</div></td></tr>
+   <tr><td>akzo nobel</td><td><div id="akzo nobel">wait...</div></td></tr>
+   <tr><td>asm lith</td><td><div id="asm lith h">wait...</div></td></tr>
+   <tr><td>corus plc</td><td><div id="corus plc">wait...</div></td></tr>
+   <tr><td>dsm</td><td><div id="dsm">wait...</div></td></tr>
+   <tr><td>elsevier</td><td><div id="elsevier">wait...</div></td></tr>
+   <tr><td>fortis (nl)</td><td><div id="fortis (nl)">wait...</div></td></tr>
+   <tr><td>getronics</td><td><div id="getronics">wait...</div></td></tr>
+   <tr><td>gucci</td><td><div id="gucci">wait...</div></td></tr>
+   <tr><td>hagemeyer</td><td><div id="hagemeyer">wait...</div></td></tr>
+   <tr><td>heineken</td><td><div id="heineken">wait...</div></td></tr>
+   <tr><td>ing c</td><td><div id="ing c">wait...</div></td></tr>
+   <tr><td>klm</td><td><div id="klm">wait...</div></td></tr>
+   <tr><td>kon olie</td><td><div id="kon olie">wait...</div></td></tr>
+   <tr><td>kpn</td><td><div id="kpn">wait...</div></td></tr>
+   <tr><td>numico c</td><td><div id="numico c">wait...</div></td></tr>
+   <tr><td>philips, kon</td><td><div id="philips, kon">wait...</div></td></tr>
+   <tr><td>tnt</td><td><div id="tnt">wait...</div></td></tr>
+   <tr><td>unilever c</td><td><div id="unilever c">wait...</div></td></tr>
+   <tr><td>vendex kbb</td><td><div id="vendex kbb">wait...</div></td></tr>
+   <tr><td>vnu</td><td><div id="vnu">wait...</div></td></tr>
+   <tr><td>wolt-kluw</td><td><div id="wolt-kluw c">wait...</div></td></tr>
+
+
+</table>
+
+<!-- Embed pushlet in page -->
+<script type="text/javascript">p_embed()</script>
+
+</body>
+</html>
+
+

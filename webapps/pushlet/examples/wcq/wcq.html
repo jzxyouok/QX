@@ -1,0 +1,250 @@
+<!--
+  Simple ICQ/MSN-type of buddy presence and IM app.
+
+  $Id: wcq.html,v 1.13 2006/05/25 10:47:03 justb Exp $
+  author: Just van den Broecke
+-->
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+   <script type="text/javascript" src="../../assets/api.js"></script>
+   <script type="text/javascript" src="../../assets/util.js"></script>
+   <script type="text/javascript" src="../../assets/layer.js"></script>
+   <script type="text/javascript" src="../../assets/layer-grid.js"></script>
+   <script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+
+   <style type="text/css">
+     body {
+       background-color: #000000;
+     }
+
+     A {text-decoration:none}
+
+     .ENTRY { font-family: arial, sans-serif; font-size: 10pt; color: yellow; }
+   </style>
+   <title>WCQ</title>
+
+<script type="text/javascript">
+var layerGrid;
+var maxUsers=12
+var gridXSize=1
+var gridYSize=maxUsers
+var textPre='<div class=entry>&nbsp;&nbsp;'
+var textPost='</div>'
+var emptyText = textPre + '.' + textPost
+var userCollection = new UserCollection(maxUsers);
+var myName=null;
+var subject = '/wcq';
+// Somehow needed since our relative URI seems to change
+var alertURL = p_getWebRoot() + '/examples/wcq/wcqalert.html';
+
+// Sounds: TODO see how to script embeds i.s.o. refreshing sound layers each time
+var soundEmbedIn='<EMBED TYPE=audio/aiff NAME=soundNote SRC=notify-in.aif HIDDEN=true autostart=true loop=no>'
+var soundEmbedOut='<EMBED TYPE=audio/aiff NAME=soundNote SRC=notify-out.aif HIDDEN=true autostart=true loop=no>'
+var soundLayerIn, soundLayerOut;
+
+// Object to represent single user
+function UserEntry(name, presence)  {
+  // Its name
+  this.name = name
+
+  // Presence state
+  // ranges from '!' (very present), '?' (present), '-' (zombie), '~' (dead), '' (not present)
+  this.presence = presence
+}
+
+// Represents list of UserEntries
+function UserCollection(size)  {
+  // Member var setup
+  this.userArray = new Array(size);
+  this.size = size;
+
+  // Make list with empty user entries
+   for (var i=0; i < size; i++) {
+     this.userArray[i] = new UserEntry('', '');
+   }
+
+  // Member function setup
+  this.indexOf = UserCollectionIndexOf
+  this.get = UserCollectionGet
+  this.add = UserCollectionAdd
+  this.remove = UserCollectionRemove
+}
+
+// UserCollection.indexOf method: return index of user name
+function UserCollectionIndexOf(user)  {
+  for (var i=0; i < this.size; i++) {
+     if (this.userArray[i].name == user) {
+        return i;
+     }
+   }
+   return -1;
+}
+
+// UserCollection.get method: get UserEntry at index
+function UserCollectionGet(index)  {
+  return this.userArray[index]
+}
+
+// UserCollection.add method: add user at empty slot and return index
+function UserCollectionAdd(userEntry)  {
+  for (var i=0; i < this.size; i++) {
+     if (this.userArray[i].name == '') {
+         this.userArray[i] = userEntry
+       return i;
+     }
+   }
+
+   return -1;
+}
+
+// UserCollection.remove method: remove UserEntry at index
+function UserCollectionRemove(index)  {
+  this.userArray[index] = new UserEntry('','');
+}
+
+// Called when document has loaded: setup LayerGrid for displaying UserCollection and sounds
+function init() {
+  initDHTML();
+  layerGrid = new LayerGrid('L', window, gridXSize, gridYSize, 0, 0, getInsideWindowWidth(), getInsideWindowHeight() );
+  for (var i=0; i < maxUsers; i++) {
+    layerGrid.writeCellAtIndex(i, emptyText, '#000000');
+  }
+
+  soundLayerIn = new Layer('soundIn', window);
+  soundLayerOut = new Layer('soundOut', window);
+
+  p_join_listen(subject);
+
+  // Open the 'join' window where user can login
+  openBareWindow('wcqjoin', 'wcqjoin.html', 200, 50)
+
+  ageUsers();
+}
+
+function doPresence() {
+  // Indicate our presence once we supplied a name
+  if (myName != null) {
+    // alert('send url: ' + url);
+      p_publish(subject, 'action', 'presence', 'user', myName);
+  }
+
+   // Loop forever
+  setTimeout("doPresence()",10000);
+}
+
+function doAlert(to, msg) {
+  // Indicate our presence once we supplied a name
+  if (myName != null) {
+    // alert('send url: ' + url);
+      p_publish(subject, 'action', 'alert', 'to', to, 'from', myName, 'msg', msg);
+  }
+}
+
+// Open window to send messages to selected user
+function alertUser(user) {
+  // p_debug(true, 'alertUser', window.location.href);
+  openBareWindow('wcqalert', alertURL + '?from=' + myName + '&to=' + user, 300, 50)
+  return true;
+}
+
+// Display a single user entry in the layerGrid
+function displayUserEntry(index, userEntry) {
+  if (userEntry.presence == '') {
+    layerGrid.writeCellAtIndex(index, emptyText, 'black');
+  } else {
+    layerGrid.writeCellAtIndex(index, '<a href="#" onclick="return alertUser(\'' + userEntry.name + '\');" >'+textPre+userEntry.name+userEntry.presence+textPost+"</a>", 'black');
+  }
+}
+
+// Set our own name
+function setLocalUser(name) {
+  myName = name;
+  doPresence();
+}
+
+// Get our own name
+function getLocalUser(name) {
+  return myName;
+}
+
+function ageUsers() {
+  // Assume user presence diminished until proven with /wcq/presence event
+  for (var i = 0; i < maxUsers; i++) {
+    userEntry = userCollection.get(i);
+    if (userEntry.name != '') {
+      if (userEntry.presence == '!') {
+        userEntry.presence = '?'
+        displayUserEntry(i, userEntry)
+      } else if (userEntry.presence == '?') {
+        userEntry.presence = '-'
+        displayUserEntry(i, userEntry)
+      } else if (userEntry.presence == '-') {
+        userEntry.presence = '~'
+        displayUserEntry(i, userEntry)
+      } else if (userEntry.presence == '~') {
+        userCollection.remove(i)
+        userEntry.presence = ''
+        displayUserEntry(i, userEntry);
+
+        // Play gone sound
+        soundLayerOut.write(soundEmbedOut)
+      }
+    }
+  }
+
+  // Check every N seconds
+  setTimeout("ageUsers()", 8000);
+}
+
+// Callback from pushlet.html: determine event type and take appropriate action
+function onData(event) {
+  var action = event.get('action');
+
+  // Switch on action field
+  if (action == 'alert') {
+    // Alert message: if it is us display the message
+    if (event.get('to') == myName) {
+      alert(unescape("message from "+event.get('from')+"\n"+event.get('msg')))
+    }
+  }
+  else if (action == 'presence') {
+     // Presence indicator from a user: if new add to collection else upgrade presence state
+
+     var name = escape(event.get('user'));
+     var index = userCollection.indexOf(name);
+
+     // User not yet in collection: add a new entry and play sound
+     if (index == -1) {
+        index = userCollection.add(new UserEntry(name, '!'));
+        soundLayerIn.write(soundEmbedIn)
+     }
+
+     // User in collection ? If so upgrade presence level and display
+     if (index != -1) {
+         userEntry = userCollection.get(index);
+
+         // Upgrade to maximum presence
+         userEntry.presence = '!';
+
+         // And show its presence
+         displayUserEntry(index, userEntry)
+     }
+   }
+}
+
+</script>
+
+</head>
+
+<body onload="init()" >
+
+<script type="text/javascript">
+  // Write all layer <DIV> elements into document (users+sounds)
+  document.write(createMultiLayerHTML('L', maxUsers)+createLayerHTML('soundIn')+createLayerHTML('soundOut'));
+</script>
+<script type="text/javascript">p_embed()</script>
+</body>
+
+</html>

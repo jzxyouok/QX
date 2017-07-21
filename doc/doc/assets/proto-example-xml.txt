@@ -1,0 +1,254 @@
+
+010.000.000.030.52200-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_event=join&p_format=xml HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+51
+<event p_id="fezibylina" p_time="1109773539" p_event="join-ack" p_format="xml" />
+
+010.000.000.200.08080-010.000.000.030.52200: 0
+
+
+010.000.000.030.52200-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_event=listen&p_id=fezibylina&p_mode=stream HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+63
+<event p_id="fezibylina" p_mode="stream" p_time="1109773539" p_event="listen-ack" p_format="xml" />
+
+010.000.000.030.52201-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&p_time=1109773581&p_event=subscribe&p_subject=/test/ping HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52201:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+6c
+<event p_sid="lilib" p_id="fezibylina" p_time="1109773539" p_event="subscribe-ack" p_subject="/test/ping" />
+
+010.000.000.030.52202-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&p_sid=lilib&p_time=1109773581&p_event=unsubscribe HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52202:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+6e
+<event p_id="fezibylina" p_sid="lilib" p_time="1109773539" p_subject="/test/ping" p_event="unsubscribe-ack" />
+
+
+
+010.000.000.030.52203-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&p_time=1109773581&p_event=subscribe&p_subject=/test/ping HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52203:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+6c
+<event p_sid="naziq" p_id="fezibylina" p_time="1109773539" p_event="subscribe-ack" p_subject="/test/ping" />
+
+010.000.000.030.52204-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&seqNr=1&p_time=1109773581&p_subject=/test/ping&time=1109773581776&p_event=publish HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+a0
+<event p_id="fezibylina" time="1109773581776" p_sid="naziq" seqNr="1" p_from="fezibylina" p_seq="1" p_time="1109773581" p_event="data" p_subject="/test/ping" />
+
+010.000.000.200.08080-010.000.000.030.52204:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:39 GMT
+Server: Apache-Coyote/1.1
+
+33
+<event p_time="1109773539" p_event="publish-ack" />
+
+010.000.000.200.08080-010.000.000.030.52204:
+0
+
+
+010.000.000.030.52204-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&seqNr=2&p_time=1109773584&p_subject=/test/ping&time=1109773584808&p_event=publish HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52204:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:42 GMT
+Server: Apache-Coyote/1.1
+
+33
+<event p_time="1109773542" p_event="publish-ack" />
+
+010.000.000.200.08080-010.000.000.030.52204: 0
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+a0
+<event p_id="fezibylina" time="1109773584808" p_sid="naziq" seqNr="2" p_from="fezibylina" p_seq="2" p_time="1109773584" p_event="data" p_subject="/test/ping" />
+
+010.000.000.030.52204-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&seqNr=3&p_time=1109773587&p_subject=/test/ping&time=1109773587830&p_event=publish HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52204:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:46 GMT
+Server: Apache-Coyote/1.1
+
+33
+<event p_time="1109773546" p_event="publish-ack" />
+
+010.000.000.200.08080-010.000.000.030.52204:
+0
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+a0
+<event p_id="fezibylina" time="1109773587830" p_sid="naziq" seqNr="3" p_from="fezibylina" p_seq="3" p_time="1109773587" p_event="data" p_subject="/test/ping" />
+
+010.000.000.030.52204-010.000.000.200.08080:
+GET /pushlet/pushlet.srv?p_id=fezibylina&seqNr=4&p_time=1109773590&p_subject=/test/ping&time=1109773590846&p_event=publish HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: pundit:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+010.000.000.200.08080-010.000.000.030.52204:
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Wed, 02 Mar 2005 14:25:49 GMT
+Server: Apache-Coyote/1.1
+
+33
+<event p_time="1109773549" p_event="publish-ack" />
+
+010.000.000.200.08080-010.000.000.030.52204:
+0
+
+
+010.000.000.200.08080-010.000.000.030.52200:
+a0
+<event p_id="fezibylina" time="1109773590846" p_sid="naziq" seqNr="4" p_from="fezibylina" p_seq="4" p_time="1109773590" p_event="data" p_subject="/test/ping" />
+
+tcpflow[7140]: terminating

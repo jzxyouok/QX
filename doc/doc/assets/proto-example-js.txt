@@ -1,0 +1,81 @@
+GET /pushlet/pushlet.srv?p_event=join HTTP/1.1
+Host: sumatra:8080
+User-Agent: Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.7.2) Gecko/20040803
+Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Connection: keep-alive
+Referer: http://sumatra:8080/pushlet/examples/weather/nl-temperature.html
+Cookie: JSESSIONID=37E7A128DADF6F6C5E8C2124389E75BA
+
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Mon, 28 Feb 2005 20:14:01 GMT
+Server: Apache-Coyote/1.1
+
+f2
+<html><head><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="Tue, 31 Dec 1997 23:59:59 GMT"></head><body>
+<script language="JavaScript"> var url=" ";
+function refresh() { document.location.href=url; }</script>
+
+87
+<script language="JavaScript">parent.push('p_id', "becyrulufo",'p_time', "1109621641",'p_event', "join-ack",'p_format', "js");</script>
+
+GET /pushlet/pushlet.srv?p_id=becyrulufo&p_event=listen&p_subject=/temperature HTTP/1.1
+Host: sumatra:8080
+User-Agent: Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.7.2) Gecko/20040803
+Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Connection: keep-alive
+Referer: http://sumatra:8080/pushlet/examples/weather/nl-temperature.html
+Cookie: JSESSIONID=37E7A128DADF6F6C5E8C2124389E75BA
+
+
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Mon, 28 Feb 2005 20:14:01 GMT
+Server: Apache-Coyote/1.1
+
+f2
+<html><head><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="Tue, 31 Dec 1997 23:59:59 GMT"></head><body>
+<script language="JavaScript"> var url=" ";
+function refresh() { document.location.href=url; }</script>
+
+ad
+<script language="JavaScript">parent.push('p_sid', "jycab",'p_id', "becyrulufo",'p_mode', "stream",'p_time', "1109621641",'p_event', "listen-ack",'p_format', "js");</script>
+
+c4
+<script language="JavaScript">parent.push('value', "10",'p_sid', "jycab",'p_seq', "1",'p_time', "1109621644",'p_subject', "/temperature",'p_event', "data",'city', "twente",'number', "3");</script>
+
+c7
+<script language="JavaScript">parent.push('value', "9",'p_sid', "jycab",'p_seq', "2",'p_time', "1109621648",'p_subject', "/temperature",'p_event', "data",'city', "leeuwarden",'number', "2");</script>
+
+c3
+<script language="JavaScript">parent.push('value', "6",'p_sid', "jycab",'p_seq', "3",'p_time', "1109621651",'p_subject', "/temperature",'p_event', "data",'city', "twente",'number', "3");</script>
+
+c4
+<script language="JavaScript">parent.push('value', "10",'p_sid', "jycab",'p_seq', "4",'p_time', "1109621655",'p_subject', "/temperature",'p_event', "data",'city', "twente",'number', "3");</script>
+
+c7
+<script language="JavaScript">parent.push('value', "9",'p_sid', "jycab",'p_seq', "5",'p_time', "1109621659",'p_subject', "/temperature",'p_event', "data",'city', "leeuwarden",'number', "2");</script>
+
+c4
+<script language="JavaScript">parent.push('value', "10",'p_sid', "jycab",'p_seq', "6",'p_time', "1109621662",'p_subject', "/temperature",'p_event', "data",'city', "twente",'number', "3");</script>
+
+c3
+<script language="JavaScript">parent.push('value', "8",'p_sid', "jycab",'p_seq', "7",'p_time', "1109621666",'p_subject', "/temperature",'p_event', "data",'city', "twente",'number', "3");</script>

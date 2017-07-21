@@ -1,0 +1,531 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.Controller (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Controller.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">nl.justobjects.pushlet.util.PushletException</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A>
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<FONT ID="LN">9 </FONT><A NAME="9"></A>
+<FONT ID="LN">10</FONT><A NAME="10"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">11</FONT><A NAME="11"></A> * Handles servlet requests from client.
+<FONT ID="LN">12</FONT><A NAME="12"></A> *
+<FONT ID="LN">13</FONT><A NAME="13"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">14</FONT><A NAME="14"></A> * @version $Id: Controller.java,v 1.9 2007/11/23 14:33:07 justb Exp $
+<FONT ID="LN">15</FONT><A NAME="15"></A> */</FONT>
+<FONT ID="LN">16</FONT><A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Controller <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A>, <A HREF="../../../../nl/justobjects/pushlet/core/ConfigDefs.java.html">ConfigDefs</A> {
+<FONT ID="LN">17</FONT><A NAME="17"></A>
+<FONT ID="LN">18</FONT><A NAME="18"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> session;
+<FONT ID="LN">19</FONT><A NAME="19"></A>
+<FONT ID="LN">20</FONT><A NAME="20"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">21</FONT><A NAME="21"></A>     * Protected constructor as we create through factory method.
+<FONT ID="LN">22</FONT><A NAME="22"></A>     */</FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>    <FONT ID="Protected">protected</FONT> Controller() {
+<FONT ID="LN">24</FONT><A NAME="24"></A>    }
+<FONT ID="LN">25</FONT><A NAME="25"></A>
+<FONT ID="LN">26</FONT><A NAME="26"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">27</FONT><A NAME="27"></A>     * Create instance through factory method.
+<FONT ID="LN">28</FONT><A NAME="28"></A>     *
+<FONT ID="LN">29</FONT><A NAME="29"></A>     * @param aSession the parent Session
+<FONT ID="LN">30</FONT><A NAME="30"></A>     * @return a Controller object (or derived)
+<FONT ID="LN">31</FONT><A NAME="31"></A>     * @throws PushletException exception, usually misconfiguration
+<FONT ID="LN">32</FONT><A NAME="32"></A>     */</FONT>
+<FONT ID="LN">33</FONT><A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Controller.java.html">Controller</A> create(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">34</FONT><A NAME="34"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Controller.java.html">Controller</A> controller;
+<FONT ID="LN">35</FONT><A NAME="35"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">36</FONT><A NAME="36"></A>            controller = (<A HREF="../../../../nl/justobjects/pushlet/core/Controller.java.html">Controller</A>) Config.getClass(CONTROLLER_CLASS, <FONT ID="StringLiteral">"nl.justobjects.pushlet.core.Controller"</FONT>).newInstance();
+<FONT ID="LN">37</FONT><A NAME="37"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">38</FONT><A NAME="38"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Cannot instantiate Controller from config"</FONT>, t);
+<FONT ID="LN">39</FONT><A NAME="39"></A>        }
+<FONT ID="LN">40</FONT><A NAME="40"></A>        controller.session = aSession;
+<FONT ID="LN">41</FONT><A NAME="41"></A>        <FONT ID="Return">return</FONT> controller;
+<FONT ID="LN">42</FONT><A NAME="42"></A>    }
+<FONT ID="LN">43</FONT><A NAME="43"></A>
+<FONT ID="LN">44</FONT><A NAME="44"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">45</FONT><A NAME="45"></A>     * Handle command.
+<FONT ID="LN">46</FONT><A NAME="46"></A>     */</FONT>
+<FONT ID="LN">47</FONT><A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doCommand(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) {
+<FONT ID="LN">48</FONT><A NAME="48"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">49</FONT><A NAME="49"></A>            <FONT ID="SingleLineComment">// Update lease time to live
+<FONT ID="LN">50</FONT><A NAME="50"></A></FONT>            session.kick();
+<FONT ID="LN">51</FONT><A NAME="51"></A>
+<FONT ID="LN">52</FONT><A NAME="52"></A>            <FONT ID="SingleLineComment">// Set remote IP address of client
+<FONT ID="LN">53</FONT><A NAME="53"></A></FONT>            session.setAddress(aCommand.httpReq.getRemoteAddr());
+<FONT ID="LN">54</FONT><A NAME="54"></A>
+<FONT ID="LN">55</FONT><A NAME="55"></A>            debug(<FONT ID="StringLiteral">"doCommand() event="</FONT> + aCommand.reqEvent);
+<FONT ID="LN">56</FONT><A NAME="56"></A>
+<FONT ID="LN">57</FONT><A NAME="57"></A>            <FONT ID="SingleLineComment">// Get event type
+<FONT ID="LN">58</FONT><A NAME="58"></A></FONT>            String eventType = aCommand.reqEvent.getEventType();
+<FONT ID="LN">59</FONT><A NAME="59"></A>
+<FONT ID="LN">60</FONT><A NAME="60"></A>            <FONT ID="SingleLineComment">// Determine action based on event type
+<FONT ID="LN">61</FONT><A NAME="61"></A></FONT>            <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_REFRESH)) {
+<FONT ID="LN">62</FONT><A NAME="62"></A>                <FONT ID="SingleLineComment">// Pull/poll mode clients that refresh
+<FONT ID="LN">63</FONT><A NAME="63"></A></FONT>                doRefresh(aCommand);
+<FONT ID="LN">64</FONT><A NAME="64"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_SUBSCRIBE)) {
+<FONT ID="LN">65</FONT><A NAME="65"></A>                <FONT ID="SingleLineComment">// Subscribe
+<FONT ID="LN">66</FONT><A NAME="66"></A></FONT>                doSubscribe(aCommand);
+<FONT ID="LN">67</FONT><A NAME="67"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_UNSUBSCRIBE)) {
+<FONT ID="LN">68</FONT><A NAME="68"></A>                <FONT ID="SingleLineComment">// Unsubscribe
+<FONT ID="LN">69</FONT><A NAME="69"></A></FONT>                doUnsubscribe(aCommand);
+<FONT ID="LN">70</FONT><A NAME="70"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_JOIN)) {
+<FONT ID="LN">71</FONT><A NAME="71"></A>                <FONT ID="SingleLineComment">// Join
+<FONT ID="LN">72</FONT><A NAME="72"></A></FONT>                doJoin(aCommand);
+<FONT ID="LN">73</FONT><A NAME="73"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_JOIN_LISTEN)) {
+<FONT ID="LN">74</FONT><A NAME="74"></A>                <FONT ID="SingleLineComment">// Join and listen (for simple and e.g. REST apps)
+<FONT ID="LN">75</FONT><A NAME="75"></A></FONT>                doJoinListen(aCommand);
+<FONT ID="LN">76</FONT><A NAME="76"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_LEAVE)) {
+<FONT ID="LN">77</FONT><A NAME="77"></A>                <FONT ID="SingleLineComment">// Leave
+<FONT ID="LN">78</FONT><A NAME="78"></A></FONT>                doLeave(aCommand);
+<FONT ID="LN">79</FONT><A NAME="79"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_HEARTBEAT)) {
+<FONT ID="LN">80</FONT><A NAME="80"></A>                <FONT ID="SingleLineComment">// Heartbeat mainly to do away with browser "busy" cursor
+<FONT ID="LN">81</FONT><A NAME="81"></A></FONT>                doHeartbeat(aCommand);
+<FONT ID="LN">82</FONT><A NAME="82"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_PUBLISH)) {
+<FONT ID="LN">83</FONT><A NAME="83"></A>                <FONT ID="SingleLineComment">// Publish event
+<FONT ID="LN">84</FONT><A NAME="84"></A></FONT>                doPublish(aCommand);
+<FONT ID="LN">85</FONT><A NAME="85"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(Protocol.E_LISTEN)) {
+<FONT ID="LN">86</FONT><A NAME="86"></A>                <FONT ID="SingleLineComment">// Listen to pushed events
+<FONT ID="LN">87</FONT><A NAME="87"></A></FONT>                doListen(aCommand);
+<FONT ID="LN">88</FONT><A NAME="88"></A>            }
+<FONT ID="LN">89</FONT><A NAME="89"></A>
+<FONT ID="LN">90</FONT><A NAME="90"></A>            <FONT ID="SingleLineComment">// Handle response back to client
+<FONT ID="LN">91</FONT><A NAME="91"></A></FONT>            <FONT ID="If">if</FONT> (eventType.endsWith(Protocol.E_LISTEN) ||
+<FONT ID="LN">92</FONT><A NAME="92"></A>                    eventType.equals(Protocol.E_REFRESH)) {
+<FONT ID="LN">93</FONT><A NAME="93"></A>                <FONT ID="SingleLineComment">// Data channel events
+<FONT ID="LN">94</FONT><A NAME="94"></A></FONT>                <FONT ID="SingleLineComment">// Loops until refresh or connection closed
+<FONT ID="LN">95</FONT><A NAME="95"></A></FONT>                getSubscriber().fetchEvents(aCommand);
+<FONT ID="LN">96</FONT><A NAME="96"></A>
+<FONT ID="LN">97</FONT><A NAME="97"></A>            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">98</FONT><A NAME="98"></A>                <FONT ID="SingleLineComment">// Send response for control commands
+<FONT ID="LN">99</FONT><A NAME="99"></A></FONT>                sendControlResponse(aCommand);
+<FONT ID="LN">00</FONT><A NAME="100"></A>            }
+<FONT ID="LN">01</FONT><A NAME="101"></A>
+<FONT ID="LN">02</FONT><A NAME="102"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">03</FONT><A NAME="103"></A>            warn(<FONT ID="StringLiteral">"Exception in doCommand(): "</FONT> + t);
+<FONT ID="LN">04</FONT><A NAME="104"></A>            t.printStackTrace();
+<FONT ID="LN">05</FONT><A NAME="105"></A>        }
+<FONT ID="LN">06</FONT><A NAME="106"></A>    }
+<FONT ID="LN">07</FONT><A NAME="107"></A>
+<FONT ID="LN">08</FONT><A NAME="108"></A>    <FONT ID="Public">public</FONT> String toString() {
+<FONT ID="LN">09</FONT><A NAME="109"></A>        <FONT ID="Return">return</FONT> session.toString();
+<FONT ID="LN">10</FONT><A NAME="110"></A>    }
+<FONT ID="LN">11</FONT><A NAME="111"></A>
+<FONT ID="LN">12</FONT><A NAME="112"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">13</FONT><A NAME="113"></A>     * Handle heartbeat event.
+<FONT ID="LN">14</FONT><A NAME="114"></A>     */</FONT>
+<FONT ID="LN">15</FONT><A NAME="115"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doHeartbeat(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) {
+<FONT ID="LN">16</FONT><A NAME="116"></A>
+<FONT ID="LN">17</FONT><A NAME="117"></A>        <FONT ID="SingleLineComment">// Set heartbeat acknowledgement to client
+<FONT ID="LN">18</FONT><A NAME="118"></A></FONT>        aCommand.setResponseEvent(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_HEARTBEAT_ACK));
+<FONT ID="LN">19</FONT><A NAME="119"></A>    }
+<FONT ID="LN">20</FONT><A NAME="120"></A>
+<FONT ID="LN">21</FONT><A NAME="121"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">22</FONT><A NAME="122"></A>     * Handle Join request.
+<FONT ID="LN">23</FONT><A NAME="123"></A>     */</FONT>
+<FONT ID="LN">24</FONT><A NAME="124"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doJoin(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">25</FONT><A NAME="125"></A>
+<FONT ID="LN">26</FONT><A NAME="126"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">27</FONT><A NAME="127"></A>
+<FONT ID="LN">28</FONT><A NAME="128"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">29</FONT><A NAME="129"></A>
+<FONT ID="LN">30</FONT><A NAME="130"></A>            session.start();
+<FONT ID="LN">31</FONT><A NAME="131"></A>
+<FONT ID="LN">32</FONT><A NAME="132"></A>            <FONT ID="SingleLineComment">// Determine format for encoding Events to client.
+<FONT ID="LN">33</FONT><A NAME="133"></A></FONT>            <FONT ID="SingleLineComment">// Default assume a userAgent window on the other end.
+<FONT ID="LN">34</FONT><A NAME="134"></A></FONT>            String format = aCommand.reqEvent.getField(P_FORMAT, FORMAT_JAVASCRIPT);
+<FONT ID="LN">35</FONT><A NAME="135"></A>
+<FONT ID="LN">36</FONT><A NAME="136"></A>            session.setFormat(format);
+<FONT ID="LN">37</FONT><A NAME="137"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_JOIN_ACK);
+<FONT ID="LN">38</FONT><A NAME="138"></A>
+<FONT ID="LN">39</FONT><A NAME="139"></A>            <FONT ID="SingleLineComment">// Set unique subscriber id and encoding format
+<FONT ID="LN">40</FONT><A NAME="140"></A></FONT>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">41</FONT><A NAME="141"></A>            responseEvent.setField(P_FORMAT, format);
+<FONT ID="LN">42</FONT><A NAME="142"></A>            info(<FONT ID="StringLiteral">"joined"</FONT>);
+<FONT ID="LN">43</FONT><A NAME="143"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">44</FONT><A NAME="144"></A>            session.stop();
+<FONT ID="LN">45</FONT><A NAME="145"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">46</FONT><A NAME="146"></A>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">47</FONT><A NAME="147"></A>            responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"unexpected error: "</FONT> + t);
+<FONT ID="LN">48</FONT><A NAME="148"></A>            warn(<FONT ID="StringLiteral">"doJoin() error: "</FONT> + t);
+<FONT ID="LN">49</FONT><A NAME="149"></A>            t.printStackTrace();
+<FONT ID="LN">50</FONT><A NAME="150"></A>        } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">51</FONT><A NAME="151"></A>            <FONT ID="SingleLineComment">// Always set response event in command
+<FONT ID="LN">52</FONT><A NAME="152"></A></FONT>            aCommand.setResponseEvent(responseEvent);
+<FONT ID="LN">53</FONT><A NAME="153"></A>        }
+<FONT ID="LN">54</FONT><A NAME="154"></A>
+<FONT ID="LN">55</FONT><A NAME="155"></A>    }
+<FONT ID="LN">56</FONT><A NAME="156"></A>
+<FONT ID="LN">57</FONT><A NAME="157"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">58</FONT><A NAME="158"></A>     * Handle JoinListen request.
+<FONT ID="LN">59</FONT><A NAME="159"></A>     */</FONT>
+<FONT ID="LN">60</FONT><A NAME="160"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doJoinListen(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">61</FONT><A NAME="161"></A>
+<FONT ID="LN">62</FONT><A NAME="162"></A>        <FONT ID="SingleLineComment">// Basically bundles a join and a listen
+<FONT ID="LN">63</FONT><A NAME="163"></A></FONT>        <FONT ID="SingleLineComment">// This request is handly for simple apps that
+<FONT ID="LN">64</FONT><A NAME="164"></A></FONT>        <FONT ID="SingleLineComment">// need to do a single request to get events immediately
+<FONT ID="LN">65</FONT><A NAME="165"></A></FONT>        <FONT ID="SingleLineComment">// For example in RESTful apps.
+<FONT ID="LN">66</FONT><A NAME="166"></A></FONT>
+<FONT ID="LN">67</FONT><A NAME="167"></A>        <FONT ID="SingleLineComment">// First do regular join
+<FONT ID="LN">68</FONT><A NAME="168"></A></FONT>        doJoin(aCommand);
+<FONT ID="LN">69</FONT><A NAME="169"></A>        <FONT ID="If">if</FONT> (!aCommand.getResponseEvent().getEventType().equals(E_NACK)) {
+<FONT ID="LN">70</FONT><A NAME="170"></A>            <FONT ID="SingleLineComment">// If successful do the listen
+<FONT ID="LN">71</FONT><A NAME="171"></A></FONT>            doListen(aCommand);
+<FONT ID="LN">72</FONT><A NAME="172"></A>            <FONT ID="If">if</FONT> (!aCommand.getResponseEvent().getEventType().equals(E_NACK)) {
+<FONT ID="LN">73</FONT><A NAME="173"></A>                <FONT ID="SingleLineComment">// If still ok do the listen ack
+<FONT ID="LN">74</FONT><A NAME="174"></A></FONT>                aCommand.getResponseEvent().setField(P_EVENT, E_JOIN_LISTEN_ACK);
+<FONT ID="LN">75</FONT><A NAME="175"></A>            }
+<FONT ID="LN">76</FONT><A NAME="176"></A>        }
+<FONT ID="LN">77</FONT><A NAME="177"></A>    }
+<FONT ID="LN">78</FONT><A NAME="178"></A>
+<FONT ID="LN">79</FONT><A NAME="179"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">80</FONT><A NAME="180"></A>     * Handle Leave request.
+<FONT ID="LN">81</FONT><A NAME="181"></A>     */</FONT>
+<FONT ID="LN">82</FONT><A NAME="182"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doLeave(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">83</FONT><A NAME="183"></A>
+<FONT ID="LN">84</FONT><A NAME="184"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">85</FONT><A NAME="185"></A>
+<FONT ID="LN">86</FONT><A NAME="186"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">87</FONT><A NAME="187"></A>            <FONT ID="SingleLineComment">// Also removes all subscriptions
+<FONT ID="LN">88</FONT><A NAME="188"></A></FONT>            session.stop();
+<FONT ID="LN">89</FONT><A NAME="189"></A>
+<FONT ID="LN">90</FONT><A NAME="190"></A>            <FONT ID="SingleLineComment">// Prepare acknowledgement
+<FONT ID="LN">91</FONT><A NAME="191"></A></FONT>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_LEAVE_ACK);
+<FONT ID="LN">92</FONT><A NAME="192"></A>
+<FONT ID="LN">93</FONT><A NAME="193"></A>            <FONT ID="SingleLineComment">// Set unique subscriber id
+<FONT ID="LN">94</FONT><A NAME="194"></A></FONT>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">95</FONT><A NAME="195"></A>            info(<FONT ID="StringLiteral">"left"</FONT>);
+<FONT ID="LN">96</FONT><A NAME="196"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">97</FONT><A NAME="197"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">98</FONT><A NAME="198"></A>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">99</FONT><A NAME="199"></A>            responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"unexpected error: "</FONT> + t);
+<FONT ID="LN">00</FONT><A NAME="200"></A>            warn(<FONT ID="StringLiteral">"doLeave() error: "</FONT> + t);
+<FONT ID="LN">01</FONT><A NAME="201"></A>            t.printStackTrace();
+<FONT ID="LN">02</FONT><A NAME="202"></A>        } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">03</FONT><A NAME="203"></A>            <FONT ID="SingleLineComment">// Always set response event in command
+<FONT ID="LN">04</FONT><A NAME="204"></A></FONT>            aCommand.setResponseEvent(responseEvent);
+<FONT ID="LN">05</FONT><A NAME="205"></A>        }
+<FONT ID="LN">06</FONT><A NAME="206"></A>
+<FONT ID="LN">07</FONT><A NAME="207"></A>    }
+<FONT ID="LN">08</FONT><A NAME="208"></A>
+<FONT ID="LN">09</FONT><A NAME="209"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">10</FONT><A NAME="210"></A>     * Handle Listen request.
+<FONT ID="LN">11</FONT><A NAME="211"></A>     */</FONT>
+<FONT ID="LN">12</FONT><A NAME="212"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doListen(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">13</FONT><A NAME="213"></A>
+<FONT ID="LN">14</FONT><A NAME="214"></A>
+<FONT ID="LN">15</FONT><A NAME="215"></A>        String mode = MODE_STREAM;
+<FONT ID="LN">16</FONT><A NAME="216"></A>        <FONT ID="SingleLineComment">// Should we always force "pull" mode ?
+<FONT ID="LN">17</FONT><A NAME="217"></A></FONT>        <FONT ID="If">if</FONT> (Config.getBoolProperty(LISTEN_FORCE_PULL_ALL)) {
+<FONT ID="LN">18</FONT><A NAME="218"></A>            mode = MODE_PULL;
+<FONT ID="LN">19</FONT><A NAME="219"></A>        } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">20</FONT><A NAME="220"></A>            <FONT ID="SingleLineComment">// Determine optimal mode determined by parameter and/or user agent
+<FONT ID="LN">21</FONT><A NAME="221"></A></FONT>            <FONT ID="SingleLineComment">// Mode param determines how events are transfered to the client
+<FONT ID="LN">22</FONT><A NAME="222"></A></FONT>
+<FONT ID="LN">23</FONT><A NAME="223"></A>            <FONT ID="SingleLineComment">// In "stream" mode, a stream of events is sent, i.e. the document
+<FONT ID="LN">24</FONT><A NAME="224"></A></FONT>            <FONT ID="SingleLineComment">// is neverending. In "pull" or "poll" mode a complete document is returned
+<FONT ID="LN">25</FONT><A NAME="225"></A></FONT>            <FONT ID="SingleLineComment">// ending with a request to refresh.
+<FONT ID="LN">26</FONT><A NAME="226"></A></FONT>            mode = aCommand.reqEvent.getField(P_MODE, MODE_STREAM);
+<FONT ID="LN">27</FONT><A NAME="227"></A>
+<FONT ID="LN">28</FONT><A NAME="228"></A>            String userAgent = aCommand.httpReq.getHeader(<FONT ID="StringLiteral">"User-Agent"</FONT>);
+<FONT ID="LN">29</FONT><A NAME="229"></A>            <FONT ID="If">if</FONT> (userAgent != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">30</FONT><A NAME="230"></A>                userAgent = userAgent.toLowerCase();
+<FONT ID="LN">31</FONT><A NAME="231"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; session.FORCED_PULL_AGENTS.length; i++) {
+<FONT ID="LN">32</FONT><A NAME="232"></A>                    <FONT ID="If">if</FONT> ((userAgent.indexOf(session.FORCED_PULL_AGENTS[i]) != -<FONT ID="IntegerLiteral">1</FONT>)) {
+<FONT ID="LN">33</FONT><A NAME="233"></A>                        info(<FONT ID="StringLiteral">"Forcing pull mode for agent="</FONT> + userAgent);
+<FONT ID="LN">34</FONT><A NAME="234"></A>                        mode = MODE_PULL;
+<FONT ID="LN">35</FONT><A NAME="235"></A>                        <FONT ID="Break">break</FONT>;
+<FONT ID="LN">36</FONT><A NAME="236"></A>                    }
+<FONT ID="LN">37</FONT><A NAME="237"></A>                }
+<FONT ID="LN">38</FONT><A NAME="238"></A>            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">39</FONT><A NAME="239"></A>                userAgent = <FONT ID="StringLiteral">"unknown"</FONT>;
+<FONT ID="LN">40</FONT><A NAME="240"></A>            }
+<FONT ID="LN">41</FONT><A NAME="241"></A>        }
+<FONT ID="LN">42</FONT><A NAME="242"></A>
+<FONT ID="LN">43</FONT><A NAME="243"></A>        getSubscriber().setMode(mode);
+<FONT ID="LN">44</FONT><A NAME="244"></A>
+<FONT ID="LN">45</FONT><A NAME="245"></A>        <FONT ID="SingleLineComment">// Prepare acknowledgement
+<FONT ID="LN">46</FONT><A NAME="246"></A></FONT>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> listenAckEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_LISTEN_ACK);
+<FONT ID="LN">47</FONT><A NAME="247"></A>
+<FONT ID="LN">48</FONT><A NAME="248"></A>        <FONT ID="SingleLineComment">// Add subscription(s) if subject(s) specified
+<FONT ID="LN">49</FONT><A NAME="249"></A></FONT>        String subject = aCommand.reqEvent.getField(P_SUBJECT);
+<FONT ID="LN">50</FONT><A NAME="250"></A>        <FONT ID="If">if</FONT> (subject != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">51</FONT><A NAME="251"></A>            <FONT ID="SingleLineComment">// Optional label for subscription
+<FONT ID="LN">52</FONT><A NAME="252"></A></FONT>            String label = aCommand.reqEvent.getField(Protocol.P_SUBSCRIPTION_LABEL);
+<FONT ID="LN">53</FONT><A NAME="253"></A>
+<FONT ID="LN">54</FONT><A NAME="254"></A>            <FONT ID="SingleLineComment">// Add a subscription
+<FONT ID="LN">55</FONT><A NAME="255"></A></FONT>            <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription = getSubscriber().addSubscription(subject, label);
+<FONT ID="LN">56</FONT><A NAME="256"></A>
+<FONT ID="LN">57</FONT><A NAME="257"></A>            <FONT ID="SingleLineComment">// Add subscription id and optional label to listen-ack event
+<FONT ID="LN">58</FONT><A NAME="258"></A></FONT>            listenAckEvent.setField(P_SUBSCRIPTION_ID, subscription.getId());
+<FONT ID="LN">59</FONT><A NAME="259"></A>            <FONT ID="If">if</FONT> (label != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">60</FONT><A NAME="260"></A>                listenAckEvent.setField(P_SUBSCRIPTION_LABEL, label);
+<FONT ID="LN">61</FONT><A NAME="261"></A>            }
+<FONT ID="LN">62</FONT><A NAME="262"></A>        }
+<FONT ID="LN">63</FONT><A NAME="263"></A>
+<FONT ID="LN">64</FONT><A NAME="264"></A>        <FONT ID="SingleLineComment">// Set unique subscriber id, push mode and encoding format
+<FONT ID="LN">65</FONT><A NAME="265"></A></FONT>        listenAckEvent.setField(P_ID, session.getId());
+<FONT ID="LN">66</FONT><A NAME="266"></A>        listenAckEvent.setField(P_MODE, mode);
+<FONT ID="LN">67</FONT><A NAME="267"></A>        listenAckEvent.setField(P_FORMAT, session.getFormat());
+<FONT ID="LN">68</FONT><A NAME="268"></A>
+<FONT ID="LN">69</FONT><A NAME="269"></A>        <FONT ID="SingleLineComment">// Activate the subscriber
+<FONT ID="LN">70</FONT><A NAME="270"></A></FONT>        getSubscriber().start();
+<FONT ID="LN">71</FONT><A NAME="271"></A>
+<FONT ID="LN">72</FONT><A NAME="272"></A>        <FONT ID="SingleLineComment">// Enqueue listen ack event on data channel
+<FONT ID="LN">73</FONT><A NAME="273"></A></FONT>        aCommand.setResponseEvent(listenAckEvent);
+<FONT ID="LN">74</FONT><A NAME="274"></A>
+<FONT ID="LN">75</FONT><A NAME="275"></A>        info(<FONT ID="StringLiteral">"Listening mode="</FONT> + mode + <FONT ID="StringLiteral">" userAgent="</FONT> + session.getUserAgent());
+<FONT ID="LN">76</FONT><A NAME="276"></A>
+<FONT ID="LN">77</FONT><A NAME="277"></A>    }
+<FONT ID="LN">78</FONT><A NAME="278"></A>
+<FONT ID="LN">79</FONT><A NAME="279"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">80</FONT><A NAME="280"></A>     * Handle Publish request.
+<FONT ID="LN">81</FONT><A NAME="281"></A>     */</FONT>
+<FONT ID="LN">82</FONT><A NAME="282"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doPublish(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) {
+<FONT ID="LN">83</FONT><A NAME="283"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">84</FONT><A NAME="284"></A>
+<FONT ID="LN">85</FONT><A NAME="285"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">86</FONT><A NAME="286"></A>            String subject = aCommand.reqEvent.getField(Protocol.P_SUBJECT);
+<FONT ID="LN">87</FONT><A NAME="287"></A>            <FONT ID="If">if</FONT> (subject == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">88</FONT><A NAME="288"></A>                <FONT ID="SingleLineComment">// Return error response
+<FONT ID="LN">89</FONT><A NAME="289"></A></FONT>                responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">90</FONT><A NAME="290"></A>                responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">91</FONT><A NAME="291"></A>                responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"no subject provided"</FONT>);
+<FONT ID="LN">92</FONT><A NAME="292"></A>            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">93</FONT><A NAME="293"></A>                aCommand.reqEvent.setField(P_FROM, session.getId());
+<FONT ID="LN">94</FONT><A NAME="294"></A>                aCommand.reqEvent.setField(P_EVENT, E_DATA);
+<FONT ID="LN">95</FONT><A NAME="295"></A>
+<FONT ID="LN">96</FONT><A NAME="296"></A>                <FONT ID="SingleLineComment">// Event may be targeted to specific user (p_to field)
+<FONT ID="LN">97</FONT><A NAME="297"></A></FONT>                String to = aCommand.reqEvent.getField(P_TO);
+<FONT ID="LN">98</FONT><A NAME="298"></A>                <FONT ID="If">if</FONT> (to != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">99</FONT><A NAME="299"></A>                    Dispatcher.getInstance().unicast(aCommand.reqEvent, to);
+<FONT ID="LN">00</FONT><A NAME="300"></A>                } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">01</FONT><A NAME="301"></A>                    <FONT ID="SingleLineComment">// No to: multicast
+<FONT ID="LN">02</FONT><A NAME="302"></A></FONT>                    debug(<FONT ID="StringLiteral">"doPublish() event="</FONT> + aCommand.reqEvent);
+<FONT ID="LN">03</FONT><A NAME="303"></A>                    Dispatcher.getInstance().multicast(aCommand.reqEvent);
+<FONT ID="LN">04</FONT><A NAME="304"></A>                }
+<FONT ID="LN">05</FONT><A NAME="305"></A>
+<FONT ID="LN">06</FONT><A NAME="306"></A>                <FONT ID="SingleLineComment">// Acknowledge
+<FONT ID="LN">07</FONT><A NAME="307"></A></FONT>                responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_PUBLISH_ACK);
+<FONT ID="LN">08</FONT><A NAME="308"></A>            }
+<FONT ID="LN">09</FONT><A NAME="309"></A>
+<FONT ID="LN">10</FONT><A NAME="310"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">11</FONT><A NAME="311"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">12</FONT><A NAME="312"></A>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">13</FONT><A NAME="313"></A>            responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"unexpected error: "</FONT> + t);
+<FONT ID="LN">14</FONT><A NAME="314"></A>            warn(<FONT ID="StringLiteral">"doPublish() error: "</FONT> + t);
+<FONT ID="LN">15</FONT><A NAME="315"></A>            t.printStackTrace();
+<FONT ID="LN">16</FONT><A NAME="316"></A>        } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">17</FONT><A NAME="317"></A>            <FONT ID="SingleLineComment">// Always set response event in command
+<FONT ID="LN">18</FONT><A NAME="318"></A></FONT>            aCommand.setResponseEvent(responseEvent);
+<FONT ID="LN">19</FONT><A NAME="319"></A>        }
+<FONT ID="LN">20</FONT><A NAME="320"></A>    }
+<FONT ID="LN">21</FONT><A NAME="321"></A>
+<FONT ID="LN">22</FONT><A NAME="322"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">23</FONT><A NAME="323"></A>     * Handle refresh event.
+<FONT ID="LN">24</FONT><A NAME="324"></A>     */</FONT>
+<FONT ID="LN">25</FONT><A NAME="325"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doRefresh(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) {
+<FONT ID="LN">26</FONT><A NAME="326"></A>        <FONT ID="SingleLineComment">// Set ack
+<FONT ID="LN">27</FONT><A NAME="327"></A></FONT>        aCommand.setResponseEvent(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_REFRESH_ACK));
+<FONT ID="LN">28</FONT><A NAME="328"></A>    }
+<FONT ID="LN">29</FONT><A NAME="329"></A>
+<FONT ID="LN">30</FONT><A NAME="330"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">31</FONT><A NAME="331"></A>     * Handle Subscribe request.
+<FONT ID="LN">32</FONT><A NAME="332"></A>     */</FONT>
+<FONT ID="LN">33</FONT><A NAME="333"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doSubscribe(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">34</FONT><A NAME="334"></A>
+<FONT ID="LN">35</FONT><A NAME="335"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">36</FONT><A NAME="336"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">37</FONT><A NAME="337"></A>            String subject = aCommand.reqEvent.getField(Protocol.P_SUBJECT);
+<FONT ID="LN">38</FONT><A NAME="338"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">39</FONT><A NAME="339"></A>            <FONT ID="If">if</FONT> (subject == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">40</FONT><A NAME="340"></A>                <FONT ID="SingleLineComment">// Return error response
+<FONT ID="LN">41</FONT><A NAME="341"></A></FONT>                responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">42</FONT><A NAME="342"></A>                responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">43</FONT><A NAME="343"></A>                responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"no subject provided"</FONT>);
+<FONT ID="LN">44</FONT><A NAME="344"></A>            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">45</FONT><A NAME="345"></A>
+<FONT ID="LN">46</FONT><A NAME="346"></A>                String label = aCommand.reqEvent.getField(Protocol.P_SUBSCRIPTION_LABEL);
+<FONT ID="LN">47</FONT><A NAME="347"></A>                subscription = getSubscriber().addSubscription(subject, label);
+<FONT ID="LN">48</FONT><A NAME="348"></A>
+<FONT ID="LN">49</FONT><A NAME="349"></A>                <FONT ID="SingleLineComment">// Acknowledge
+<FONT ID="LN">50</FONT><A NAME="350"></A></FONT>                responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_SUBSCRIBE_ACK);
+<FONT ID="LN">51</FONT><A NAME="351"></A>                responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">52</FONT><A NAME="352"></A>                responseEvent.setField(P_SUBJECT, subject);
+<FONT ID="LN">53</FONT><A NAME="353"></A>                responseEvent.setField(P_SUBSCRIPTION_ID, subscription.getId());
+<FONT ID="LN">54</FONT><A NAME="354"></A>                <FONT ID="If">if</FONT> (label != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">55</FONT><A NAME="355"></A>                    responseEvent.setField(P_SUBSCRIPTION_LABEL, label);
+<FONT ID="LN">56</FONT><A NAME="356"></A>                }
+<FONT ID="LN">57</FONT><A NAME="357"></A>                info(<FONT ID="StringLiteral">"subscribed to "</FONT> + subject + <FONT ID="StringLiteral">" sid="</FONT> + subscription.getId());
+<FONT ID="LN">58</FONT><A NAME="358"></A>            }
+<FONT ID="LN">59</FONT><A NAME="359"></A>
+<FONT ID="LN">60</FONT><A NAME="360"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">61</FONT><A NAME="361"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">62</FONT><A NAME="362"></A>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">63</FONT><A NAME="363"></A>            responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"unexpected error: "</FONT> + t);
+<FONT ID="LN">64</FONT><A NAME="364"></A>            warn(<FONT ID="StringLiteral">"doSubscribe() error: "</FONT> + t);
+<FONT ID="LN">65</FONT><A NAME="365"></A>            t.printStackTrace();
+<FONT ID="LN">66</FONT><A NAME="366"></A>        } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">67</FONT><A NAME="367"></A>            <FONT ID="SingleLineComment">// Always set response event in command
+<FONT ID="LN">68</FONT><A NAME="368"></A></FONT>            aCommand.setResponseEvent(responseEvent);
+<FONT ID="LN">69</FONT><A NAME="369"></A>        }
+<FONT ID="LN">70</FONT><A NAME="370"></A>    }
+<FONT ID="LN">71</FONT><A NAME="371"></A>
+<FONT ID="LN">72</FONT><A NAME="372"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">73</FONT><A NAME="373"></A>     * Handle Unsubscribe request.
+<FONT ID="LN">74</FONT><A NAME="374"></A>     */</FONT>
+<FONT ID="LN">75</FONT><A NAME="375"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doUnsubscribe(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">76</FONT><A NAME="376"></A>
+<FONT ID="LN">77</FONT><A NAME="377"></A>
+<FONT ID="LN">78</FONT><A NAME="378"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">79</FONT><A NAME="379"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">80</FONT><A NAME="380"></A>            String subscriptionId = aCommand.reqEvent.getField(Protocol.P_SUBSCRIPTION_ID);
+<FONT ID="LN">81</FONT><A NAME="381"></A>            <FONT ID="If">if</FONT> (subscriptionId == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">82</FONT><A NAME="382"></A>                <FONT ID="SingleLineComment">// Unsuscbribe all
+<FONT ID="LN">83</FONT><A NAME="383"></A></FONT>                getSubscriber().removeSubscriptions();
+<FONT ID="LN">84</FONT><A NAME="384"></A>                responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_UNSUBSCRIBE_ACK);
+<FONT ID="LN">85</FONT><A NAME="385"></A>                responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">86</FONT><A NAME="386"></A>                info(<FONT ID="StringLiteral">"unsubscribed all"</FONT>);
+<FONT ID="LN">87</FONT><A NAME="387"></A>            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">88</FONT><A NAME="388"></A>                <FONT ID="SingleLineComment">// Subscription id provided: remove Subscription
+<FONT ID="LN">89</FONT><A NAME="389"></A></FONT>                <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription = getSubscriber().removeSubscription(subscriptionId);
+<FONT ID="LN">90</FONT><A NAME="390"></A>                <FONT ID="If">if</FONT> (subscription == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">91</FONT><A NAME="391"></A>                    <FONT ID="SingleLineComment">// Unknown subscription id: return error response
+<FONT ID="LN">92</FONT><A NAME="392"></A></FONT>                    responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">93</FONT><A NAME="393"></A>                    responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">94</FONT><A NAME="394"></A>                    responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"no subscription for sid="</FONT> + subscriptionId);
+<FONT ID="LN">95</FONT><A NAME="395"></A>                    warn(<FONT ID="StringLiteral">"unsubscribe: no subscription for sid="</FONT> + subscriptionId);
+<FONT ID="LN">96</FONT><A NAME="396"></A>                } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">97</FONT><A NAME="397"></A>                    <FONT ID="SingleLineComment">// OK return ack
+<FONT ID="LN">98</FONT><A NAME="398"></A></FONT>                    responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_UNSUBSCRIBE_ACK);
+<FONT ID="LN">99</FONT><A NAME="399"></A>                    responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">00</FONT><A NAME="400"></A>                    responseEvent.setField(P_SUBSCRIPTION_ID, subscription.getId());
+<FONT ID="LN">01</FONT><A NAME="401"></A>                    responseEvent.setField(P_SUBJECT, subscription.getSubject());
+<FONT ID="LN">02</FONT><A NAME="402"></A>                    <FONT ID="If">if</FONT> (subscription.getLabel() != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">03</FONT><A NAME="403"></A>                        responseEvent.setField(P_SUBSCRIPTION_LABEL, subscription.getLabel());
+<FONT ID="LN">04</FONT><A NAME="404"></A>                    }
+<FONT ID="LN">05</FONT><A NAME="405"></A>                    info(<FONT ID="StringLiteral">"unsubscribed sid= "</FONT> + subscriptionId);
+<FONT ID="LN">06</FONT><A NAME="406"></A>                }
+<FONT ID="LN">07</FONT><A NAME="407"></A>            }
+<FONT ID="LN">08</FONT><A NAME="408"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">09</FONT><A NAME="409"></A>            responseEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_NACK);
+<FONT ID="LN">10</FONT><A NAME="410"></A>            responseEvent.setField(P_ID, session.getId());
+<FONT ID="LN">11</FONT><A NAME="411"></A>            responseEvent.setField(P_REASON, <FONT ID="StringLiteral">"unexpected error: "</FONT> + t);
+<FONT ID="LN">12</FONT><A NAME="412"></A>            warn(<FONT ID="StringLiteral">"doUnsubscribe() error: "</FONT> + t);
+<FONT ID="LN">13</FONT><A NAME="413"></A>            t.printStackTrace();
+<FONT ID="LN">14</FONT><A NAME="414"></A>        } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">15</FONT><A NAME="415"></A>            <FONT ID="SingleLineComment">// Always set response event in command
+<FONT ID="LN">16</FONT><A NAME="416"></A></FONT>            aCommand.setResponseEvent(responseEvent);
+<FONT ID="LN">17</FONT><A NAME="417"></A>        }
+<FONT ID="LN">18</FONT><A NAME="418"></A>    }
+<FONT ID="LN">19</FONT><A NAME="419"></A>
+<FONT ID="LN">20</FONT><A NAME="420"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscriber.java.html">Subscriber</A> getSubscriber() {
+<FONT ID="LN">21</FONT><A NAME="421"></A>        <FONT ID="Return">return</FONT> session.getSubscriber();
+<FONT ID="LN">22</FONT><A NAME="422"></A>    }
+<FONT ID="LN">23</FONT><A NAME="423"></A>
+<FONT ID="LN">24</FONT><A NAME="424"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">25</FONT><A NAME="425"></A>     * Send response on the control channel.
+<FONT ID="LN">26</FONT><A NAME="426"></A>     */</FONT>
+<FONT ID="LN">27</FONT><A NAME="427"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> sendControlResponse(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) {
+<FONT ID="LN">28</FONT><A NAME="428"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">29</FONT><A NAME="429"></A>
+<FONT ID="LN">30</FONT><A NAME="430"></A>            <FONT ID="SingleLineComment">// Try to prevent caching in any form.
+<FONT ID="LN">31</FONT><A NAME="431"></A></FONT>            aCommand.sendResponseHeaders();
+<FONT ID="LN">32</FONT><A NAME="432"></A>
+<FONT ID="LN">33</FONT><A NAME="433"></A>            <FONT ID="SingleLineComment">// Let clientAdapter determine how to send event
+<FONT ID="LN">34</FONT><A NAME="434"></A></FONT>            aCommand.getClientAdapter().start();
+<FONT ID="LN">35</FONT><A NAME="435"></A>
+<FONT ID="LN">36</FONT><A NAME="436"></A>            <FONT ID="SingleLineComment">// Push to client through client adapter
+<FONT ID="LN">37</FONT><A NAME="437"></A></FONT>            aCommand.getClientAdapter().push(aCommand.getResponseEvent());
+<FONT ID="LN">38</FONT><A NAME="438"></A>
+<FONT ID="LN">39</FONT><A NAME="439"></A>            <FONT ID="SingleLineComment">// One shot response
+<FONT ID="LN">40</FONT><A NAME="440"></A></FONT>            aCommand.getClientAdapter().stop();
+<FONT ID="LN">41</FONT><A NAME="441"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">42</FONT><A NAME="442"></A>            session.stop();
+<FONT ID="LN">43</FONT><A NAME="443"></A>        }
+<FONT ID="LN">44</FONT><A NAME="444"></A>    }
+<FONT ID="LN">45</FONT><A NAME="445"></A>
+<FONT ID="LN">46</FONT><A NAME="446"></A>
+<FONT ID="LN">47</FONT><A NAME="447"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">48</FONT><A NAME="448"></A>     * Info.
+<FONT ID="LN">49</FONT><A NAME="449"></A>     */</FONT>
+<FONT ID="LN">50</FONT><A NAME="450"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> info(String s) {
+<FONT ID="LN">51</FONT><A NAME="451"></A>        session.info(<FONT ID="StringLiteral">"[Controller] "</FONT> + s);
+<FONT ID="LN">52</FONT><A NAME="452"></A>    }
+<FONT ID="LN">53</FONT><A NAME="453"></A>
+<FONT ID="LN">54</FONT><A NAME="454"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">55</FONT><A NAME="455"></A>     * Exceptional print util.
+<FONT ID="LN">56</FONT><A NAME="456"></A>     */</FONT>
+<FONT ID="LN">57</FONT><A NAME="457"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> warn(String s) {
+<FONT ID="LN">58</FONT><A NAME="458"></A>        session.warn(<FONT ID="StringLiteral">"[Controller] "</FONT> + s);
+<FONT ID="LN">59</FONT><A NAME="459"></A>    }
+<FONT ID="LN">60</FONT><A NAME="460"></A>
+<FONT ID="LN">61</FONT><A NAME="461"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">62</FONT><A NAME="462"></A>     * Exceptional print util.
+<FONT ID="LN">63</FONT><A NAME="463"></A>     */</FONT>
+<FONT ID="LN">64</FONT><A NAME="464"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> debug(String s) {
+<FONT ID="LN">65</FONT><A NAME="465"></A>        session.debug(<FONT ID="StringLiteral">"[Controller] "</FONT> + s);
+<FONT ID="LN">66</FONT><A NAME="466"></A>    }
+<FONT ID="LN">67</FONT><A NAME="467"></A>
+<FONT ID="LN">68</FONT><A NAME="468"></A>
+<FONT ID="LN">69</FONT><A NAME="469"></A>}
+<FONT ID="LN">70</FONT><A NAME="470"></A>
+<FONT ID="LN">71</FONT><A NAME="471"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">72</FONT><A NAME="472"></A> * $Log: Controller.java,v $
+<FONT ID="LN">73</FONT><A NAME="473"></A> * Revision 1.9  2007/11/23 14:33:07  justb
+<FONT ID="LN">74</FONT><A NAME="474"></A> * core classes now configurable through factory
+<FONT ID="LN">75</FONT><A NAME="475"></A> *
+<FONT ID="LN">76</FONT><A NAME="476"></A> * Revision 1.8  2005/02/28 15:58:05  justb
+<FONT ID="LN">77</FONT><A NAME="477"></A> * added SimpleListener example
+<FONT ID="LN">78</FONT><A NAME="478"></A> *
+<FONT ID="LN">79</FONT><A NAME="479"></A> * Revision 1.7  2005/02/28 13:05:59  justb
+<FONT ID="LN">80</FONT><A NAME="480"></A> * introduced join-listen protocol service
+<FONT ID="LN">81</FONT><A NAME="481"></A> *
+<FONT ID="LN">82</FONT><A NAME="482"></A> * Revision 1.6  2005/02/28 12:45:59  justb
+<FONT ID="LN">83</FONT><A NAME="483"></A> * introduced Command class
+<FONT ID="LN">84</FONT><A NAME="484"></A> *
+<FONT ID="LN">85</FONT><A NAME="485"></A> * Revision 1.5  2005/02/28 09:14:55  justb
+<FONT ID="LN">86</FONT><A NAME="486"></A> * sessmgr/dispatcher factory/singleton support
+<FONT ID="LN">87</FONT><A NAME="487"></A> *
+<FONT ID="LN">88</FONT><A NAME="488"></A> * Revision 1.4  2005/02/25 15:13:00  justb
+<FONT ID="LN">89</FONT><A NAME="489"></A> * session id generation more robust
+<FONT ID="LN">90</FONT><A NAME="490"></A> *
+<FONT ID="LN">91</FONT><A NAME="491"></A> * Revision 1.3  2005/02/21 16:59:06  justb
+<FONT ID="LN">92</FONT><A NAME="492"></A> * SessionManager and session lease introduced
+<FONT ID="LN">93</FONT><A NAME="493"></A> *
+<FONT ID="LN">94</FONT><A NAME="494"></A> * Revision 1.2  2005/02/21 12:32:28  justb
+<FONT ID="LN">95</FONT><A NAME="495"></A> * fixed publish event in Controller
+<FONT ID="LN">96</FONT><A NAME="496"></A> *
+<FONT ID="LN">97</FONT><A NAME="497"></A> * Revision 1.1  2005/02/21 11:50:46  justb
+<FONT ID="LN">98</FONT><A NAME="498"></A> * ohase1 of refactoring Subscriber into Session/Controller/Subscriber
+<FONT ID="LN">99</FONT><A NAME="499"></A> *
+<FONT ID="LN">00</FONT><A NAME="500"></A>
+<FONT ID="LN">01</FONT><A NAME="501"></A> *
+<FONT ID="LN">02</FONT><A NAME="502"></A> */</FONT>
+<FONT ID="LN">03</FONT><A NAME="503"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Controller.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,727 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.client.PushletClient (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PushletClient.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.client.index.html" target="packageFrame">nl.justobjects.pushlet.client</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">nl.justobjects.pushlet.core.Event</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventParser.java.html">nl.justobjects.pushlet.core.EventParser</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">nl.justobjects.pushlet.core.Protocol</A>;
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">nl.justobjects.pushlet.util.PushletException</A>;
+<FONT ID="LN">10</FONT><A NAME="10"></A>
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<FONT ID="LN">12</FONT><A NAME="12"></A><FONT ID="Import">import</FONT> java.io.InputStreamReader;
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="Import">import</FONT> java.io.Reader;
+<FONT ID="LN">14</FONT><A NAME="14"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<FONT ID="LN">15</FONT><A NAME="15"></A><FONT ID="Import">import</FONT> java.net.*;
+<FONT ID="LN">16</FONT><A NAME="16"></A><FONT ID="Import">import</FONT> java.util.Map;
+<FONT ID="LN">17</FONT><A NAME="17"></A>
+<FONT ID="LN">18</FONT><A NAME="18"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">19</FONT><A NAME="19"></A> * Client API for Java HTTP client applets or apps.
+<FONT ID="LN">20</FONT><A NAME="20"></A> * &lt;p/&gt;
+<FONT ID="LN">21</FONT><A NAME="21"></A> * Use this class within Java client applications or applets.
+<FONT ID="LN">22</FONT><A NAME="22"></A> * Implement a PushletClientListener to receive callbacks for
+<FONT ID="LN">23</FONT><A NAME="23"></A> * data-related Event objects pushed by the server.
+<FONT ID="LN">24</FONT><A NAME="24"></A> * &lt;p/&gt;
+<FONT ID="LN">25</FONT><A NAME="25"></A> * This class may also be used as a base class and be extended
+<FONT ID="LN">26</FONT><A NAME="26"></A> * for custom clients, hence the presence of many proteced methods.
+<FONT ID="LN">27</FONT><A NAME="27"></A> *
+<FONT ID="LN">28</FONT><A NAME="28"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">29</FONT><A NAME="29"></A> * @version $Id: PushletClient.java,v 1.19 2009/06/04 12:46:35 justb Exp $
+<FONT ID="LN">30</FONT><A NAME="30"></A> * @see PushletClientListener
+<FONT ID="LN">31</FONT><A NAME="31"></A> * @see nl.justobjects.pushlet.test.PushletApplet
+<FONT ID="LN">32</FONT><A NAME="32"></A> * @see nl.justobjects.pushlet.test.PushletPingApplication
+<FONT ID="LN">33</FONT><A NAME="33"></A> */</FONT>
+<FONT ID="LN">34</FONT><A NAME="34"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> PushletClient <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A> {
+<FONT ID="LN">35</FONT><A NAME="35"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">36</FONT><A NAME="36"></A>     * Pushlet URL.
+<FONT ID="LN">37</FONT><A NAME="37"></A>     */</FONT>
+<FONT ID="LN">38</FONT><A NAME="38"></A>    <FONT ID="Private">private</FONT> String pushletURL;
+<FONT ID="LN">39</FONT><A NAME="39"></A>
+<FONT ID="LN">40</FONT><A NAME="40"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">41</FONT><A NAME="41"></A>     * Debug flag for verbose output.
+<FONT ID="LN">42</FONT><A NAME="42"></A>     */</FONT>
+<FONT ID="LN">43</FONT><A NAME="43"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> debug;
+<FONT ID="LN">44</FONT><A NAME="44"></A>
+<FONT ID="LN">45</FONT><A NAME="45"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">46</FONT><A NAME="46"></A>     * Id gotten on join ack
+<FONT ID="LN">47</FONT><A NAME="47"></A>     */</FONT>
+<FONT ID="LN">48</FONT><A NAME="48"></A>    <FONT ID="Private">private</FONT> String id;
+<FONT ID="LN">49</FONT><A NAME="49"></A>
+<FONT ID="LN">50</FONT><A NAME="50"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">51</FONT><A NAME="51"></A>     * Internal listener for data events pushed by server.
+<FONT ID="LN">52</FONT><A NAME="52"></A>     */</FONT>
+<FONT ID="LN">53</FONT><A NAME="53"></A>    <FONT ID="Protected">protected</FONT> DataEventListener dataEventListener;
+<FONT ID="LN">54</FONT><A NAME="54"></A>
+<FONT ID="LN">55</FONT><A NAME="55"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">56</FONT><A NAME="56"></A>     * Constructor with full pushlet URL.
+<FONT ID="LN">57</FONT><A NAME="57"></A>     */</FONT>
+<FONT ID="LN">58</FONT><A NAME="58"></A>    <FONT ID="Public">public</FONT> PushletClient(String aPushletURL) {
+<FONT ID="LN">59</FONT><A NAME="59"></A>        pushletURL = aPushletURL;
+<FONT ID="LN">60</FONT><A NAME="60"></A>    }
+<FONT ID="LN">61</FONT><A NAME="61"></A>
+<FONT ID="LN">62</FONT><A NAME="62"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">63</FONT><A NAME="63"></A>     * Constructor with host and port using default URI.
+<FONT ID="LN">64</FONT><A NAME="64"></A>     */</FONT>
+<FONT ID="LN">65</FONT><A NAME="65"></A>    <FONT ID="Public">public</FONT> PushletClient(String aHost, <FONT ID="Int">int</FONT> aPort) {
+<FONT ID="LN">66</FONT><A NAME="66"></A>        <FONT ID="This">this</FONT>(<FONT ID="StringLiteral">"http://"</FONT> + aHost + <FONT ID="StringLiteral">":"</FONT> + aPort + DEFAULT_SERVLET_URI);
+<FONT ID="LN">67</FONT><A NAME="67"></A>    }
+<FONT ID="LN">68</FONT><A NAME="68"></A>
+<FONT ID="LN">69</FONT><A NAME="69"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">70</FONT><A NAME="70"></A>     * Set proxy options and optional proxy authentication.
+<FONT ID="LN">71</FONT><A NAME="71"></A>     * &lt;p/&gt;
+<FONT ID="LN">72</FONT><A NAME="72"></A>     * Contributed by Dele Olajide
+<FONT ID="LN">73</FONT><A NAME="73"></A>     * See http://groups.yahoo.com/group/pushlet/message/634
+<FONT ID="LN">74</FONT><A NAME="74"></A>     * &lt;p/&gt;
+<FONT ID="LN">75</FONT><A NAME="75"></A>     * Usage:
+<FONT ID="LN">76</FONT><A NAME="76"></A>     * PushletClient pushletClient = new PushletClient("http:://www.domain.com/pushlet");
+<FONT ID="LN">77</FONT><A NAME="77"></A>     * pushletClient.setProxyOptions("proxy.bla.com", "8080", ....);
+<FONT ID="LN">78</FONT><A NAME="78"></A>     * &lt;p/&gt;
+<FONT ID="LN">79</FONT><A NAME="79"></A>     * use pushletClient further as normal
+<FONT ID="LN">80</FONT><A NAME="80"></A>     */</FONT>
+<FONT ID="LN">81</FONT><A NAME="81"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setProxyOptions(String aProxyHost,
+<FONT ID="LN">82</FONT><A NAME="82"></A>                                String aProxyPort, String theNonProxyHosts,
+<FONT ID="LN">83</FONT><A NAME="83"></A>                                String aUserName, String aPassword, String anNTLMDomain) {
+<FONT ID="LN">84</FONT><A NAME="84"></A>
+<FONT ID="LN">85</FONT><A NAME="85"></A>        <FONT ID="SingleLineComment">// Enable proxying
+<FONT ID="LN">86</FONT><A NAME="86"></A></FONT>        System.setProperty(<FONT ID="StringLiteral">"http.proxySet"</FONT>, <FONT ID="StringLiteral">"true"</FONT>);
+<FONT ID="LN">87</FONT><A NAME="87"></A>        System.setProperty(<FONT ID="StringLiteral">"http.proxyHost"</FONT>, aProxyHost);
+<FONT ID="LN">88</FONT><A NAME="88"></A>        System.setProperty(<FONT ID="StringLiteral">"http.proxyPort"</FONT>, aProxyPort);
+<FONT ID="LN">89</FONT><A NAME="89"></A>
+<FONT ID="LN">90</FONT><A NAME="90"></A>        <FONT ID="SingleLineComment">// Set optional non-proxy hosts
+<FONT ID="LN">91</FONT><A NAME="91"></A></FONT>        <FONT ID="If">if</FONT> (theNonProxyHosts != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">92</FONT><A NAME="92"></A>            System.setProperty(<FONT ID="StringLiteral">"http.nonProxyHosts"</FONT>, theNonProxyHosts);
+<FONT ID="LN">93</FONT><A NAME="93"></A>        }
+<FONT ID="LN">94</FONT><A NAME="94"></A>
+<FONT ID="LN">95</FONT><A NAME="95"></A>        <FONT ID="SingleLineComment">// If user name specified configure proxy authentication
+<FONT ID="LN">96</FONT><A NAME="96"></A></FONT>        <FONT ID="If">if</FONT> (aUserName != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">97</FONT><A NAME="97"></A>            System.setProperty(<FONT ID="StringLiteral">"http.proxyUser"</FONT>, aUserName);
+<FONT ID="LN">98</FONT><A NAME="98"></A>            System.setProperty(<FONT ID="StringLiteral">"http.proxyPassword"</FONT>, aPassword);
+<FONT ID="LN">99</FONT><A NAME="99"></A>
+<FONT ID="LN">00</FONT><A NAME="100"></A>            <FONT ID="SingleLineComment">// See inner class below
+<FONT ID="LN">01</FONT><A NAME="101"></A></FONT>            Authenticator.setDefault(<FONT ID="New">new</FONT> HTTPAuthenticateProxy(aUserName, aPassword));
+<FONT ID="LN">02</FONT><A NAME="102"></A>
+<FONT ID="LN">03</FONT><A NAME="103"></A>            <FONT ID="SingleLineComment">// Optional NT domain
+<FONT ID="LN">04</FONT><A NAME="104"></A></FONT>            <FONT ID="If">if</FONT> (anNTLMDomain != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">05</FONT><A NAME="105"></A>                System.setProperty(<FONT ID="StringLiteral">"http.auth.ntlm.domain"</FONT>, anNTLMDomain);
+<FONT ID="LN">06</FONT><A NAME="106"></A>            }
+<FONT ID="LN">07</FONT><A NAME="107"></A>        }
+<FONT ID="LN">08</FONT><A NAME="108"></A>    }
+<FONT ID="LN">09</FONT><A NAME="109"></A>
+<FONT ID="LN">10</FONT><A NAME="110"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">11</FONT><A NAME="111"></A>     * Join server, starts session.
+<FONT ID="LN">12</FONT><A NAME="112"></A>     */</FONT>
+<FONT ID="LN">13</FONT><A NAME="113"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> join() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">14</FONT><A NAME="114"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_JOIN);
+<FONT ID="LN">15</FONT><A NAME="115"></A>        event.setField(P_FORMAT, FORMAT_XML);
+<FONT ID="LN">16</FONT><A NAME="116"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> response = doControl(event);
+<FONT ID="LN">17</FONT><A NAME="117"></A>        throwOnNack(response);
+<FONT ID="LN">18</FONT><A NAME="118"></A>
+<FONT ID="LN">19</FONT><A NAME="119"></A>        <FONT ID="SingleLineComment">// Join Ack received
+<FONT ID="LN">20</FONT><A NAME="120"></A></FONT>        id = response.getField(P_ID);
+<FONT ID="LN">21</FONT><A NAME="121"></A>    }
+<FONT ID="LN">22</FONT><A NAME="122"></A>
+<FONT ID="LN">23</FONT><A NAME="123"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">24</FONT><A NAME="124"></A>     * Leave server, stops session.
+<FONT ID="LN">25</FONT><A NAME="125"></A>     */</FONT>
+<FONT ID="LN">26</FONT><A NAME="126"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> leave() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">27</FONT><A NAME="127"></A>        stopListen();
+<FONT ID="LN">28</FONT><A NAME="128"></A>        throwOnInvalidSession();
+<FONT ID="LN">29</FONT><A NAME="129"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_LEAVE);
+<FONT ID="LN">30</FONT><A NAME="130"></A>        event.setField(P_ID, id);
+<FONT ID="LN">31</FONT><A NAME="131"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> response = doControl(event);
+<FONT ID="LN">32</FONT><A NAME="132"></A>
+<FONT ID="LN">33</FONT><A NAME="133"></A>        throwOnNack(response);
+<FONT ID="LN">34</FONT><A NAME="134"></A>        id = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">35</FONT><A NAME="135"></A>    }
+<FONT ID="LN">36</FONT><A NAME="136"></A>
+<FONT ID="LN">37</FONT><A NAME="137"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">38</FONT><A NAME="138"></A>     * Open data channel.
+<FONT ID="LN">39</FONT><A NAME="139"></A>     */</FONT>
+<FONT ID="LN">40</FONT><A NAME="140"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> listen(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">41</FONT><A NAME="141"></A>        listen(aListener, MODE_STREAM);
+<FONT ID="LN">42</FONT><A NAME="142"></A>    }
+<FONT ID="LN">43</FONT><A NAME="143"></A>
+<FONT ID="LN">44</FONT><A NAME="144"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">45</FONT><A NAME="145"></A>     * Open data channel in stream or push mode.
+<FONT ID="LN">46</FONT><A NAME="146"></A>     */</FONT>
+<FONT ID="LN">47</FONT><A NAME="147"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> listen(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener, String aMode) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">48</FONT><A NAME="148"></A>        listen(aListener, aMode, <FONT ID="Null">null</FONT>);
+<FONT ID="LN">49</FONT><A NAME="149"></A>    }
+<FONT ID="LN">50</FONT><A NAME="150"></A>
+<FONT ID="LN">51</FONT><A NAME="151"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">52</FONT><A NAME="152"></A>     * Open data channel in stream or push mode with a subject.
+<FONT ID="LN">53</FONT><A NAME="153"></A>     */</FONT>
+<FONT ID="LN">54</FONT><A NAME="154"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> listen(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener, String aMode, String aSubject) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">55</FONT><A NAME="155"></A>        throwOnInvalidSession();
+<FONT ID="LN">56</FONT><A NAME="156"></A>        stopListen();
+<FONT ID="LN">57</FONT><A NAME="157"></A>
+<FONT ID="LN">58</FONT><A NAME="158"></A>        String listenURL = pushletURL
+<FONT ID="LN">59</FONT><A NAME="159"></A>                + <FONT ID="StringLiteral">"?"</FONT> + P_EVENT + <FONT ID="StringLiteral">"="</FONT> + E_LISTEN
+<FONT ID="LN">60</FONT><A NAME="160"></A>                + <FONT ID="StringLiteral">"&amp;"</FONT> + P_ID + <FONT ID="StringLiteral">"="</FONT> + id
+<FONT ID="LN">61</FONT><A NAME="161"></A>                + <FONT ID="StringLiteral">"&amp;"</FONT> + P_MODE + <FONT ID="StringLiteral">"="</FONT> + aMode;
+<FONT ID="LN">62</FONT><A NAME="162"></A>        <FONT ID="If">if</FONT> (aSubject != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">63</FONT><A NAME="163"></A>            listenURL = listenURL + <FONT ID="StringLiteral">"&amp;"</FONT> + P_SUBJECT + <FONT ID="StringLiteral">"="</FONT> + aSubject;
+<FONT ID="LN">64</FONT><A NAME="164"></A>        }
+<FONT ID="LN">65</FONT><A NAME="165"></A>
+<FONT ID="LN">66</FONT><A NAME="166"></A>        <FONT ID="SingleLineComment">// Start listener thread (sync call).
+<FONT ID="LN">67</FONT><A NAME="167"></A></FONT>        startDataEventListener(aListener, listenURL);
+<FONT ID="LN">68</FONT><A NAME="168"></A>    }
+<FONT ID="LN">69</FONT><A NAME="169"></A>
+<FONT ID="LN">70</FONT><A NAME="170"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">71</FONT><A NAME="171"></A>     * Immediate listener: joins/subscribes and listens in one action.
+<FONT ID="LN">72</FONT><A NAME="172"></A>     */</FONT>
+<FONT ID="LN">73</FONT><A NAME="173"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> joinListen(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener, String aMode, String aSubject) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">74</FONT><A NAME="174"></A>        stopListen();
+<FONT ID="LN">75</FONT><A NAME="175"></A>
+<FONT ID="LN">76</FONT><A NAME="176"></A>        String listenURL = pushletURL
+<FONT ID="LN">77</FONT><A NAME="177"></A>                + <FONT ID="StringLiteral">"?"</FONT> + P_EVENT + <FONT ID="StringLiteral">"="</FONT> + E_JOIN_LISTEN
+<FONT ID="LN">78</FONT><A NAME="178"></A>                + <FONT ID="StringLiteral">"&amp;"</FONT> + P_FORMAT + <FONT ID="StringLiteral">"="</FONT> + FORMAT_XML
+<FONT ID="LN">79</FONT><A NAME="179"></A>                + <FONT ID="StringLiteral">"&amp;"</FONT> + P_MODE + <FONT ID="StringLiteral">"="</FONT> + aMode
+<FONT ID="LN">80</FONT><A NAME="180"></A>                + <FONT ID="StringLiteral">"&amp;"</FONT> + P_SUBJECT + <FONT ID="StringLiteral">"="</FONT> + aSubject;
+<FONT ID="LN">81</FONT><A NAME="181"></A>
+<FONT ID="LN">82</FONT><A NAME="182"></A>        <FONT ID="SingleLineComment">// Start listener thread (sync call).
+<FONT ID="LN">83</FONT><A NAME="183"></A></FONT>        startDataEventListener(aListener, listenURL);
+<FONT ID="LN">84</FONT><A NAME="184"></A>    }
+<FONT ID="LN">85</FONT><A NAME="185"></A>
+<FONT ID="LN">86</FONT><A NAME="186"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">87</FONT><A NAME="187"></A>     * Publish an event through server.
+<FONT ID="LN">88</FONT><A NAME="188"></A>     */</FONT>
+<FONT ID="LN">89</FONT><A NAME="189"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> publish(String aSubject, Map theAttributes) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">90</FONT><A NAME="190"></A>        throwOnInvalidSession();
+<FONT ID="LN">91</FONT><A NAME="191"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_PUBLISH, theAttributes);
+<FONT ID="LN">92</FONT><A NAME="192"></A>        event.setField(P_SUBJECT, aSubject);
+<FONT ID="LN">93</FONT><A NAME="193"></A>        event.setField(P_ID, id);
+<FONT ID="LN">94</FONT><A NAME="194"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> response = doControl(event);
+<FONT ID="LN">95</FONT><A NAME="195"></A>        throwOnNack(response);
+<FONT ID="LN">96</FONT><A NAME="196"></A>    }
+<FONT ID="LN">97</FONT><A NAME="197"></A>
+<FONT ID="LN">98</FONT><A NAME="198"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">99</FONT><A NAME="199"></A>     * Subscribes, returning subscription id.
+<FONT ID="LN">00</FONT><A NAME="200"></A>     */</FONT>
+<FONT ID="LN">01</FONT><A NAME="201"></A>    <FONT ID="Public">public</FONT> String subscribe(String aSubject, String aLabel) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">02</FONT><A NAME="202"></A>        throwOnInvalidSession();
+<FONT ID="LN">03</FONT><A NAME="203"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_SUBSCRIBE);
+<FONT ID="LN">04</FONT><A NAME="204"></A>        event.setField(P_ID, id);
+<FONT ID="LN">05</FONT><A NAME="205"></A>        event.setField(P_SUBJECT, aSubject);
+<FONT ID="LN">06</FONT><A NAME="206"></A>
+<FONT ID="LN">07</FONT><A NAME="207"></A>        <FONT ID="SingleLineComment">// Optional label, is returned in data events
+<FONT ID="LN">08</FONT><A NAME="208"></A></FONT>        <FONT ID="If">if</FONT> (aLabel != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">09</FONT><A NAME="209"></A>            event.setField(P_SUBSCRIPTION_LABEL, aLabel);
+<FONT ID="LN">10</FONT><A NAME="210"></A>        }
+<FONT ID="LN">11</FONT><A NAME="211"></A>
+<FONT ID="LN">12</FONT><A NAME="212"></A>        <FONT ID="SingleLineComment">// Send request
+<FONT ID="LN">13</FONT><A NAME="213"></A></FONT>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> response = doControl(event);
+<FONT ID="LN">14</FONT><A NAME="214"></A>        throwOnNack(response);
+<FONT ID="LN">15</FONT><A NAME="215"></A>
+<FONT ID="LN">16</FONT><A NAME="216"></A>        <FONT ID="Return">return</FONT> response.getField(P_SUBSCRIPTION_ID);
+<FONT ID="LN">17</FONT><A NAME="217"></A>    }
+<FONT ID="LN">18</FONT><A NAME="218"></A>
+<FONT ID="LN">19</FONT><A NAME="219"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">20</FONT><A NAME="220"></A>     * Subscribes, returning subscription id.
+<FONT ID="LN">21</FONT><A NAME="221"></A>     */</FONT>
+<FONT ID="LN">22</FONT><A NAME="222"></A>    <FONT ID="Public">public</FONT> String subscribe(String aSubject) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">23</FONT><A NAME="223"></A>        <FONT ID="Return">return</FONT> subscribe(aSubject, <FONT ID="Null">null</FONT>);
+<FONT ID="LN">24</FONT><A NAME="224"></A>    }
+<FONT ID="LN">25</FONT><A NAME="225"></A>
+<FONT ID="LN">26</FONT><A NAME="226"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">27</FONT><A NAME="227"></A>     * Unsubscribes with subscription id.
+<FONT ID="LN">28</FONT><A NAME="228"></A>     */</FONT>
+<FONT ID="LN">29</FONT><A NAME="229"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> unsubscribe(String aSubscriptionId) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">30</FONT><A NAME="230"></A>        throwOnInvalidSession();
+<FONT ID="LN">31</FONT><A NAME="231"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_UNSUBSCRIBE);
+<FONT ID="LN">32</FONT><A NAME="232"></A>        event.setField(P_ID, id);
+<FONT ID="LN">33</FONT><A NAME="233"></A>
+<FONT ID="LN">34</FONT><A NAME="234"></A>        <FONT ID="SingleLineComment">// Optional subscription id
+<FONT ID="LN">35</FONT><A NAME="235"></A></FONT>        <FONT ID="If">if</FONT> (aSubscriptionId != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">36</FONT><A NAME="236"></A>            event.setField(P_SUBSCRIPTION_ID, aSubscriptionId);
+<FONT ID="LN">37</FONT><A NAME="237"></A>        }
+<FONT ID="LN">38</FONT><A NAME="238"></A>
+<FONT ID="LN">39</FONT><A NAME="239"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> response = doControl(event);
+<FONT ID="LN">40</FONT><A NAME="240"></A>        throwOnNack(response);
+<FONT ID="LN">41</FONT><A NAME="241"></A>    }
+<FONT ID="LN">42</FONT><A NAME="242"></A>
+<FONT ID="LN">43</FONT><A NAME="243"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">44</FONT><A NAME="244"></A>     * Unsubscribes from all subjects.
+<FONT ID="LN">45</FONT><A NAME="245"></A>     */</FONT>
+<FONT ID="LN">46</FONT><A NAME="246"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> unsubscribe() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">47</FONT><A NAME="247"></A>        unsubscribe(<FONT ID="Null">null</FONT>);
+<FONT ID="LN">48</FONT><A NAME="248"></A>    }
+<FONT ID="LN">49</FONT><A NAME="249"></A>
+<FONT ID="LN">50</FONT><A NAME="250"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">51</FONT><A NAME="251"></A>     * Stop the listener.
+<FONT ID="LN">52</FONT><A NAME="252"></A>     */</FONT>
+<FONT ID="LN">53</FONT><A NAME="253"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopListen() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">54</FONT><A NAME="254"></A>        <FONT ID="If">if</FONT> (dataEventListener != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">55</FONT><A NAME="255"></A>            unsubscribe();
+<FONT ID="LN">56</FONT><A NAME="256"></A>            dataEventListener.stop();
+<FONT ID="LN">57</FONT><A NAME="257"></A>            dataEventListener = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">58</FONT><A NAME="258"></A>        }
+<FONT ID="LN">59</FONT><A NAME="259"></A>    }
+<FONT ID="LN">60</FONT><A NAME="260"></A>
+<FONT ID="LN">61</FONT><A NAME="261"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setDebug(<FONT ID="Boolean">boolean</FONT> b) {
+<FONT ID="LN">62</FONT><A NAME="262"></A>        debug = b;
+<FONT ID="LN">63</FONT><A NAME="263"></A>    }
+<FONT ID="LN">64</FONT><A NAME="264"></A>
+<FONT ID="LN">65</FONT><A NAME="265"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">66</FONT><A NAME="266"></A>     * Starts default DataEventListener and waits for its thread to start.
+<FONT ID="LN">67</FONT><A NAME="267"></A>     */</FONT>
+<FONT ID="LN">68</FONT><A NAME="268"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> startDataEventListener(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener, String aListenURL) {
+<FONT ID="LN">69</FONT><A NAME="269"></A>        <FONT ID="SingleLineComment">// Suggestion by Jeff Nowakowski 29.oct.2006
+<FONT ID="LN">70</FONT><A NAME="270"></A></FONT>        dataEventListener = <FONT ID="New">new</FONT> DataEventListener(aListener, aListenURL);
+<FONT ID="LN">71</FONT><A NAME="271"></A>
+<FONT ID="LN">72</FONT><A NAME="272"></A>        <FONT ID="Synchronized">synchronized</FONT> (dataEventListener) {
+<FONT ID="LN">73</FONT><A NAME="273"></A>            dataEventListener.start();
+<FONT ID="LN">74</FONT><A NAME="274"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">75</FONT><A NAME="275"></A>                <FONT ID="SingleLineComment">// Wait for data event listener (thread) to start
+<FONT ID="LN">76</FONT><A NAME="276"></A></FONT>                dataEventListener.wait();
+<FONT ID="LN">77</FONT><A NAME="277"></A>            } <FONT ID="Catch">catch</FONT> (InterruptedException e) {
+<FONT ID="LN">78</FONT><A NAME="278"></A>            }
+<FONT ID="LN">79</FONT><A NAME="279"></A>        }
+<FONT ID="LN">80</FONT><A NAME="280"></A>    }
+<FONT ID="LN">81</FONT><A NAME="281"></A>
+<FONT ID="LN">82</FONT><A NAME="282"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> throwOnNack(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> anEvent) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">83</FONT><A NAME="283"></A>        <FONT ID="If">if</FONT> (anEvent.getEventType().equals(E_NACK)) {
+<FONT ID="LN">84</FONT><A NAME="284"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Negative response: reason="</FONT> + anEvent.getField(P_REASON));
+<FONT ID="LN">85</FONT><A NAME="285"></A>        }
+<FONT ID="LN">86</FONT><A NAME="286"></A>    }
+<FONT ID="LN">87</FONT><A NAME="287"></A>
+<FONT ID="LN">88</FONT><A NAME="288"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> throwOnInvalidSession() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">89</FONT><A NAME="289"></A>        <FONT ID="If">if</FONT> (id == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">90</FONT><A NAME="290"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Invalid pushlet session"</FONT>);
+<FONT ID="LN">91</FONT><A NAME="291"></A>        }
+<FONT ID="LN">92</FONT><A NAME="292"></A>    }
+<FONT ID="LN">93</FONT><A NAME="293"></A>
+<FONT ID="LN">94</FONT><A NAME="294"></A>    <FONT ID="Protected">protected</FONT> Reader openURL(String aURL) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">95</FONT><A NAME="295"></A>        <FONT ID="SingleLineComment">// Open URL connection with server
+<FONT ID="LN">96</FONT><A NAME="296"></A></FONT>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">97</FONT><A NAME="297"></A>            p(<FONT ID="StringLiteral">"Connecting to "</FONT> + aURL);
+<FONT ID="LN">98</FONT><A NAME="298"></A>            URL url = <FONT ID="New">new</FONT> URL(aURL);
+<FONT ID="LN">99</FONT><A NAME="299"></A>            URLConnection urlConnection = url.openConnection();
+<FONT ID="LN">00</FONT><A NAME="300"></A>
+<FONT ID="LN">01</FONT><A NAME="301"></A>            <FONT ID="SingleLineComment">// Disable any kind of caching.
+<FONT ID="LN">02</FONT><A NAME="302"></A></FONT>            urlConnection.setUseCaches(<FONT ID="False">false</FONT>);
+<FONT ID="LN">03</FONT><A NAME="303"></A>            urlConnection.setDefaultUseCaches(<FONT ID="False">false</FONT>);
+<FONT ID="LN">04</FONT><A NAME="304"></A>
+<FONT ID="LN">05</FONT><A NAME="305"></A>            <FONT ID="SingleLineComment">// TODO: later version may use POST
+<FONT ID="LN">06</FONT><A NAME="306"></A></FONT>            <FONT ID="SingleLineComment">// Enable HTTP POST
+<FONT ID="LN">07</FONT><A NAME="307"></A></FONT>            <FONT ID="SingleLineComment">// urlConnection.setDoOutput(true);
+<FONT ID="LN">08</FONT><A NAME="308"></A></FONT>
+<FONT ID="LN">09</FONT><A NAME="309"></A>            <FONT ID="SingleLineComment">// Do the POST with Event in XML in body
+<FONT ID="LN">10</FONT><A NAME="310"></A></FONT>            <FONT ID="SingleLineComment">// OutputStream os = urlConnection.getOutputStream();
+<FONT ID="LN">11</FONT><A NAME="311"></A></FONT>            <FONT ID="SingleLineComment">// os.write(anEvent.toXML().getBytes());
+<FONT ID="LN">12</FONT><A NAME="312"></A></FONT>            <FONT ID="SingleLineComment">// os.flush();
+<FONT ID="LN">13</FONT><A NAME="313"></A></FONT>            <FONT ID="SingleLineComment">// os.close();
+<FONT ID="LN">14</FONT><A NAME="314"></A></FONT>
+<FONT ID="LN">15</FONT><A NAME="315"></A>            <FONT ID="SingleLineComment">// Get the stream from the server.
+<FONT ID="LN">16</FONT><A NAME="316"></A></FONT>            <FONT ID="SingleLineComment">// reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+<FONT ID="LN">17</FONT><A NAME="317"></A></FONT>            <FONT ID="SingleLineComment">// Note: somehow the client does not work with some JVMs when using
+<FONT ID="LN">18</FONT><A NAME="318"></A></FONT>            <FONT ID="SingleLineComment">// BufferedInputStream... So do unbuffered input.
+<FONT ID="LN">19</FONT><A NAME="319"></A></FONT>            <FONT ID="SingleLineComment">// p("Opening urlConnection inputstream");
+<FONT ID="LN">20</FONT><A NAME="320"></A></FONT>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> InputStreamReader(urlConnection.getInputStream());
+<FONT ID="LN">21</FONT><A NAME="321"></A>
+<FONT ID="LN">22</FONT><A NAME="322"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">23</FONT><A NAME="323"></A>            warn(<FONT ID="StringLiteral">"openURL() could not open "</FONT> + aURL, t);
+<FONT ID="LN">24</FONT><A NAME="324"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">" could not open "</FONT> + aURL, t);
+<FONT ID="LN">25</FONT><A NAME="325"></A>        }
+<FONT ID="LN">26</FONT><A NAME="326"></A>    }
+<FONT ID="LN">27</FONT><A NAME="327"></A>
+<FONT ID="LN">28</FONT><A NAME="328"></A>
+<FONT ID="LN">29</FONT><A NAME="329"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">30</FONT><A NAME="330"></A>     * Send control events to server and return response.
+<FONT ID="LN">31</FONT><A NAME="331"></A>     */</FONT>
+<FONT ID="LN">32</FONT><A NAME="332"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> doControl(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> aControlEvent) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">33</FONT><A NAME="333"></A>        String controlURL = pushletURL + <FONT ID="StringLiteral">"?"</FONT> + aControlEvent.toQueryString();
+<FONT ID="LN">34</FONT><A NAME="334"></A>
+<FONT ID="LN">35</FONT><A NAME="335"></A>        p(<FONT ID="StringLiteral">"doControl to "</FONT> + controlURL);
+<FONT ID="LN">36</FONT><A NAME="336"></A>
+<FONT ID="LN">37</FONT><A NAME="337"></A>        <FONT ID="SingleLineComment">// Open URL connection with server
+<FONT ID="LN">38</FONT><A NAME="338"></A></FONT>        Reader reader = openURL(controlURL);
+<FONT ID="LN">39</FONT><A NAME="339"></A>
+<FONT ID="LN">40</FONT><A NAME="340"></A>        <FONT ID="SingleLineComment">// Get Pushlet event from stream
+<FONT ID="LN">41</FONT><A NAME="341"></A></FONT>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">42</FONT><A NAME="342"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">43</FONT><A NAME="343"></A>            p(<FONT ID="StringLiteral">"Getting event..."</FONT>);
+<FONT ID="LN">44</FONT><A NAME="344"></A>            <FONT ID="SingleLineComment">// Get next event from server
+<FONT ID="LN">45</FONT><A NAME="345"></A></FONT>            event = EventParser.parse(reader);
+<FONT ID="LN">46</FONT><A NAME="346"></A>            p(<FONT ID="StringLiteral">"Event received "</FONT> + event);
+<FONT ID="LN">47</FONT><A NAME="347"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">48</FONT><A NAME="348"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">49</FONT><A NAME="349"></A>            <FONT ID="SingleLineComment">// Stop and report error.
+<FONT ID="LN">50</FONT><A NAME="350"></A></FONT>            warn(<FONT ID="StringLiteral">"doControl() exception"</FONT>, t);
+<FONT ID="LN">51</FONT><A NAME="351"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">" error parsing response from"</FONT> + controlURL, t);
+<FONT ID="LN">52</FONT><A NAME="352"></A>        }
+<FONT ID="LN">53</FONT><A NAME="353"></A>    }
+<FONT ID="LN">54</FONT><A NAME="354"></A>
+<FONT ID="LN">55</FONT><A NAME="355"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">56</FONT><A NAME="356"></A>     * Util: print.
+<FONT ID="LN">57</FONT><A NAME="357"></A>     */</FONT>
+<FONT ID="LN">58</FONT><A NAME="358"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> p(String s) {
+<FONT ID="LN">59</FONT><A NAME="359"></A>        <FONT ID="If">if</FONT> (debug) {
+<FONT ID="LN">60</FONT><A NAME="360"></A>            System.out.println(<FONT ID="StringLiteral">"[PushletClient] "</FONT> + s);
+<FONT ID="LN">61</FONT><A NAME="361"></A>        }
+<FONT ID="LN">62</FONT><A NAME="362"></A>    }
+<FONT ID="LN">63</FONT><A NAME="363"></A>
+<FONT ID="LN">64</FONT><A NAME="364"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">65</FONT><A NAME="365"></A>     * Util: warn.
+<FONT ID="LN">66</FONT><A NAME="366"></A>     */</FONT>
+<FONT ID="LN">67</FONT><A NAME="367"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> warn(String s) {
+<FONT ID="LN">68</FONT><A NAME="368"></A>        warn(s, <FONT ID="Null">null</FONT>);
+<FONT ID="LN">69</FONT><A NAME="369"></A>    }
+<FONT ID="LN">70</FONT><A NAME="370"></A>
+<FONT ID="LN">71</FONT><A NAME="371"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">72</FONT><A NAME="372"></A>     * Util: warn with exception.
+<FONT ID="LN">73</FONT><A NAME="373"></A>     */</FONT>
+<FONT ID="LN">74</FONT><A NAME="374"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> warn(String s, Throwable t) {
+<FONT ID="LN">75</FONT><A NAME="375"></A>        System.err.println(<FONT ID="StringLiteral">"[PushletClient] - WARN - "</FONT> + s + <FONT ID="StringLiteral">" ex="</FONT> + t);
+<FONT ID="LN">76</FONT><A NAME="376"></A>
+<FONT ID="LN">77</FONT><A NAME="377"></A>        <FONT ID="If">if</FONT> (t != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">78</FONT><A NAME="378"></A>            t.printStackTrace();
+<FONT ID="LN">79</FONT><A NAME="379"></A>        }
+<FONT ID="LN">80</FONT><A NAME="380"></A>    }
+<FONT ID="LN">81</FONT><A NAME="381"></A>
+<FONT ID="LN">82</FONT><A NAME="382"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">83</FONT><A NAME="383"></A>     * Internal (default) listener for the Pushlet data channel.
+<FONT ID="LN">84</FONT><A NAME="384"></A>     */</FONT>
+<FONT ID="LN">85</FONT><A NAME="385"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Class">class</FONT> DataEventListener <FONT ID="Implements">implements</FONT> Runnable {
+<FONT ID="LN">86</FONT><A NAME="386"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">87</FONT><A NAME="387"></A>         * Client's listener that gets called back on events.
+<FONT ID="LN">88</FONT><A NAME="388"></A>         */</FONT>
+<FONT ID="LN">89</FONT><A NAME="389"></A>        <FONT ID="Private">private</FONT> <A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> listener;
+<FONT ID="LN">90</FONT><A NAME="390"></A>
+<FONT ID="LN">91</FONT><A NAME="391"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">92</FONT><A NAME="392"></A>         * Receiver receiveThread.
+<FONT ID="LN">93</FONT><A NAME="393"></A>         */</FONT>
+<FONT ID="LN">94</FONT><A NAME="394"></A>        <FONT ID="Private">private</FONT> Thread receiveThread = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">95</FONT><A NAME="395"></A>        <FONT ID="Private">private</FONT> Reader reader;
+<FONT ID="LN">96</FONT><A NAME="396"></A>        <FONT ID="Private">private</FONT> String refreshURL;
+<FONT ID="LN">97</FONT><A NAME="397"></A>        <FONT ID="Private">private</FONT> String listenURL;
+<FONT ID="LN">98</FONT><A NAME="398"></A>
+<FONT ID="LN">99</FONT><A NAME="399"></A>        <FONT ID="Public">public</FONT> DataEventListener(<A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> aListener, String aListenURL) {
+<FONT ID="LN">00</FONT><A NAME="400"></A>            listener = aListener;
+<FONT ID="LN">01</FONT><A NAME="401"></A>            listenURL = aListenURL;
+<FONT ID="LN">02</FONT><A NAME="402"></A>        }
+<FONT ID="LN">03</FONT><A NAME="403"></A>
+<FONT ID="LN">04</FONT><A NAME="404"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() {
+<FONT ID="LN">05</FONT><A NAME="405"></A>            <FONT ID="SingleLineComment">// All ok: start a receiver receiveThread
+<FONT ID="LN">06</FONT><A NAME="406"></A></FONT>            receiveThread = <FONT ID="New">new</FONT> Thread(<FONT ID="This">this</FONT>);
+<FONT ID="LN">07</FONT><A NAME="407"></A>            receiveThread.start();
+<FONT ID="LN">08</FONT><A NAME="408"></A>
+<FONT ID="LN">09</FONT><A NAME="409"></A>        }
+<FONT ID="LN">10</FONT><A NAME="410"></A>
+<FONT ID="LN">11</FONT><A NAME="411"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">12</FONT><A NAME="412"></A>         * Stop listening; may restart later with start().
+<FONT ID="LN">13</FONT><A NAME="413"></A>         */</FONT>
+<FONT ID="LN">14</FONT><A NAME="414"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">15</FONT><A NAME="415"></A>            p(<FONT ID="StringLiteral">"In stop()"</FONT>);
+<FONT ID="LN">16</FONT><A NAME="416"></A>            bailout();
+<FONT ID="LN">17</FONT><A NAME="417"></A>        }
+<FONT ID="LN">18</FONT><A NAME="418"></A>
+<FONT ID="LN">19</FONT><A NAME="419"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">20</FONT><A NAME="420"></A>         * Receive event objects from server and callback listener.
+<FONT ID="LN">21</FONT><A NAME="421"></A>         */</FONT>
+<FONT ID="LN">22</FONT><A NAME="422"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run() {
+<FONT ID="LN">23</FONT><A NAME="423"></A>            p(<FONT ID="StringLiteral">"Start run()"</FONT>);
+<FONT ID="LN">24</FONT><A NAME="424"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">25</FONT><A NAME="425"></A>                <FONT ID="While">while</FONT> (receiveThread != <FONT ID="Null">null</FONT> &amp;&amp; receiveThread.isAlive()) {
+<FONT ID="LN">26</FONT><A NAME="426"></A>                    <FONT ID="SingleLineComment">// Connect to server
+<FONT ID="LN">27</FONT><A NAME="427"></A></FONT>                    reader = openURL(listenURL);
+<FONT ID="LN">28</FONT><A NAME="428"></A>
+<FONT ID="LN">29</FONT><A NAME="429"></A>                    <FONT ID="Synchronized">synchronized</FONT> (<FONT ID="This">this</FONT>) {
+<FONT ID="LN">30</FONT><A NAME="430"></A>                        <FONT ID="SingleLineComment">// Inform the calling thread we're ready to receive events.
+<FONT ID="LN">31</FONT><A NAME="431"></A></FONT>                        <FONT ID="SingleLineComment">// Suggestion by Jeff Nowakowski 29.oct.2006
+<FONT ID="LN">32</FONT><A NAME="432"></A></FONT>                        <FONT ID="This">this</FONT>.notify();
+<FONT ID="LN">33</FONT><A NAME="433"></A>                    }
+<FONT ID="LN">34</FONT><A NAME="434"></A>
+<FONT ID="LN">35</FONT><A NAME="435"></A>                    <FONT ID="SingleLineComment">// Get events while we're alive.
+<FONT ID="LN">36</FONT><A NAME="436"></A></FONT>                    <FONT ID="While">while</FONT> (receiveThread != <FONT ID="Null">null</FONT> &amp;&amp; receiveThread.isAlive()) {
+<FONT ID="LN">37</FONT><A NAME="437"></A>                        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">38</FONT><A NAME="438"></A>                        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">39</FONT><A NAME="439"></A>                            <FONT ID="SingleLineComment">// p("Getting event...");
+<FONT ID="LN">40</FONT><A NAME="440"></A></FONT>                            <FONT ID="SingleLineComment">// Get next event from server
+<FONT ID="LN">41</FONT><A NAME="441"></A></FONT>                            event = EventParser.parse(reader);
+<FONT ID="LN">42</FONT><A NAME="442"></A>                            p(<FONT ID="StringLiteral">"Event received "</FONT> + event);
+<FONT ID="LN">43</FONT><A NAME="443"></A>                        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">44</FONT><A NAME="444"></A>
+<FONT ID="LN">45</FONT><A NAME="445"></A>                            <FONT ID="SingleLineComment">// Stop and report error.
+<FONT ID="LN">46</FONT><A NAME="446"></A></FONT>                            <FONT ID="SingleLineComment">// warn("Stop run() on exception", t);
+<FONT ID="LN">47</FONT><A NAME="447"></A></FONT>                            <FONT ID="If">if</FONT> (listener != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">48</FONT><A NAME="448"></A>                                listener.onError(<FONT ID="StringLiteral">"exception during receive: "</FONT> + t);
+<FONT ID="LN">49</FONT><A NAME="449"></A>                            }
+<FONT ID="LN">50</FONT><A NAME="450"></A>
+<FONT ID="LN">51</FONT><A NAME="451"></A>                            <FONT ID="Break">break</FONT>;
+<FONT ID="LN">52</FONT><A NAME="452"></A>                        }
+<FONT ID="LN">53</FONT><A NAME="453"></A>
+<FONT ID="LN">54</FONT><A NAME="454"></A>                        <FONT ID="SingleLineComment">// Handle event by calling listener
+<FONT ID="LN">55</FONT><A NAME="455"></A></FONT>                        <FONT ID="If">if</FONT> (event != <FONT ID="Null">null</FONT> &amp;&amp; listener != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">56</FONT><A NAME="456"></A>                            <FONT ID="SingleLineComment">// p("received: " + event.toXML());
+<FONT ID="LN">57</FONT><A NAME="457"></A></FONT>                            String eventType = event.getEventType();
+<FONT ID="LN">58</FONT><A NAME="458"></A>                            <FONT ID="If">if</FONT> (eventType.equals(E_HEARTBEAT)) {
+<FONT ID="LN">59</FONT><A NAME="459"></A>                                listener.onHeartbeat(event);
+<FONT ID="LN">60</FONT><A NAME="460"></A>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_DATA)) {
+<FONT ID="LN">61</FONT><A NAME="461"></A>                                listener.onData(event);
+<FONT ID="LN">62</FONT><A NAME="462"></A>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_JOIN_LISTEN_ACK)) {
+<FONT ID="LN">63</FONT><A NAME="463"></A>                                id = event.getField(P_ID);
+<FONT ID="LN">64</FONT><A NAME="464"></A>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_LISTEN_ACK)) {
+<FONT ID="LN">65</FONT><A NAME="465"></A>                                p(<FONT ID="StringLiteral">"Listen ack ok"</FONT>);
+<FONT ID="LN">66</FONT><A NAME="466"></A>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_REFRESH_ACK)) {
+<FONT ID="LN">67</FONT><A NAME="467"></A>                                <FONT ID="SingleLineComment">// ignore
+<FONT ID="LN">68</FONT><A NAME="468"></A></FONT>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_ABORT)) {
+<FONT ID="LN">69</FONT><A NAME="469"></A>                                listener.onAbort(event);
+<FONT ID="LN">70</FONT><A NAME="470"></A>                                listener = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">71</FONT><A NAME="471"></A>                                <FONT ID="Break">break</FONT>;
+<FONT ID="LN">72</FONT><A NAME="472"></A>                            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (eventType.equals(E_REFRESH)) {
+<FONT ID="LN">73</FONT><A NAME="473"></A>                                refresh(event);
+<FONT ID="LN">74</FONT><A NAME="474"></A>                            } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">75</FONT><A NAME="475"></A>                                handleUnknownEventType(eventType, event, listener);
+<FONT ID="LN">76</FONT><A NAME="476"></A>                            }
+<FONT ID="LN">77</FONT><A NAME="477"></A>                        }
+<FONT ID="LN">78</FONT><A NAME="478"></A>                    }
+<FONT ID="LN">79</FONT><A NAME="479"></A>                }
+<FONT ID="LN">80</FONT><A NAME="480"></A>            } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">81</FONT><A NAME="481"></A>                warn(<FONT ID="StringLiteral">"Exception in run() "</FONT>, t);
+<FONT ID="LN">82</FONT><A NAME="482"></A>                <FONT ID="SingleLineComment">// bailout();
+<FONT ID="LN">83</FONT><A NAME="483"></A></FONT>            }
+<FONT ID="LN">84</FONT><A NAME="484"></A>        }
+<FONT ID="LN">85</FONT><A NAME="485"></A>
+<FONT ID="LN">86</FONT><A NAME="486"></A>        <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> disconnect() {
+<FONT ID="LN">87</FONT><A NAME="487"></A>            p(<FONT ID="StringLiteral">"start disconnect()"</FONT>);
+<FONT ID="LN">88</FONT><A NAME="488"></A>            <FONT ID="If">if</FONT> (reader != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">89</FONT><A NAME="489"></A>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">90</FONT><A NAME="490"></A>                    <FONT ID="SingleLineComment">// this blocks, find another way
+<FONT ID="LN">91</FONT><A NAME="491"></A></FONT>                    <FONT ID="SingleLineComment">// reader.close();
+<FONT ID="LN">92</FONT><A NAME="492"></A></FONT>                    p(<FONT ID="StringLiteral">"Closed reader ok"</FONT>);
+<FONT ID="LN">93</FONT><A NAME="493"></A>                } <FONT ID="Catch">catch</FONT> (<A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">Exception</A> ignore) {
+<FONT ID="LN">94</FONT><A NAME="494"></A>                } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">95</FONT><A NAME="495"></A>                    reader = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">96</FONT><A NAME="496"></A>                }
+<FONT ID="LN">97</FONT><A NAME="497"></A>            }
+<FONT ID="LN">98</FONT><A NAME="498"></A>            p(<FONT ID="StringLiteral">"end disconnect()"</FONT>);
+<FONT ID="LN">99</FONT><A NAME="499"></A>        }
+<FONT ID="LN">00</FONT><A NAME="500"></A>
+<FONT ID="LN">01</FONT><A NAME="501"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">02</FONT><A NAME="502"></A>         * Stop receiver receiveThread.
+<FONT ID="LN">03</FONT><A NAME="503"></A>         */</FONT>
+<FONT ID="LN">04</FONT><A NAME="504"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopThread() {
+<FONT ID="LN">05</FONT><A NAME="505"></A>            p(<FONT ID="StringLiteral">"In stopThread()"</FONT>);
+<FONT ID="LN">06</FONT><A NAME="506"></A>
+<FONT ID="LN">07</FONT><A NAME="507"></A>            <FONT ID="SingleLineComment">// Keep a reference such that we can kill it from here.
+<FONT ID="LN">08</FONT><A NAME="508"></A></FONT>            Thread targetThread = receiveThread;
+<FONT ID="LN">09</FONT><A NAME="509"></A>
+<FONT ID="LN">10</FONT><A NAME="510"></A>            receiveThread = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">11</FONT><A NAME="511"></A>
+<FONT ID="LN">12</FONT><A NAME="512"></A>            <FONT ID="SingleLineComment">// This should stop the main loop for this receiveThread.
+<FONT ID="LN">13</FONT><A NAME="513"></A></FONT>            <FONT ID="SingleLineComment">// Killing a receiveThread on a blcing read is tricky.
+<FONT ID="LN">14</FONT><A NAME="514"></A></FONT>            <FONT ID="SingleLineComment">// See also http://gee.cs.oswego.edu/dl/cpj/cancel.html
+<FONT ID="LN">15</FONT><A NAME="515"></A></FONT>            <FONT ID="If">if</FONT> ((targetThread != <FONT ID="Null">null</FONT>) &amp;&amp; targetThread.isAlive()) {
+<FONT ID="LN">16</FONT><A NAME="516"></A>
+<FONT ID="LN">17</FONT><A NAME="517"></A>                targetThread.interrupt();
+<FONT ID="LN">18</FONT><A NAME="518"></A>
+<FONT ID="LN">19</FONT><A NAME="519"></A>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">20</FONT><A NAME="520"></A>
+<FONT ID="LN">21</FONT><A NAME="521"></A>                    <FONT ID="SingleLineComment">// Wait for it to die
+<FONT ID="LN">22</FONT><A NAME="522"></A></FONT>                    targetThread.join(<FONT ID="IntegerLiteral">500</FONT>);
+<FONT ID="LN">23</FONT><A NAME="523"></A>                } <FONT ID="Catch">catch</FONT> (InterruptedException ignore) {
+<FONT ID="LN">24</FONT><A NAME="524"></A>                }
+<FONT ID="LN">25</FONT><A NAME="525"></A>
+<FONT ID="LN">26</FONT><A NAME="526"></A>                <FONT ID="SingleLineComment">// If current receiveThread refuses to die,
+<FONT ID="LN">27</FONT><A NAME="527"></A></FONT>                <FONT ID="SingleLineComment">// take more rigorous methods.
+<FONT ID="LN">28</FONT><A NAME="528"></A></FONT>                <FONT ID="If">if</FONT> (targetThread.isAlive()) {
+<FONT ID="LN">29</FONT><A NAME="529"></A>
+<FONT ID="LN">30</FONT><A NAME="530"></A>                    <FONT ID="SingleLineComment">// Not preferred but may be needed
+<FONT ID="LN">31</FONT><A NAME="531"></A></FONT>                    <FONT ID="SingleLineComment">// to stop during a blocking read.
+<FONT ID="LN">32</FONT><A NAME="532"></A></FONT>                    targetThread.stop();
+<FONT ID="LN">33</FONT><A NAME="533"></A>
+<FONT ID="LN">34</FONT><A NAME="534"></A>                    <FONT ID="SingleLineComment">// Wait for it to die
+<FONT ID="LN">35</FONT><A NAME="535"></A></FONT>                    <FONT ID="Try">try</FONT> {
+<FONT ID="LN">36</FONT><A NAME="536"></A>                        targetThread.join(<FONT ID="IntegerLiteral">500</FONT>);
+<FONT ID="LN">37</FONT><A NAME="537"></A>                    } <FONT ID="Catch">catch</FONT> (Throwable ignore) {
+<FONT ID="LN">38</FONT><A NAME="538"></A>                    }
+<FONT ID="LN">39</FONT><A NAME="539"></A>                }
+<FONT ID="LN">40</FONT><A NAME="540"></A>
+<FONT ID="LN">41</FONT><A NAME="541"></A>                p(<FONT ID="StringLiteral">"Stopped receiveThread alive="</FONT> + targetThread.isAlive());
+<FONT ID="LN">42</FONT><A NAME="542"></A>
+<FONT ID="LN">43</FONT><A NAME="543"></A>            }
+<FONT ID="LN">44</FONT><A NAME="544"></A>        }
+<FONT ID="LN">45</FONT><A NAME="545"></A>
+<FONT ID="LN">46</FONT><A NAME="546"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">47</FONT><A NAME="547"></A>         * Stop listening on stream from server.
+<FONT ID="LN">48</FONT><A NAME="548"></A>         */</FONT>
+<FONT ID="LN">49</FONT><A NAME="549"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> bailout() {
+<FONT ID="LN">50</FONT><A NAME="550"></A>            p(<FONT ID="StringLiteral">"In bailout()"</FONT>);
+<FONT ID="LN">51</FONT><A NAME="551"></A>            stopThread();
+<FONT ID="LN">52</FONT><A NAME="552"></A>            disconnect();
+<FONT ID="LN">53</FONT><A NAME="553"></A>        }
+<FONT ID="LN">54</FONT><A NAME="554"></A>
+<FONT ID="LN">55</FONT><A NAME="555"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">56</FONT><A NAME="556"></A>         * Handle refresh, by pausing.
+<FONT ID="LN">57</FONT><A NAME="557"></A>         */</FONT>
+<FONT ID="LN">58</FONT><A NAME="558"></A>        <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> refresh(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> aRefreshEvent) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">59</FONT><A NAME="559"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">60</FONT><A NAME="560"></A>                <FONT ID="SingleLineComment">// Wait for specified time.
+<FONT ID="LN">61</FONT><A NAME="561"></A></FONT>                Thread.sleep(Long.parseLong(aRefreshEvent.getField(P_WAIT)));
+<FONT ID="LN">62</FONT><A NAME="562"></A>            } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">63</FONT><A NAME="563"></A>                warn(<FONT ID="StringLiteral">"abort while refresing"</FONT>);
+<FONT ID="LN">64</FONT><A NAME="564"></A>                refreshURL = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">65</FONT><A NAME="565"></A>                <FONT ID="Return">return</FONT>;
+<FONT ID="LN">66</FONT><A NAME="566"></A>            }
+<FONT ID="LN">67</FONT><A NAME="567"></A>
+<FONT ID="LN">68</FONT><A NAME="568"></A>            <FONT ID="SingleLineComment">// If stopped during sleep, don't proceed
+<FONT ID="LN">69</FONT><A NAME="569"></A></FONT>            <FONT ID="If">if</FONT> (receiveThread == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">70</FONT><A NAME="570"></A>                <FONT ID="Return">return</FONT>;
+<FONT ID="LN">71</FONT><A NAME="571"></A>            }
+<FONT ID="LN">72</FONT><A NAME="572"></A>
+<FONT ID="LN">73</FONT><A NAME="573"></A>            <FONT ID="SingleLineComment">// Create url to refresh
+<FONT ID="LN">74</FONT><A NAME="574"></A></FONT>            refreshURL = pushletURL
+<FONT ID="LN">75</FONT><A NAME="575"></A>                    + <FONT ID="StringLiteral">"?"</FONT> + P_ID + <FONT ID="StringLiteral">"="</FONT> + id
+<FONT ID="LN">76</FONT><A NAME="576"></A>                    + <FONT ID="StringLiteral">"&amp;"</FONT> + P_EVENT + <FONT ID="StringLiteral">"="</FONT> + E_REFRESH
+<FONT ID="LN">77</FONT><A NAME="577"></A>                    ;
+<FONT ID="LN">78</FONT><A NAME="578"></A>
+<FONT ID="LN">79</FONT><A NAME="579"></A>            <FONT ID="If">if</FONT> (reader != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">80</FONT><A NAME="580"></A>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">81</FONT><A NAME="581"></A>                    reader.close();
+<FONT ID="LN">82</FONT><A NAME="582"></A>
+<FONT ID="LN">83</FONT><A NAME="583"></A>                } <FONT ID="Catch">catch</FONT> (IOException ignore) {
+<FONT ID="LN">84</FONT><A NAME="584"></A>
+<FONT ID="LN">85</FONT><A NAME="585"></A>                }
+<FONT ID="LN">86</FONT><A NAME="586"></A>                reader = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">87</FONT><A NAME="587"></A>            }
+<FONT ID="LN">88</FONT><A NAME="588"></A>
+<FONT ID="LN">89</FONT><A NAME="589"></A>            reader = openURL(refreshURL);
+<FONT ID="LN">90</FONT><A NAME="590"></A>        }
+<FONT ID="LN">91</FONT><A NAME="591"></A>
+<FONT ID="LN">92</FONT><A NAME="592"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">93</FONT><A NAME="593"></A>         * Handle unknown Event (default behaviour).
+<FONT ID="LN">94</FONT><A NAME="594"></A>         */</FONT>
+<FONT ID="LN">95</FONT><A NAME="595"></A>        <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> handleUnknownEventType(String eventType, <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event, <A HREF="../../../../nl/justobjects/pushlet/client/PushletClientListener.java.html">PushletClientListener</A> listener) {
+<FONT ID="LN">96</FONT><A NAME="596"></A>            warn(<FONT ID="StringLiteral">"unsupported event type received: "</FONT> + eventType);
+<FONT ID="LN">97</FONT><A NAME="597"></A>        }
+<FONT ID="LN">98</FONT><A NAME="598"></A>    }
+<FONT ID="LN">99</FONT><A NAME="599"></A>
+<FONT ID="LN">00</FONT><A NAME="600"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">01</FONT><A NAME="601"></A>     * Authenticator
+<FONT ID="LN">02</FONT><A NAME="602"></A>     */</FONT>
+<FONT ID="LN">03</FONT><A NAME="603"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> HTTPAuthenticateProxy <FONT ID="Extends">extends</FONT> Authenticator {
+<FONT ID="LN">04</FONT><A NAME="604"></A>
+<FONT ID="LN">05</FONT><A NAME="605"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">06</FONT><A NAME="606"></A>         * Contributed by Dele Olajide
+<FONT ID="LN">07</FONT><A NAME="607"></A>         * See http://groups.yahoo.com/group/pushlet/message/634
+<FONT ID="LN">08</FONT><A NAME="608"></A>         */</FONT>
+<FONT ID="LN">09</FONT><A NAME="609"></A>
+<FONT ID="LN">10</FONT><A NAME="610"></A>        <FONT ID="Private">private</FONT> String thePassword = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">11</FONT><A NAME="611"></A>        <FONT ID="Private">private</FONT> String theUser = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">12</FONT><A NAME="612"></A>
+<FONT ID="LN">13</FONT><A NAME="613"></A>        <FONT ID="Public">public</FONT> HTTPAuthenticateProxy(String username, String password) {
+<FONT ID="LN">14</FONT><A NAME="614"></A>
+<FONT ID="LN">15</FONT><A NAME="615"></A>            thePassword = password;
+<FONT ID="LN">16</FONT><A NAME="616"></A>            theUser = username;
+<FONT ID="LN">17</FONT><A NAME="617"></A>        }
+<FONT ID="LN">18</FONT><A NAME="618"></A>
+<FONT ID="LN">19</FONT><A NAME="619"></A>        <FONT ID="Protected">protected</FONT> PasswordAuthentication getPasswordAuthentication() {
+<FONT ID="LN">20</FONT><A NAME="620"></A>            <FONT ID="SingleLineComment">// System.out.println("[HttpAuthenticateProxy] Username = " + theUser);
+<FONT ID="LN">21</FONT><A NAME="621"></A></FONT>            <FONT ID="SingleLineComment">// System.out.println("[HttpAuthenticateProxy] Password = " + thePassword);
+<FONT ID="LN">22</FONT><A NAME="622"></A></FONT>
+<FONT ID="LN">23</FONT><A NAME="623"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> PasswordAuthentication(theUser, thePassword.toCharArray());
+<FONT ID="LN">24</FONT><A NAME="624"></A>        }
+<FONT ID="LN">25</FONT><A NAME="625"></A>
+<FONT ID="LN">26</FONT><A NAME="626"></A>    }
+<FONT ID="LN">27</FONT><A NAME="627"></A>
+<FONT ID="LN">28</FONT><A NAME="628"></A>}
+<FONT ID="LN">29</FONT><A NAME="629"></A>
+<FONT ID="LN">30</FONT><A NAME="630"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">31</FONT><A NAME="631"></A> * $Log: PushletClient.java,v $
+<FONT ID="LN">32</FONT><A NAME="632"></A> * Revision 1.19  2009/06/04 12:46:35  justb
+<FONT ID="LN">33</FONT><A NAME="633"></A> * PushletClient: add more hooks for extension (feat ID: 2799694 Craig M)
+<FONT ID="LN">34</FONT><A NAME="634"></A> *
+<FONT ID="LN">35</FONT><A NAME="635"></A> * Revision 1.18  2007/11/10 13:52:47  justb
+<FONT ID="LN">36</FONT><A NAME="636"></A> * make startDataEventListener method protected to allow overriding
+<FONT ID="LN">37</FONT><A NAME="637"></A> *
+<FONT ID="LN">38</FONT><A NAME="638"></A> * Revision 1.17  2006/10/29 16:47:57  justb
+<FONT ID="LN">39</FONT><A NAME="639"></A> * included patch from Jeff Nowakowski: wait until listener thread runs
+<FONT ID="LN">40</FONT><A NAME="640"></A> *
+<FONT ID="LN">41</FONT><A NAME="641"></A> * Revision 1.16  2005/05/06 20:08:20  justb
+<FONT ID="LN">42</FONT><A NAME="642"></A> * client enhancements
+<FONT ID="LN">43</FONT><A NAME="643"></A> *
+<FONT ID="LN">44</FONT><A NAME="644"></A> * Revision 1.15  2005/03/27 17:42:27  justb
+<FONT ID="LN">45</FONT><A NAME="645"></A> * enhancements
+<FONT ID="LN">46</FONT><A NAME="646"></A> *
+<FONT ID="LN">47</FONT><A NAME="647"></A> * Revision 1.14  2005/03/25 23:54:04  justb
+<FONT ID="LN">48</FONT><A NAME="648"></A> * *** empty log message ***
+<FONT ID="LN">49</FONT><A NAME="649"></A> *
+<FONT ID="LN">50</FONT><A NAME="650"></A> * Revision 1.13  2005/02/28 16:59:40  justb
+<FONT ID="LN">51</FONT><A NAME="651"></A> * fixes for leave and disconnect
+<FONT ID="LN">52</FONT><A NAME="652"></A> *
+<FONT ID="LN">53</FONT><A NAME="653"></A> * Revision 1.12  2005/02/28 15:57:54  justb
+<FONT ID="LN">54</FONT><A NAME="654"></A> * added SimpleListener example
+<FONT ID="LN">55</FONT><A NAME="655"></A> *
+<FONT ID="LN">56</FONT><A NAME="656"></A> * Revision 1.11  2005/02/21 12:31:44  justb
+<FONT ID="LN">57</FONT><A NAME="657"></A> * added proxy contribution from Dele Olajide
+<FONT ID="LN">58</FONT><A NAME="658"></A> *
+<FONT ID="LN">59</FONT><A NAME="659"></A> * Revision 1.10  2005/02/20 13:05:32  justb
+<FONT ID="LN">60</FONT><A NAME="660"></A> * removed the Postlet (integrated in Pushlet protocol)
+<FONT ID="LN">61</FONT><A NAME="661"></A> *
+<FONT ID="LN">62</FONT><A NAME="662"></A> * Revision 1.9  2005/02/18 10:07:23  justb
+<FONT ID="LN">63</FONT><A NAME="663"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">64</FONT><A NAME="664"></A> *
+<FONT ID="LN">65</FONT><A NAME="665"></A> * Revision 1.8  2005/02/18 09:54:12  justb
+<FONT ID="LN">66</FONT><A NAME="666"></A> * refactor: rename Publisher Dispatcher and single Subscriber class
+<FONT ID="LN">67</FONT><A NAME="667"></A> *
+<FONT ID="LN">68</FONT><A NAME="668"></A> * Revision 1.7  2005/02/15 15:46:30  justb
+<FONT ID="LN">69</FONT><A NAME="669"></A> * client API improves
+<FONT ID="LN">70</FONT><A NAME="670"></A> *
+<FONT ID="LN">71</FONT><A NAME="671"></A> * Revision 1.6  2005/02/15 13:28:56  justb
+<FONT ID="LN">72</FONT><A NAME="672"></A> * first quick rewrite adapt for v2 protocol
+<FONT ID="LN">73</FONT><A NAME="673"></A> *
+<FONT ID="LN">74</FONT><A NAME="674"></A> * Revision 1.5  2004/10/25 21:23:44  justb
+<FONT ID="LN">75</FONT><A NAME="675"></A> * *** empty log message ***
+<FONT ID="LN">76</FONT><A NAME="676"></A> *
+<FONT ID="LN">77</FONT><A NAME="677"></A> * Revision 1.4  2004/10/24 13:52:51  justb
+<FONT ID="LN">78</FONT><A NAME="678"></A> * small fixes in client lib
+<FONT ID="LN">79</FONT><A NAME="679"></A> *
+<FONT ID="LN">80</FONT><A NAME="680"></A> * Revision 1.3  2004/10/24 12:58:18  justb
+<FONT ID="LN">81</FONT><A NAME="681"></A> * revised client and test classes for new protocol
+<FONT ID="LN">82</FONT><A NAME="682"></A> *
+<FONT ID="LN">83</FONT><A NAME="683"></A> * Revision 1.2  2004/09/03 22:35:37  justb
+<FONT ID="LN">84</FONT><A NAME="684"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">85</FONT><A NAME="685"></A> *
+<FONT ID="LN">86</FONT><A NAME="686"></A> * Revision 1.1  2004/03/10 20:14:17  justb
+<FONT ID="LN">87</FONT><A NAME="687"></A> * renamed all *JavaPushletClient* to *PushletClient*
+<FONT ID="LN">88</FONT><A NAME="688"></A> *
+<FONT ID="LN">89</FONT><A NAME="689"></A> * Revision 1.10  2004/03/10 15:45:55  justb
+<FONT ID="LN">90</FONT><A NAME="690"></A> * many cosmetic changes
+<FONT ID="LN">91</FONT><A NAME="691"></A> *
+<FONT ID="LN">92</FONT><A NAME="692"></A> * Revision 1.9  2003/08/17 20:30:20  justb
+<FONT ID="LN">93</FONT><A NAME="693"></A> * cosmetic changes
+<FONT ID="LN">94</FONT><A NAME="694"></A> *
+<FONT ID="LN">95</FONT><A NAME="695"></A> * Revision 1.8  2003/08/15 08:37:40  justb
+<FONT ID="LN">96</FONT><A NAME="696"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">97</FONT><A NAME="697"></A> *
+<FONT ID="LN">98</FONT><A NAME="698"></A> *
+<FONT ID="LN">99</FONT><A NAME="699"></A> */</FONT></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PushletClient.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

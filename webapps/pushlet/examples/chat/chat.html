@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+  <head>
+  <!-- Chat example, adapted from jenchat: http://code.jenseng.com
+    $Id: chat.html,v 1.10 2006/05/15 11:52:53 justb Exp $
+   -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Pushlet Chat</title>
+
+    <link href="chat.css" rel="stylesheet">
+
+    <style type="text/css">
+    </style>
+   	<script type="text/javascript" src="../../assets/util.js"></script>
+
+ 	<script type="text/javascript" src="../../lib/ajax-pushlet-client.js"></script>
+
+    <script type="text/javascript"><!--
+      var chatDoc;
+      var chatFrame;
+      var nick=getPageParameter('nick', 'anon');
+
+      window.onload = chat_init;
+
+      function chat_init(){
+        if (window.frames && window.frames["chatContents"]) //IE 5 (Win/Mac), Konqueror, Safari
+          chatFrame = window.frames["chatContents"];
+        else if (document.getElementById("chatContents").contentWindow) //IE 5.5+, Mozilla 0.9+, Opera
+          chatFrame = document.getElementById("chatContents").contentWindow;
+        else //Moz < 0.9 (Netscape 6.0)
+          chatFrame = document.getElementById("chatContents");
+
+        if(chatFrame.document) //Moz 0.9+, Konq, Safari, IE, Opera
+          chatDoc = chatFrame.document;
+        else //Moz < 0.9 (Netscape 6.0)
+          chatDoc = chatFrame.contentDocument;
+
+        enterChat();
+        document.forms[0].msg.focus();
+       }
+
+ 		// Event Callback for join
+		function onJoinAck(event) {
+	 		appendMessage('Listening to chat');
+		}
+
+       // Event Callback: display all events
+       function onData(event) {
+	  		p_debug(false, "pushlet-app", 'event received event=' + event.getEvent() );
+			var action = event.get('action');
+			var content = 'none action=' + action;
+         if (action == 'send') {
+				content = '<b>' + event.get('nick') + '</b>: <i>' + event.get('msg') + '</i>';
+		} else if (action == 'enter') {
+				content = '<b><i>*** ' + event.get('nick') + ' joined chat  ***</i></b>';
+		} else if (action == 'exit') {
+				content = '<b><i>*** ' + event.get('nick') + ' left chat  ***</i></b>';
+        }
+        appendMessage(content);
+
+	}
+
+    // Event Callback: display all events
+	function onNack(event) {
+	   alert('negative response from server: ' + event.getEvent() + ' reason: ' + event.get('p_reason'));
+    }
+
+      function appendMessage  (content){
+        var newDiv = chatDoc.createElement("DIV");
+        newDiv.innerHTML = content;
+        chatDoc.getElementById("contents").appendChild(newDiv);
+        chatFrame.scrollTo(0, chatDoc.getElementById("contents").offsetHeight);
+      }
+
+      function enterChat(){
+   		p_join_listen('/chat');
+    	p_publish('/chat', 'action', 'enter', 'nick', nick);
+       }
+
+      function sendMsg(){
+        p_publish('/chat', 'action', 'send', 'nick', nick, 'msg', document.getElementById("msg").value);
+        resetForm();
+       }
+
+      function leaveChat(){
+        // Send exit to chatters
+        p_publish('/chat', 'action', 'exit', 'nick', nick);
+
+    	// Stop pushlet session
+    	p_leave();
+
+    	// Give some time to send the leave request to server
+    	setTimeout('gotoEnter()', 500);
+     }
+
+     function gotoEnter() {
+        window.location.href='enter.html';
+     }
+
+     function resetForm(){
+        document.forms[0].msg.value = "";
+        document.forms[0].msg.focus();
+     }//-->
+    </script>
+  </head>
+  <body>
+   <center>
+     <h3>Pushlet Chat (AJAX Version)</h3>
+     <iframe id="chatContents" name="chatContents" src="contents.html"></iframe>
+	  <form action="#" onSubmit="sendMsg(); return false;">
+         <input type="text" name="msg" id="msg" style="width: 300px" />&nbsp;<a href="#" onclick="javascript:leaveChat()">[exit]</a>
+       </form>
+     </center>
+  </body>
+</html>

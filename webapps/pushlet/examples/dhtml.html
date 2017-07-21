@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+   <meta name="Author" content="Just van den Broecke">
+   
+   <link href="../assets/style.css" rel="stylesheet">
+   <script type="text/javascript" src="../assets/util.js"></script>
+    <script type="text/javascript">
+   function viewSource(uri) {
+		var cvsURLprefix='http://pushlets.cvs.sourceforge.net/pushlets/pushlets/';
+		var cvsURLpostfix='?view=markup';
+		var url = cvsURLprefix + uri + cvsURLpostfix;
+
+		window.open(url, 'cvs');
+    }
+	</script>
+   <title>DHTML Examples</title>
+</head>
+<body>
+
+<H2>DHTML Examples</H2>
+These show some examples of the power of Dynamic HTML. DHTML refers to a combination of
+JavaScript, Cascading Style Sheets (CSS) and the Document Object Model (DOM) used within
+type 4+ browsers. So called DHTML "Layers" are an important feature when making content dynamic.
+A Layer is a sort of mini document with a variable position on the screen. It can be moved around
+and its content can be dynamically refreshed. 
+<P>
+See the <a href="http://www.pushlets.com/doc/whitepaper.html">Resources</a> section for DHTML references.
+<P>
+<table border=1 cellpadding=8 width="80%">
+<tr>
+<td><b>Name</b></td><td><b>Description</b></td><td><b>Run</b></td><td><b>Source</b></td>
+</tr>
+
+<tr>
+<td>Random Layers</td>
+<td>Here we move layer objects randomly in a page while refreshing their content
+and changing their background color. For browser compatibility a Browser object and
+Layer objects are defined (see src).</td>
+<td><A HREF="javascript:openBareWindow('dhtml1', 'dhtml/random-layers.html', 600, 600)">run</A></td> 
+<td>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/dhtml/random-layers.html')">random-layers.html</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/api.js')">api.js</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/layer.js')">layer.js</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/map.js')">map.js</A><BR>
+</td>
+</tr>
+
+<tr>
+<td>Grid Layers</td>
+<td>Layers are organized in a grid (like Java GridLayout).</td>
+<td><A HREF="javascript:openBareWindow('dhtml2', 'dhtml/grid-layers.html', 300, 300)">run</A></td> 
+<td>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/dhtml/grid-layers.html')">grid-layers.html</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/api.js')">api.js</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/layer.js')">layer.js</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/layer.js')">layer-grid.js</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/assets/map.js')">map.js</A><BR>
+</td>
+</tr>
+
+</table>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!--
+  Displays raw events in text area.
+
+  $Id: raw.html,v 1.18 2006/05/25 10:47:00 justb Exp $
+  author: Just van den Broecke
+
+-->
+<html>
+<head>
+	<title>Pushlet Raw Events</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta http-equiv="Pragma" content="no-cache">
+  	<link href="../../assets/style.css" rel="stylesheet">
+
+	<script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+
+     <script type="text/javascript">
+     	var subscriptionId = null;
+
+       	// Join or leave depending on arg
+		function joinLeave(what) {
+			if (what == 'joinStream') {
+			  p_join_listen(null, 'stream');
+			} else if (what == 'joinPull') {
+			  p_join_listen(null, 'pull');
+			} else if (what == 'joinPoll') {
+			  p_join_listen(null, 'poll');
+		    } else if (what == 'leave') {
+			  p_leave();
+			  subscriptionId = null;
+			  displayData('NO DATA (left)');
+		    }
+		}
+
+		// Data Event Callback
+		function onData(event) {
+			// Write the event as HTML table into content Element
+	  		// p_debug(flag, "pushlet-app", 'event received subject=' + event.getSubject() );
+			displayData(event.toString());
+		}
+
+		// Subscribe acknowledgement Callback
+		function onSubscribeAck(event) {
+			subscriptionId = event.get('p_sid');
+			displayControl(event.toString());
+			displayData('WAITING FOR DATA...');
+    	}
+
+    	// Ack refresh
+		function onRefreshAck(event) {
+			displayData(event.toString());
+    	}
+
+	   	// Heartbeat on data channel
+		function onHeartbeat(event) {
+			displayData(event.toString());
+    	}
+
+		// Subscribe acknowledgement Callback
+		function onUnsubscribeAck(event) {
+			subscriptionId = null;
+			displayControl(event.toString());
+			displayData('NO DATA (unsubscribed)');
+  		}
+
+		// Catches all other callbacks
+		function onEvent(event) {
+			displayControl(event.toString());
+		}
+
+		// Subscribe/unsubscribe to/from subject
+		function subscribeUnsubscribe(subject) {
+		    if (p_getSessionId() == null) {
+		      alert('you need to join first (join/leave combo)');
+		      return;
+		    }
+
+		    if (subject == 'UNSUBSCRIBE') {
+		       // Unsubscribe all
+			   p_unsubscribe();
+			} else if (subject != '') {
+				// Unsubscribe first if already subscribed
+				if (subscriptionId != null) {
+					p_unsubscribe(subscriptionId);
+				}
+				p_subscribe(subject, 'mylabel');
+			}
+ 		}
+
+
+		// Toggle debug windows
+		function setDebug(value) {
+			if (value == 'none') {
+				p_setDebug(false);
+			} else if (value == 'full') {
+				p_setDebug(true);
+			} else if (value == 'net') {
+				p_setDebug(false);
+				p_setNetDebug(true);
+			}
+ 		}
+
+ 		function displayData(aString) {
+ 		  document.dataEventDisplay.event.value = aString;
+		}
+
+   		function displayControl(aString) {
+ 		  document.controlEventDisplay.event.value = aString;
+		}
+
+	</script>
+
+</head>
+
+<body>
+  <h2>Test Page for Raw Events</h2>
+  <p>The forms below allow you to control Pushlet services.</p>
+  <table border="0" cellpadding="10" cellspacing="0" >
+    <tr>
+    <td>
+       <h3>Join/Leave</h3>
+     </td>
+     <td>
+       <h3>Subscription</h3>
+     </td>
+      <td>
+       <h3>Debug Window</h3>
+     </td>
+    </tr>
+    <tr>
+    <td>
+       <form name="joinForm">
+         <select name="joinField" onChange="joinLeave(this.value)">
+           <option selected value="" >select join/leave</option>
+           <option value="joinStream">join (stream mode)</option>
+           <option value="joinPull">join (pull mode)</option>
+           <option value="joinPoll">join (poll mode)</option>
+           <option value="leave">leave</option>
+         </select>
+       </form>
+     </td>
+     <td>
+       <form name="subscribeForm">
+         <select name="selectField" onChange="subscribeUnsubscribe(this.value)">
+           <option selected value="" >select subject</option>
+           <option value="/system">system</option>
+           <option value="/temperature">weather</option>
+           <option value="/stocks">stocks</option>
+           <option value="/stocks,/temperature">multiple subjects</option>
+           <option value="/">all events</option>
+          <option value="UNSUBSCRIBE">unsubscribe all</option>
+          </select>
+       </form>
+     </td>
+      <td>
+        <form name="debugForm">
+          <select name="selectField" onChange="setDebug(this.value)">
+           <option selected value="none" >none</option>
+           <option value="full">full</option>
+           <option value="net">net events only</option>
+          </select>
+        </form>
+     </td>
+    </tr>
+  </table>
+
+<h3>Control Monitor</h3>
+<p>
+Below are the raw control events. You need to join first.
+</p>
+<form name="controlEventDisplay">
+  <table border="2" bordercolor="white" cellpadding="4" cellspacing="0" >
+    <tr>
+     <td>
+       <textarea cols="40" rows="8" name="event">
+        WAITING FOR CONTROL EVENTS
+       </textarea>
+     </td>
+    </tr>
+  </table>
+</form>
+
+<h3>Data Monitor</h3>
+<p>
+Below are the raw data events. To see data join and select a subject.
+</p>
+<form name="dataEventDisplay">
+  <table border="2" bordercolor="white" cellpadding="4" cellspacing="0" >
+    <tr>
+     <td>
+       <textarea cols="60" rows="16" name="event">
+        NO DATA (idle)
+       </textarea>
+     </td>
+    </tr>
+  </table>
+</form>
+<script type="text/javascript">p_embed()</script>
+
+</body>
+</html>
+

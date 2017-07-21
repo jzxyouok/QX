@@ -1,0 +1,14 @@
+<div class="in" id="content-chart-scroll">
+     <div ng-repeat="message in clickUser.messageList" ng-class="{true:'right',false:'left'}[message.OWN]">
+         <div class="author-name">
+          	{{message.NAME}}
+          	<small class="chat-date">
+              {{message.SENDTIME}}
+          	</small>
+      		</div>
+      		<div ng-class="{true:'chat-message active',false:'chat-message'}[message.OWN]">
+			{{message.MESSAGE}}
+			</div>
+		</div>
+	</div>
+</div>

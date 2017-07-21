@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.test.TestEventPushSources (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestEventPushSources.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.test.index.html" target="packageFrame">nl.justobjects.pushlet.test</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Dispatcher.java.html">nl.justobjects.pushlet.core.Dispatcher</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">nl.justobjects.pushlet.core.Event</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventSource.java.html">nl.justobjects.pushlet.core.EventSource</A>;
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Rand.java.html">nl.justobjects.pushlet.util.Rand</A>;
+<FONT ID="LN">10</FONT><A NAME="10"></A>
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.io.BufferedReader;
+<FONT ID="LN">12</FONT><A NAME="12"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<FONT ID="LN">14</FONT><A NAME="14"></A><FONT ID="Import">import</FONT> java.io.InputStreamReader;
+<FONT ID="LN">15</FONT><A NAME="15"></A><FONT ID="Import">import</FONT> java.net.URL;
+<FONT ID="LN">16</FONT><A NAME="16"></A><FONT ID="Import">import</FONT> java.util.StringTokenizer;
+<FONT ID="LN">17</FONT><A NAME="17"></A><FONT ID="Import">import</FONT> java.util.Vector;
+<FONT ID="LN">18</FONT><A NAME="18"></A>
+<FONT ID="LN">19</FONT><A NAME="19"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">20</FONT><A NAME="20"></A> * Event sources that push events (for testing).
+<FONT ID="LN">21</FONT><A NAME="21"></A> *
+<FONT ID="LN">22</FONT><A NAME="22"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">23</FONT><A NAME="23"></A> * @version $Id: TestEventPushSources.java,v 1.10 2007/11/09 13:16:57 justb Exp $
+<FONT ID="LN">24</FONT><A NAME="24"></A> */</FONT>
+<FONT ID="LN">25</FONT><A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestEventPushSources {
+<FONT ID="LN">26</FONT><A NAME="26"></A>
+<FONT ID="LN">27</FONT><A NAME="27"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AEXStocksEventPushSourceABN {
+<FONT ID="LN">28</FONT><A NAME="28"></A>        String pageURL = <FONT ID="StringLiteral">"http://ri2.rois.com/E36msPtnZC0e15CVb4KT97JAGfGSfCcrvv6*FcyZIoNyh/CTIB/RI2APISNAP?RIC=0%23.AEX&amp;FORMAT=XML"</FONT>;
+<FONT ID="LN">29</FONT><A NAME="29"></A>        <FONT ID="SingleLineComment">// This could be further expanded: getting the Reuters AEX stocks
+<FONT ID="LN">30</FONT><A NAME="30"></A></FONT>        <FONT ID="SingleLineComment">// as XML from ABN with this URL, but we may get into legal problems...
+<FONT ID="LN">31</FONT><A NAME="31"></A></FONT>    }
+<FONT ID="LN">32</FONT><A NAME="32"></A>
+<FONT ID="LN">33</FONT><A NAME="33"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">34</FONT><A NAME="34"></A>     * Produces events from REAL stocks from the AEX.
+<FONT ID="LN">35</FONT><A NAME="35"></A>     */</FONT>
+<FONT ID="LN">36</FONT><A NAME="36"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AEXStocksEventPushSource <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventSource.java.html">EventSource</A>, Runnable {
+<FONT ID="LN">37</FONT><A NAME="37"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">38</FONT><A NAME="38"></A>         * Here we get our stocks from.
+<FONT ID="LN">39</FONT><A NAME="39"></A>         */</FONT>
+<FONT ID="LN">40</FONT><A NAME="40"></A>        String pageURL = <FONT ID="StringLiteral">"http://www.debeurs.nl/koersen/aex.asp"</FONT>;
+<FONT ID="LN">41</FONT><A NAME="41"></A>        Thread thread = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">42</FONT><A NAME="42"></A>        <FONT ID="Volatile">volatile</FONT> <FONT ID="Boolean">boolean</FONT> active = <FONT ID="False">false</FONT>;
+<FONT ID="LN">43</FONT><A NAME="43"></A>
+<FONT ID="LN">44</FONT><A NAME="44"></A>        <FONT ID="SingleLineComment">// Since Baan has been thrown out...
+<FONT ID="LN">45</FONT><A NAME="45"></A></FONT>        <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> NR_OF_STOCKS = <FONT ID="IntegerLiteral">24</FONT>;
+<FONT ID="LN">46</FONT><A NAME="46"></A>
+<FONT ID="LN">47</FONT><A NAME="47"></A>        <FONT ID="Public">public</FONT> <FONT ID="Final">final</FONT> <FONT ID="Static">static</FONT> String EMPTY = <FONT ID="StringLiteral">"wait..."</FONT>;
+<FONT ID="LN">48</FONT><A NAME="48"></A>        <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> restarts = <FONT ID="IntegerLiteral">1</FONT>;
+<FONT ID="LN">49</FONT><A NAME="49"></A>
+<FONT ID="LN">50</FONT><A NAME="50"></A>        <FONT ID="Class">class</FONT> Stock {
+<FONT ID="LN">51</FONT><A NAME="51"></A>            <FONT ID="Public">public</FONT> String name = EMPTY;
+<FONT ID="LN">52</FONT><A NAME="52"></A>            <FONT ID="Public">public</FONT> String rate = EMPTY;
+<FONT ID="LN">53</FONT><A NAME="53"></A>            <FONT ID="Volatile">volatile</FONT> <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> modified = <FONT ID="False">false</FONT>;
+<FONT ID="LN">54</FONT><A NAME="54"></A>        }
+<FONT ID="LN">55</FONT><A NAME="55"></A>
+<FONT ID="LN">56</FONT><A NAME="56"></A>        Vector stocksCache = <FONT ID="New">new</FONT> Vector(NR_OF_STOCKS);
+<FONT ID="LN">57</FONT><A NAME="57"></A>
+<FONT ID="LN">58</FONT><A NAME="58"></A>        <FONT ID="Public">public</FONT> AEXStocksEventPushSource() {
+<FONT ID="LN">59</FONT><A NAME="59"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; NR_OF_STOCKS; i++) {
+<FONT ID="LN">60</FONT><A NAME="60"></A>                stocksCache.addElement(<FONT ID="New">new</FONT> Stock());
+<FONT ID="LN">61</FONT><A NAME="61"></A>            }
+<FONT ID="LN">62</FONT><A NAME="62"></A>            <FONT ID="SingleLineComment">// updateCache();
+<FONT ID="LN">63</FONT><A NAME="63"></A></FONT>        }
+<FONT ID="LN">64</FONT><A NAME="64"></A>
+<FONT ID="LN">65</FONT><A NAME="65"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">66</FONT><A NAME="66"></A>         * Activate the event source.
+<FONT ID="LN">67</FONT><A NAME="67"></A>         */</FONT>
+<FONT ID="LN">68</FONT><A NAME="68"></A>        <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> activate() {
+<FONT ID="LN">69</FONT><A NAME="69"></A>            e(<FONT ID="StringLiteral">"activating..."</FONT>);
+<FONT ID="LN">70</FONT><A NAME="70"></A>            <FONT ID="SingleLineComment">// Stop a possibly running thread
+<FONT ID="LN">71</FONT><A NAME="71"></A></FONT>            stopThread();
+<FONT ID="LN">72</FONT><A NAME="72"></A>
+<FONT ID="LN">73</FONT><A NAME="73"></A>            <FONT ID="SingleLineComment">// Start new thread and
+<FONT ID="LN">74</FONT><A NAME="74"></A></FONT>            thread = <FONT ID="New">new</FONT> Thread(<FONT ID="This">this</FONT>, <FONT ID="StringLiteral">"AEXStocksPublisher-"</FONT> + (restarts++));
+<FONT ID="LN">75</FONT><A NAME="75"></A>            active = <FONT ID="True">true</FONT>;
+<FONT ID="LN">76</FONT><A NAME="76"></A>            thread.start();
+<FONT ID="LN">77</FONT><A NAME="77"></A>            e(<FONT ID="StringLiteral">"activated"</FONT>);
+<FONT ID="LN">78</FONT><A NAME="78"></A>        }
+<FONT ID="LN">79</FONT><A NAME="79"></A>
+<FONT ID="LN">80</FONT><A NAME="80"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">81</FONT><A NAME="81"></A>         * Deactivate the event source.
+<FONT ID="LN">82</FONT><A NAME="82"></A>         */</FONT>
+<FONT ID="LN">83</FONT><A NAME="83"></A>        <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> passivate() {
+<FONT ID="LN">84</FONT><A NAME="84"></A>            e(<FONT ID="StringLiteral">"passivating..."</FONT>);
+<FONT ID="LN">85</FONT><A NAME="85"></A>            active = <FONT ID="False">false</FONT>;
+<FONT ID="LN">86</FONT><A NAME="86"></A>            stopThread();
+<FONT ID="LN">87</FONT><A NAME="87"></A>
+<FONT ID="LN">88</FONT><A NAME="88"></A>            <FONT ID="SingleLineComment">// Mark the cache modified so we'll send the contents
+<FONT ID="LN">89</FONT><A NAME="89"></A></FONT>            <FONT ID="SingleLineComment">// on the next activation.
+<FONT ID="LN">90</FONT><A NAME="90"></A></FONT>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; NR_OF_STOCKS; i++) {
+<FONT ID="LN">91</FONT><A NAME="91"></A>                ((Stock) stocksCache.elementAt(i)).modified = <FONT ID="True">true</FONT>;
+<FONT ID="LN">92</FONT><A NAME="92"></A>            }
+<FONT ID="LN">93</FONT><A NAME="93"></A>
+<FONT ID="LN">94</FONT><A NAME="94"></A>            e(<FONT ID="StringLiteral">"passivated"</FONT>);
+<FONT ID="LN">95</FONT><A NAME="95"></A>        }
+<FONT ID="LN">96</FONT><A NAME="96"></A>
+<FONT ID="LN">97</FONT><A NAME="97"></A>
+<FONT ID="LN">98</FONT><A NAME="98"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">99</FONT><A NAME="99"></A>         * Deactivate the event source.
+<FONT ID="LN">00</FONT><A NAME="100"></A>         */</FONT>
+<FONT ID="LN">01</FONT><A NAME="101"></A>        <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">02</FONT><A NAME="102"></A>        }
+<FONT ID="LN">03</FONT><A NAME="103"></A>
+<FONT ID="LN">04</FONT><A NAME="104"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run() {
+<FONT ID="LN">05</FONT><A NAME="105"></A>            <FONT ID="SingleLineComment">// Publish cache content (if any) first.
+<FONT ID="LN">06</FONT><A NAME="106"></A></FONT>            publishStocks();
+<FONT ID="LN">07</FONT><A NAME="107"></A>
+<FONT ID="LN">08</FONT><A NAME="108"></A>            <FONT ID="Int">int</FONT> count = <FONT ID="IntegerLiteral">5</FONT>; <FONT ID="SingleLineComment">// enforce update first
+<FONT ID="LN">09</FONT><A NAME="109"></A></FONT>            <FONT ID="While">while</FONT> (active) {
+<FONT ID="LN">10</FONT><A NAME="110"></A>
+<FONT ID="LN">11</FONT><A NAME="111"></A>                <FONT ID="SingleLineComment">// Only do work if active
+<FONT ID="LN">12</FONT><A NAME="112"></A></FONT>                <FONT ID="SingleLineComment">// Update cache every 10 secs.
+<FONT ID="LN">13</FONT><A NAME="113"></A></FONT>                <FONT ID="If">if</FONT> (count == <FONT ID="IntegerLiteral">5</FONT>) {
+<FONT ID="LN">14</FONT><A NAME="114"></A>                    updateCache();
+<FONT ID="LN">15</FONT><A NAME="115"></A>                    count = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">16</FONT><A NAME="116"></A>                }
+<FONT ID="LN">17</FONT><A NAME="117"></A>                count++;
+<FONT ID="LN">18</FONT><A NAME="118"></A>
+<FONT ID="LN">19</FONT><A NAME="119"></A>                <FONT ID="SingleLineComment">// Do updates for changed stock rates
+<FONT ID="LN">20</FONT><A NAME="120"></A></FONT>                sendUpdates();
+<FONT ID="LN">21</FONT><A NAME="121"></A>
+<FONT ID="LN">22</FONT><A NAME="122"></A>                <FONT ID="SingleLineComment">// If we were interrupted just return.
+<FONT ID="LN">23</FONT><A NAME="123"></A></FONT>                <FONT ID="If">if</FONT> (thread == <FONT ID="Null">null</FONT> || thread.isInterrupted()) {
+<FONT ID="LN">24</FONT><A NAME="124"></A>                    <FONT ID="Break">break</FONT>;
+<FONT ID="LN">25</FONT><A NAME="125"></A>                }
+<FONT ID="LN">26</FONT><A NAME="126"></A>
+<FONT ID="LN">27</FONT><A NAME="127"></A>                <FONT ID="SingleLineComment">// Sleep 2 secs before sending next updates
+<FONT ID="LN">28</FONT><A NAME="128"></A></FONT>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">29</FONT><A NAME="129"></A>                    thread.sleep(<FONT ID="IntegerLiteral">2000</FONT>);
+<FONT ID="LN">30</FONT><A NAME="130"></A>                } <FONT ID="Catch">catch</FONT> (InterruptedException ie) {
+<FONT ID="LN">31</FONT><A NAME="131"></A>                    <FONT ID="Break">break</FONT>;
+<FONT ID="LN">32</FONT><A NAME="132"></A>                }
+<FONT ID="LN">33</FONT><A NAME="133"></A>            }
+<FONT ID="LN">34</FONT><A NAME="134"></A>
+<FONT ID="LN">35</FONT><A NAME="135"></A>            <FONT ID="SingleLineComment">// Loop terminated: reset vars
+<FONT ID="LN">36</FONT><A NAME="136"></A></FONT>            thread = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">37</FONT><A NAME="137"></A>            active = <FONT ID="False">false</FONT>;
+<FONT ID="LN">38</FONT><A NAME="138"></A>        }
+<FONT ID="LN">39</FONT><A NAME="139"></A>
+<FONT ID="LN">40</FONT><A NAME="140"></A>        <FONT ID="Private">private</FONT> String getStocksLine() {
+<FONT ID="LN">41</FONT><A NAME="141"></A>            BufferedReader br = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">42</FONT><A NAME="142"></A>            InputStream is = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">43</FONT><A NAME="143"></A>            String nextLine = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">44</FONT><A NAME="144"></A>
+<FONT ID="LN">45</FONT><A NAME="145"></A>            <FONT ID="SingleLineComment">// Read line from server
+<FONT ID="LN">46</FONT><A NAME="146"></A></FONT>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">47</FONT><A NAME="147"></A>                is = <FONT ID="New">new</FONT> URL(pageURL).openStream();
+<FONT ID="LN">48</FONT><A NAME="148"></A>                br = <FONT ID="New">new</FONT> BufferedReader(<FONT ID="New">new</FONT> InputStreamReader(is));
+<FONT ID="LN">49</FONT><A NAME="149"></A>                <FONT ID="Boolean">boolean</FONT> foundLine = <FONT ID="False">false</FONT>;
+<FONT ID="LN">50</FONT><A NAME="150"></A>                <FONT ID="While">while</FONT> (!foundLine) {
+<FONT ID="LN">51</FONT><A NAME="151"></A>                    nextLine = br.readLine();
+<FONT ID="LN">52</FONT><A NAME="152"></A>                    <FONT ID="If">if</FONT> (nextLine == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">53</FONT><A NAME="153"></A>                        <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">54</FONT><A NAME="154"></A>                    }
+<FONT ID="LN">55</FONT><A NAME="155"></A>                    foundLine = (nextLine.indexOf(<FONT ID="StringLiteral">"details.asp?iid=14053&amp;parent=aex"</FONT>) != -<FONT ID="IntegerLiteral">1</FONT>);
+<FONT ID="LN">56</FONT><A NAME="156"></A>                }
+<FONT ID="LN">57</FONT><A NAME="157"></A>            } <FONT ID="Catch">catch</FONT> (Exception e) {
+<FONT ID="LN">58</FONT><A NAME="158"></A>                e(<FONT ID="StringLiteral">"could not open or read URL pageURL="</FONT> + pageURL + <FONT ID="StringLiteral">" ex="</FONT> + e);
+<FONT ID="LN">59</FONT><A NAME="159"></A>                <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">60</FONT><A NAME="160"></A>            } <FONT ID="Finally">finally</FONT> {
+<FONT ID="LN">61</FONT><A NAME="161"></A>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">62</FONT><A NAME="162"></A>                    <FONT ID="If">if</FONT> (is != <FONT ID="Null">null</FONT>) is.close();
+<FONT ID="LN">63</FONT><A NAME="163"></A>                } <FONT ID="Catch">catch</FONT> (IOException ignore) {
+<FONT ID="LN">64</FONT><A NAME="164"></A>                }
+<FONT ID="LN">65</FONT><A NAME="165"></A>            }
+<FONT ID="LN">66</FONT><A NAME="166"></A>            <FONT ID="Return">return</FONT> nextLine;
+<FONT ID="LN">67</FONT><A NAME="167"></A>        }
+<FONT ID="LN">68</FONT><A NAME="168"></A>
+<FONT ID="LN">69</FONT><A NAME="169"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> publishStocks() {
+<FONT ID="LN">70</FONT><A NAME="170"></A>            <FONT ID="SingleLineComment">// Publish only modified stocks from the cache
+<FONT ID="LN">71</FONT><A NAME="171"></A></FONT>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; NR_OF_STOCKS; i++) {
+<FONT ID="LN">72</FONT><A NAME="172"></A>                Stock nextStock = (Stock) stocksCache.elementAt(i);
+<FONT ID="LN">73</FONT><A NAME="173"></A>
+<FONT ID="LN">74</FONT><A NAME="174"></A>                <FONT ID="SingleLineComment">// Publish modified stocks
+<FONT ID="LN">75</FONT><A NAME="175"></A></FONT>                <FONT ID="If">if</FONT> (nextStock.modified) {
+<FONT ID="LN">76</FONT><A NAME="176"></A>                    publishStock(i, nextStock.name, nextStock.rate);
+<FONT ID="LN">77</FONT><A NAME="177"></A>                    nextStock.modified = <FONT ID="False">false</FONT>;
+<FONT ID="LN">78</FONT><A NAME="178"></A>                    <FONT ID="Try">try</FONT> {
+<FONT ID="LN">79</FONT><A NAME="179"></A>                        Thread.sleep(<FONT ID="IntegerLiteral">400</FONT>);
+<FONT ID="LN">80</FONT><A NAME="180"></A>                    } <FONT ID="Catch">catch</FONT> (InterruptedException ie) {
+<FONT ID="LN">81</FONT><A NAME="181"></A>                        <FONT ID="Return">return</FONT>;
+<FONT ID="LN">82</FONT><A NAME="182"></A>                    }
+<FONT ID="LN">83</FONT><A NAME="183"></A>                }
+<FONT ID="LN">84</FONT><A NAME="184"></A>            }
+<FONT ID="LN">85</FONT><A NAME="185"></A>        }
+<FONT ID="LN">86</FONT><A NAME="186"></A>
+<FONT ID="LN">87</FONT><A NAME="187"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> publishStock(<FONT ID="Int">int</FONT> index, String name, String rate) {
+<FONT ID="LN">88</FONT><A NAME="188"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/stocks/aex"</FONT>);
+<FONT ID="LN">89</FONT><A NAME="189"></A>            event.setField(<FONT ID="StringLiteral">"number"</FONT>, index + <FONT ID="StringLiteral">""</FONT>);
+<FONT ID="LN">90</FONT><A NAME="190"></A>            event.setField(<FONT ID="StringLiteral">"name"</FONT>, name);
+<FONT ID="LN">91</FONT><A NAME="191"></A>            event.setField(<FONT ID="StringLiteral">"rate"</FONT>, rate);
+<FONT ID="LN">92</FONT><A NAME="192"></A>            p(<FONT ID="StringLiteral">"publish: nr="</FONT> + index + <FONT ID="StringLiteral">" name="</FONT> + name + <FONT ID="StringLiteral">" rate="</FONT> + rate);
+<FONT ID="LN">93</FONT><A NAME="193"></A>            Dispatcher.getInstance().multicast(event);
+<FONT ID="LN">94</FONT><A NAME="194"></A>        }
+<FONT ID="LN">95</FONT><A NAME="195"></A>
+<FONT ID="LN">96</FONT><A NAME="196"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> sendUpdates() {
+<FONT ID="LN">97</FONT><A NAME="197"></A>            p(<FONT ID="StringLiteral">"sending updates"</FONT>);
+<FONT ID="LN">98</FONT><A NAME="198"></A>            <FONT ID="SingleLineComment">// In any case send a random stock value by
+<FONT ID="LN">99</FONT><A NAME="199"></A></FONT>            <FONT ID="SingleLineComment">// making it modified, just to see something moving...
+<FONT ID="LN">00</FONT><A NAME="200"></A></FONT>            <FONT ID="Int">int</FONT> randomIndex = Rand.randomInt(<FONT ID="IntegerLiteral">0</FONT>, NR_OF_STOCKS - <FONT ID="IntegerLiteral">1</FONT>);
+<FONT ID="LN">01</FONT><A NAME="201"></A>            Stock randomStock = (Stock) stocksCache.elementAt(randomIndex);
+<FONT ID="LN">02</FONT><A NAME="202"></A>            randomStock.modified = <FONT ID="True">true</FONT>;
+<FONT ID="LN">03</FONT><A NAME="203"></A>
+<FONT ID="LN">04</FONT><A NAME="204"></A>            publishStocks();
+<FONT ID="LN">05</FONT><A NAME="205"></A>        }
+<FONT ID="LN">06</FONT><A NAME="206"></A>
+<FONT ID="LN">07</FONT><A NAME="207"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> stopThread() {
+<FONT ID="LN">08</FONT><A NAME="208"></A>            <FONT ID="If">if</FONT> (thread != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">09</FONT><A NAME="209"></A>                thread.interrupt();
+<FONT ID="LN">10</FONT><A NAME="210"></A>                thread = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">11</FONT><A NAME="211"></A>            }
+<FONT ID="LN">12</FONT><A NAME="212"></A>        }
+<FONT ID="LN">13</FONT><A NAME="213"></A>
+<FONT ID="LN">14</FONT><A NAME="214"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> updateCache() {
+<FONT ID="LN">15</FONT><A NAME="215"></A>            p(<FONT ID="StringLiteral">"updating Cache"</FONT>);
+<FONT ID="LN">16</FONT><A NAME="216"></A>
+<FONT ID="LN">17</FONT><A NAME="217"></A>            <FONT ID="SingleLineComment">// Get the line with all stocks from HTML page
+<FONT ID="LN">18</FONT><A NAME="218"></A></FONT>            String stocksLine = getStocksLine();
+<FONT ID="LN">19</FONT><A NAME="219"></A>            <FONT ID="If">if</FONT> (<FONT ID="StringLiteral">""</FONT>.equals(stocksLine)) {
+<FONT ID="LN">20</FONT><A NAME="220"></A>                e(<FONT ID="StringLiteral">"updateCache: stocksLine == null"</FONT>);
+<FONT ID="LN">21</FONT><A NAME="221"></A>                <FONT ID="Return">return</FONT>;
+<FONT ID="LN">22</FONT><A NAME="222"></A>            }
+<FONT ID="LN">23</FONT><A NAME="223"></A>
+<FONT ID="LN">24</FONT><A NAME="224"></A>            <FONT ID="SingleLineComment">// Parse the stocksline and put in cache.
+<FONT ID="LN">25</FONT><A NAME="225"></A></FONT>            <FONT ID="SingleLineComment">// Beware: this is the messy part!!
+<FONT ID="LN">26</FONT><A NAME="226"></A></FONT>            <FONT ID="SingleLineComment">// We assume that stock/names and rates are located at
+<FONT ID="LN">27</FONT><A NAME="227"></A></FONT>            <FONT ID="SingleLineComment">// regular positions in the line.
+<FONT ID="LN">28</FONT><A NAME="228"></A></FONT>            String delim = <FONT ID="StringLiteral">"&lt;&gt;"</FONT>;
+<FONT ID="LN">29</FONT><A NAME="229"></A>            StringTokenizer st = <FONT ID="New">new</FONT> StringTokenizer(stocksLine, delim);
+<FONT ID="LN">30</FONT><A NAME="230"></A>            String nextToken = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">31</FONT><A NAME="231"></A>            <FONT ID="Int">int</FONT> count = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">32</FONT><A NAME="232"></A>            String nextStock = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">33</FONT><A NAME="233"></A>            String nextQuote = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">34</FONT><A NAME="234"></A>            String currentQuote = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">35</FONT><A NAME="235"></A>            <FONT ID="Int">int</FONT> index = -<FONT ID="IntegerLiteral">1</FONT>;
+<FONT ID="LN">36</FONT><A NAME="236"></A>            <FONT ID="While">while</FONT> (st.hasMoreTokens()) {
+<FONT ID="LN">37</FONT><A NAME="237"></A>                nextToken = st.nextToken();
+<FONT ID="LN">38</FONT><A NAME="238"></A>                count++;
+<FONT ID="LN">39</FONT><A NAME="239"></A>                <FONT ID="SingleLineComment">// The &lt;TD&gt; with the stock name
+<FONT ID="LN">40</FONT><A NAME="240"></A></FONT>                <FONT ID="If">if</FONT> ((count - <FONT ID="IntegerLiteral">5</FONT>) % <FONT ID="IntegerLiteral">57</FONT> == <FONT ID="IntegerLiteral">0</FONT>) {
+<FONT ID="LN">41</FONT><A NAME="241"></A>                    p(<FONT ID="StringLiteral">"c="</FONT> + count + <FONT ID="StringLiteral">" s="</FONT> + nextToken);
+<FONT ID="LN">42</FONT><A NAME="242"></A>                    nextStock = nextToken;
+<FONT ID="LN">43</FONT><A NAME="243"></A>                }
+<FONT ID="LN">44</FONT><A NAME="244"></A>
+<FONT ID="LN">45</FONT><A NAME="245"></A>                <FONT ID="SingleLineComment">// The &lt;TD&gt; with the stock rate
+<FONT ID="LN">46</FONT><A NAME="246"></A></FONT>                <FONT ID="If">if</FONT> ((count - <FONT ID="IntegerLiteral">10</FONT>) % <FONT ID="IntegerLiteral">57</FONT> == <FONT ID="IntegerLiteral">0</FONT>) {
+<FONT ID="LN">47</FONT><A NAME="247"></A>                    nextQuote = nextToken;
+<FONT ID="LN">48</FONT><A NAME="248"></A>                    index++;
+<FONT ID="LN">49</FONT><A NAME="249"></A>                    p(<FONT ID="StringLiteral">"c="</FONT> + count + <FONT ID="StringLiteral">" val="</FONT> + nextQuote);
+<FONT ID="LN">50</FONT><A NAME="250"></A>                    Stock currentStock = (Stock) stocksCache.elementAt(index);
+<FONT ID="LN">51</FONT><A NAME="251"></A>
+<FONT ID="LN">52</FONT><A NAME="252"></A>                    <FONT ID="SingleLineComment">// Only update new or modified stocks
+<FONT ID="LN">53</FONT><A NAME="253"></A></FONT>                    <FONT ID="If">if</FONT> (EMPTY.equals(currentStock.rate) || !currentStock.rate.equals(nextQuote)) {
+<FONT ID="LN">54</FONT><A NAME="254"></A>                        p(<FONT ID="StringLiteral">"modified: "</FONT> + nextStock);
+<FONT ID="LN">55</FONT><A NAME="255"></A>                        currentStock.name = nextStock;
+<FONT ID="LN">56</FONT><A NAME="256"></A>                        currentStock.rate = nextQuote;
+<FONT ID="LN">57</FONT><A NAME="257"></A>                        currentStock.modified = <FONT ID="True">true</FONT>;
+<FONT ID="LN">58</FONT><A NAME="258"></A>                    }
+<FONT ID="LN">59</FONT><A NAME="259"></A>                }
+<FONT ID="LN">60</FONT><A NAME="260"></A>            }
+<FONT ID="LN">61</FONT><A NAME="261"></A>        }
+<FONT ID="LN">62</FONT><A NAME="262"></A>    }
+<FONT ID="LN">63</FONT><A NAME="263"></A>
+<FONT ID="LN">64</FONT><A NAME="264"></A>
+<FONT ID="LN">65</FONT><A NAME="265"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">66</FONT><A NAME="266"></A>     * Util: stderr print method.
+<FONT ID="LN">67</FONT><A NAME="267"></A>     */</FONT>
+<FONT ID="LN">68</FONT><A NAME="268"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> e(String s) {
+<FONT ID="LN">69</FONT><A NAME="269"></A>        System.out.println(<FONT ID="StringLiteral">"AEXStocksEventPushSource: "</FONT> + s);
+<FONT ID="LN">70</FONT><A NAME="270"></A>    }
+<FONT ID="LN">71</FONT><A NAME="271"></A>
+<FONT ID="LN">72</FONT><A NAME="272"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">73</FONT><A NAME="273"></A>     * Util: stdout print method.
+<FONT ID="LN">74</FONT><A NAME="274"></A>     */</FONT>
+<FONT ID="LN">75</FONT><A NAME="275"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> p(String s) {
+<FONT ID="LN">76</FONT><A NAME="276"></A>        <FONT ID="SingleLineComment">// System.out.println(s);
+<FONT ID="LN">77</FONT><A NAME="277"></A></FONT>    }
+<FONT ID="LN">78</FONT><A NAME="278"></A>
+<FONT ID="LN">79</FONT><A NAME="279"></A>
+<FONT ID="LN">80</FONT><A NAME="280"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<FONT ID="LN">81</FONT><A NAME="281"></A>        <FONT ID="SingleLineComment">// new TestEventPushSources$AEXStocksEventPushSource();
+<FONT ID="LN">82</FONT><A NAME="282"></A></FONT>    }
+<FONT ID="LN">83</FONT><A NAME="283"></A>}
+<FONT ID="LN">84</FONT><A NAME="284"></A>
+<FONT ID="LN">85</FONT><A NAME="285"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">86</FONT><A NAME="286"></A> * $Log: TestEventPushSources.java,v $
+<FONT ID="LN">87</FONT><A NAME="287"></A> * Revision 1.10  2007/11/09 13:16:57  justb
+<FONT ID="LN">88</FONT><A NAME="288"></A> * use Rand from util package (and and Rand.java to pushlet client jar
+<FONT ID="LN">89</FONT><A NAME="289"></A> *
+<FONT ID="LN">90</FONT><A NAME="290"></A> * Revision 1.9  2005/02/28 09:14:56  justb
+<FONT ID="LN">91</FONT><A NAME="291"></A> * sessmgr/dispatcher factory/singleton support
+<FONT ID="LN">92</FONT><A NAME="292"></A> *
+<FONT ID="LN">93</FONT><A NAME="293"></A> * Revision 1.8  2005/02/21 16:59:17  justb
+<FONT ID="LN">94</FONT><A NAME="294"></A> * SessionManager and session lease introduced
+<FONT ID="LN">95</FONT><A NAME="295"></A> *
+<FONT ID="LN">96</FONT><A NAME="296"></A> * Revision 1.7  2005/02/18 10:07:23  justb
+<FONT ID="LN">97</FONT><A NAME="297"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">98</FONT><A NAME="298"></A> *
+<FONT ID="LN">99</FONT><A NAME="299"></A> * Revision 1.6  2005/02/18 09:54:15  justb
+<FONT ID="LN">00</FONT><A NAME="300"></A> * refactor: rename Publisher Dispatcher and single Subscriber class
+<FONT ID="LN">01</FONT><A NAME="301"></A> *
+<FONT ID="LN">02</FONT><A NAME="302"></A> * Revision 1.5  2004/09/03 22:35:37  justb
+<FONT ID="LN">03</FONT><A NAME="303"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">04</FONT><A NAME="304"></A> *
+<FONT ID="LN">05</FONT><A NAME="305"></A> * Revision 1.4  2004/03/10 15:45:55  justb
+<FONT ID="LN">06</FONT><A NAME="306"></A> * many cosmetic changes
+<FONT ID="LN">07</FONT><A NAME="307"></A> *
+<FONT ID="LN">08</FONT><A NAME="308"></A> * Revision 1.3  2003/08/15 08:37:41  justb
+<FONT ID="LN">09</FONT><A NAME="309"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">10</FONT><A NAME="310"></A> *
+<FONT ID="LN">11</FONT><A NAME="311"></A> * Revision 1.2  2003/05/18 16:15:08  justb
+<FONT ID="LN">12</FONT><A NAME="312"></A> * support for XML encoded Events
+<FONT ID="LN">13</FONT><A NAME="313"></A> *
+<FONT ID="LN">14</FONT><A NAME="314"></A> * Revision 1.1.1.1  2002/09/24 21:02:33  justb
+<FONT ID="LN">15</FONT><A NAME="315"></A> * import to sourceforge
+<FONT ID="LN">16</FONT><A NAME="316"></A> *
+<FONT ID="LN">17</FONT><A NAME="317"></A> * Revision 1.1.1.1  2002/09/20 22:48:20  justb
+<FONT ID="LN">18</FONT><A NAME="318"></A> * import to SF
+<FONT ID="LN">19</FONT><A NAME="319"></A> *
+<FONT ID="LN">20</FONT><A NAME="320"></A> * Revision 1.1.1.1  2002/09/20 14:19:02  justb
+<FONT ID="LN">21</FONT><A NAME="321"></A> * first import into SF
+<FONT ID="LN">22</FONT><A NAME="322"></A> *
+<FONT ID="LN">23</FONT><A NAME="323"></A> * Revision 1.6  2001/02/18 23:45:13  just
+<FONT ID="LN">24</FONT><A NAME="324"></A> * fixes for AEX
+<FONT ID="LN">25</FONT><A NAME="325"></A> *
+<FONT ID="LN">26</FONT><A NAME="326"></A> * Revision 1.5  2000/10/30 14:16:09  just
+<FONT ID="LN">27</FONT><A NAME="327"></A> * no message
+<FONT ID="LN">28</FONT><A NAME="328"></A> *
+<FONT ID="LN">29</FONT><A NAME="329"></A> * Revision 1.4  2000/09/24 21:02:43  just
+<FONT ID="LN">30</FONT><A NAME="330"></A> * chnages due to changed webpage in debeurs.nl
+<FONT ID="LN">31</FONT><A NAME="331"></A> *
+<FONT ID="LN">32</FONT><A NAME="332"></A> * Revision 1.3  2000/08/31 12:49:50  just
+<FONT ID="LN">33</FONT><A NAME="333"></A> * added CVS comment tags for log and copyright
+<FONT ID="LN">34</FONT><A NAME="334"></A> *
+<FONT ID="LN">35</FONT><A NAME="335"></A> *
+<FONT ID="LN">36</FONT><A NAME="336"></A> */</FONT>
+<FONT ID="LN">37</FONT><A NAME="337"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestEventPushSources.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

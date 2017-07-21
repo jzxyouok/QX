@@ -1,0 +1,21 @@
+<ul class="nav" id="nav-list-scroll">
+	<!--最近联系人列表-->
+	<li ng-repeat="user in userRecentList">
+		<div class="hr-line-solid-qx"></div>
+		<a ui-sref=".content" ng-click="changeChatObject(user)" ng-style="user.userSelecedClass">
+			<div class="row">
+				<div class="col-xs-2">
+					<img alt="image" class="img-rounded-qx" src="/QX/chatAction.do?method=getSmallPhotoByUserId&&userId={{user.ID}}" />
+				</div>
+				<div class="col-xs-7">
+					<div class="nav-list-name-qx">{{user.NAME}}</div>
+					<div class="nav-list-msg-qx">{{user.LASTMSG}}</div>
+				</div>
+				<div class="col-xs-3">
+					<div class="nav-list-time-qx pull-right">{{user.LASTMSGTIME}}</div>
+					<div class="nav-list-warn-qx pull-right"><i class="fa fa-bell-slash" ng-show="user.REJECT_FLAG==1"></i></div>
+				</div>
+			</div>
+        </a>
+   	</li>
+</ul>

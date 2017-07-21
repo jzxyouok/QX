@@ -1,0 +1,68 @@
+<!--
+  Window for messages from users.
+
+  $Id: wcqalert.html,v 1.8 2006/05/15 11:52:53 justb Exp $
+  author: Just van den Broecke
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+   <style type="text/css">
+     body, p {
+       background-color: #000000;
+       color: yellow;
+       font-size: 10pt;
+       font-family: Verdana, Helvetica, Arial, sans-serif;
+     }
+
+   </style>
+
+   <script type="text/javascript" src="../../assets/util.js"></script>
+
+<script type="text/javascript">
+
+function doAlert() {
+  var message = document.forms[0].msg.value;
+  if (message.length > 0) {
+	opener.doAlert(getPageParameter('to', 'anon'),
+	           escape(message));
+
+	window.close();
+	return true;
+  } else {
+    return false;
+  }
+
+}
+
+</script>
+</head>
+
+<body>
+<p>
+Type text to
+<script type="text/javascript">
+   document.write(getPageParameter('to', 'anon'));
+</script>
+</p>
+
+<table width="300" border="0" cellspacing="0" cellpadding="4">
+  <form name="alertForm" onsubmit="return doAlert();" action="#" >
+    <tr>
+     <td>
+       <input type="text" name="msg" size=30 >
+     </td>
+    </tr>
+  </form>
+</table>
+<script type="text/javascript">
+  document.forms[0].msg.focus();
+</script>
+
+</body>
+</html>
+
+

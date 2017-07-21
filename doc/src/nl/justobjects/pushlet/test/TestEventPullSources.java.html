@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.test.TestEventPullSources (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestEventPullSources.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.test.index.html" target="packageFrame">nl.justobjects.pushlet.test</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">nl.justobjects.pushlet.core.Event</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">nl.justobjects.pushlet.core.EventPullSource</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/SessionManager.java.html">nl.justobjects.pushlet.core.SessionManager</A>;
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Rand.java.html">nl.justobjects.pushlet.util.Rand</A>;
+<FONT ID="LN">10</FONT><A NAME="10"></A>
+<FONT ID="LN">11</FONT><A NAME="11"></A>
+<FONT ID="LN">12</FONT><A NAME="12"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">13</FONT><A NAME="13"></A> * Event sources for testing.
+<FONT ID="LN">14</FONT><A NAME="14"></A> *
+<FONT ID="LN">15</FONT><A NAME="15"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">16</FONT><A NAME="16"></A> * @version $Id: TestEventPullSources.java,v 1.10 2007/11/09 13:16:57 justb Exp $
+<FONT ID="LN">17</FONT><A NAME="17"></A> */</FONT>
+<FONT ID="LN">18</FONT><A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestEventPullSources {
+<FONT ID="LN">19</FONT><A NAME="19"></A>
+<FONT ID="LN">20</FONT><A NAME="20"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">21</FONT><A NAME="21"></A>     * Produces a fake temparature event.
+<FONT ID="LN">22</FONT><A NAME="22"></A>     */</FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TemperatureEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">24</FONT><A NAME="24"></A>        String[] cities = {<FONT ID="StringLiteral">"amsterdam"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"rotterdam"</FONT>, <FONT ID="Null">null</FONT>,
+<FONT ID="LN">25</FONT><A NAME="25"></A>                <FONT ID="StringLiteral">"leeuwarden"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"twente"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"limburg"</FONT>, <FONT ID="Null">null</FONT>};
+<FONT ID="LN">26</FONT><A NAME="26"></A>
+<FONT ID="LN">27</FONT><A NAME="27"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">28</FONT><A NAME="28"></A>            <FONT ID="Return">return</FONT> Rand.randomLong(<FONT ID="IntegerLiteral">3000</FONT>, <FONT ID="IntegerLiteral">5000</FONT>);
+<FONT ID="LN">29</FONT><A NAME="29"></A>        }
+<FONT ID="LN">30</FONT><A NAME="30"></A>
+<FONT ID="LN">31</FONT><A NAME="31"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">32</FONT><A NAME="32"></A>            <FONT ID="Int">int</FONT> cityNumber = Rand.randomInt(<FONT ID="IntegerLiteral">0</FONT>, (cities.length) / <FONT ID="IntegerLiteral">2</FONT> - <FONT ID="IntegerLiteral">1</FONT>);
+<FONT ID="LN">33</FONT><A NAME="33"></A>            <FONT ID="Int">int</FONT> nextCityIndex = <FONT ID="IntegerLiteral">2</FONT> * cityNumber;
+<FONT ID="LN">34</FONT><A NAME="34"></A>
+<FONT ID="LN">35</FONT><A NAME="35"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/temperature"</FONT>);
+<FONT ID="LN">36</FONT><A NAME="36"></A>
+<FONT ID="LN">37</FONT><A NAME="37"></A>            event.setField(<FONT ID="StringLiteral">"number"</FONT>, <FONT ID="StringLiteral">""</FONT> + cityNumber);
+<FONT ID="LN">38</FONT><A NAME="38"></A>            event.setField(<FONT ID="StringLiteral">"city"</FONT>, cities[nextCityIndex]);
+<FONT ID="LN">39</FONT><A NAME="39"></A>            <FONT ID="If">if</FONT> (cities[nextCityIndex + <FONT ID="IntegerLiteral">1</FONT>] == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">40</FONT><A NAME="40"></A>                cities[nextCityIndex + <FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="StringLiteral">""</FONT> + Rand.randomInt(<FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">10</FONT>);
+<FONT ID="LN">41</FONT><A NAME="41"></A>            }
+<FONT ID="LN">42</FONT><A NAME="42"></A>            <FONT ID="Int">int</FONT> currentCityValue = <FONT ID="New">new</FONT> Integer(cities[nextCityIndex + <FONT ID="IntegerLiteral">1</FONT>]).intValue();
+<FONT ID="LN">43</FONT><A NAME="43"></A>            <FONT ID="Int">int</FONT> newCityValue = currentCityValue + Rand.randomInt(-<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<FONT ID="LN">44</FONT><A NAME="44"></A>
+<FONT ID="LN">45</FONT><A NAME="45"></A>            event.setField(<FONT ID="StringLiteral">"value"</FONT>, <FONT ID="StringLiteral">""</FONT> + newCityValue);
+<FONT ID="LN">46</FONT><A NAME="46"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">47</FONT><A NAME="47"></A>        }
+<FONT ID="LN">48</FONT><A NAME="48"></A>    }
+<FONT ID="LN">49</FONT><A NAME="49"></A>
+<FONT ID="LN">50</FONT><A NAME="50"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">51</FONT><A NAME="51"></A>     * Produces a ping event.
+<FONT ID="LN">52</FONT><A NAME="52"></A>     */</FONT>
+<FONT ID="LN">53</FONT><A NAME="53"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> PingEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">54</FONT><A NAME="54"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">55</FONT><A NAME="55"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">3000</FONT>;
+<FONT ID="LN">56</FONT><A NAME="56"></A>        }
+<FONT ID="LN">57</FONT><A NAME="57"></A>
+<FONT ID="LN">58</FONT><A NAME="58"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">59</FONT><A NAME="59"></A>
+<FONT ID="LN">60</FONT><A NAME="60"></A>            <FONT ID="Return">return</FONT> Event.createDataEvent(<FONT ID="StringLiteral">"/pushlet/ping"</FONT>);
+<FONT ID="LN">61</FONT><A NAME="61"></A>        }
+<FONT ID="LN">62</FONT><A NAME="62"></A>    }
+<FONT ID="LN">63</FONT><A NAME="63"></A>
+<FONT ID="LN">64</FONT><A NAME="64"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">65</FONT><A NAME="65"></A>     * Produces an event related to the JVM status.
+<FONT ID="LN">66</FONT><A NAME="66"></A>     */</FONT>
+<FONT ID="LN">67</FONT><A NAME="67"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SystemStatusEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">68</FONT><A NAME="68"></A>        Runtime runtime = Runtime.getRuntime();
+<FONT ID="LN">69</FONT><A NAME="69"></A>
+<FONT ID="LN">70</FONT><A NAME="70"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">71</FONT><A NAME="71"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">4000</FONT>;
+<FONT ID="LN">72</FONT><A NAME="72"></A>        }
+<FONT ID="LN">73</FONT><A NAME="73"></A>
+<FONT ID="LN">74</FONT><A NAME="74"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">75</FONT><A NAME="75"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/system/jvm"</FONT>);
+<FONT ID="LN">76</FONT><A NAME="76"></A>            event.setField(<FONT ID="StringLiteral">"totalMemory"</FONT>, <FONT ID="StringLiteral">""</FONT> + runtime.totalMemory());
+<FONT ID="LN">77</FONT><A NAME="77"></A>            event.setField(<FONT ID="StringLiteral">"freeMemory"</FONT>, <FONT ID="StringLiteral">""</FONT> + runtime.freeMemory());
+<FONT ID="LN">78</FONT><A NAME="78"></A>            event.setField(<FONT ID="StringLiteral">"maxMemory"</FONT>, <FONT ID="StringLiteral">""</FONT> + runtime.maxMemory());
+<FONT ID="LN">79</FONT><A NAME="79"></A>            <FONT ID="Int">int</FONT> activeCount = Thread.activeCount();
+<FONT ID="LN">80</FONT><A NAME="80"></A>            event.setField(<FONT ID="StringLiteral">"threads"</FONT>, <FONT ID="StringLiteral">""</FONT> + activeCount);
+<FONT ID="LN">81</FONT><A NAME="81"></A>
+<FONT ID="LN">82</FONT><A NAME="82"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">83</FONT><A NAME="83"></A>        }
+<FONT ID="LN">84</FONT><A NAME="84"></A>    }
+<FONT ID="LN">85</FONT><A NAME="85"></A>
+<FONT ID="LN">86</FONT><A NAME="86"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">87</FONT><A NAME="87"></A>     * Produces an event related to the Dispatcher.getInstance(). status.
+<FONT ID="LN">88</FONT><A NAME="88"></A>     */</FONT>
+<FONT ID="LN">89</FONT><A NAME="89"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> PushletStatusEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">90</FONT><A NAME="90"></A>
+<FONT ID="LN">91</FONT><A NAME="91"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">92</FONT><A NAME="92"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">5000</FONT>;
+<FONT ID="LN">93</FONT><A NAME="93"></A>        }
+<FONT ID="LN">94</FONT><A NAME="94"></A>
+<FONT ID="LN">95</FONT><A NAME="95"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">96</FONT><A NAME="96"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/system/pushlet"</FONT>);
+<FONT ID="LN">97</FONT><A NAME="97"></A>            <FONT ID="SingleLineComment">// p(Dispatcher.getStatus());
+<FONT ID="LN">98</FONT><A NAME="98"></A></FONT>            event.setField(<FONT ID="StringLiteral">"publisher"</FONT>, <FONT ID="StringLiteral">""</FONT> + SessionManager.getInstance().getStatus());
+<FONT ID="LN">99</FONT><A NAME="99"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">00</FONT><A NAME="100"></A>        }
+<FONT ID="LN">01</FONT><A NAME="101"></A>    }
+<FONT ID="LN">02</FONT><A NAME="102"></A>
+<FONT ID="LN">03</FONT><A NAME="103"></A>
+<FONT ID="LN">04</FONT><A NAME="104"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">05</FONT><A NAME="105"></A>     * Produces events simulating stocks from the AEX.
+<FONT ID="LN">06</FONT><A NAME="106"></A>     */</FONT>
+<FONT ID="LN">07</FONT><A NAME="107"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AEXStocksEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">08</FONT><A NAME="108"></A>
+<FONT ID="LN">09</FONT><A NAME="109"></A>        String[] stocks = {<FONT ID="StringLiteral">"abn amro"</FONT>, <FONT ID="StringLiteral">"26"</FONT>,
+<FONT ID="LN">10</FONT><A NAME="110"></A>                <FONT ID="StringLiteral">"aegon"</FONT>, <FONT ID="StringLiteral">"38"</FONT>,
+<FONT ID="LN">11</FONT><A NAME="111"></A>                <FONT ID="StringLiteral">"ahold"</FONT>, <FONT ID="StringLiteral">"34"</FONT>,
+<FONT ID="LN">12</FONT><A NAME="112"></A>                <FONT ID="StringLiteral">"akzo nobel"</FONT>, <FONT ID="StringLiteral">"51"</FONT>,
+<FONT ID="LN">13</FONT><A NAME="113"></A>                <FONT ID="StringLiteral">"asm lith h"</FONT>, <FONT ID="StringLiteral">"26"</FONT>,
+<FONT ID="LN">14</FONT><A NAME="114"></A>                <FONT ID="StringLiteral">"corus plc"</FONT>, <FONT ID="StringLiteral">"2"</FONT>,
+<FONT ID="LN">15</FONT><A NAME="115"></A>                <FONT ID="StringLiteral">"dsm"</FONT>, <FONT ID="StringLiteral">"40"</FONT>,
+<FONT ID="LN">16</FONT><A NAME="116"></A>                <FONT ID="StringLiteral">"elsevier"</FONT>, <FONT ID="StringLiteral">"14"</FONT>,
+<FONT ID="LN">17</FONT><A NAME="117"></A>                <FONT ID="StringLiteral">"fortis (nl)"</FONT>, <FONT ID="StringLiteral">"32"</FONT>,
+<FONT ID="LN">18</FONT><A NAME="118"></A>                <FONT ID="StringLiteral">"getronics"</FONT>, <FONT ID="StringLiteral">"6"</FONT>,
+<FONT ID="LN">19</FONT><A NAME="119"></A>                <FONT ID="StringLiteral">"gucci"</FONT>, <FONT ID="StringLiteral">"94"</FONT>,
+<FONT ID="LN">20</FONT><A NAME="120"></A>                <FONT ID="StringLiteral">"hagemeyer"</FONT>, <FONT ID="StringLiteral">"25"</FONT>,
+<FONT ID="LN">21</FONT><A NAME="121"></A>                <FONT ID="StringLiteral">"heineken"</FONT>, <FONT ID="StringLiteral">"61"</FONT>,
+<FONT ID="LN">22</FONT><A NAME="122"></A>                <FONT ID="StringLiteral">"ing c"</FONT>, <FONT ID="StringLiteral">"78"</FONT>,
+<FONT ID="LN">23</FONT><A NAME="123"></A>                <FONT ID="StringLiteral">"klm"</FONT>, <FONT ID="StringLiteral">"66"</FONT>,
+<FONT ID="LN">24</FONT><A NAME="124"></A>                <FONT ID="StringLiteral">"kon olie"</FONT>, <FONT ID="StringLiteral">"66"</FONT>,
+<FONT ID="LN">25</FONT><A NAME="125"></A>                <FONT ID="StringLiteral">"kpn"</FONT>, <FONT ID="StringLiteral">"13"</FONT>,
+<FONT ID="LN">26</FONT><A NAME="126"></A>                <FONT ID="StringLiteral">"numico c"</FONT>, <FONT ID="StringLiteral">"44"</FONT>,
+<FONT ID="LN">27</FONT><A NAME="127"></A>                <FONT ID="StringLiteral">"philips, kon"</FONT>, <FONT ID="StringLiteral">"38"</FONT>,
+<FONT ID="LN">28</FONT><A NAME="128"></A>                <FONT ID="StringLiteral">"tnt"</FONT>, <FONT ID="StringLiteral">"26"</FONT>,
+<FONT ID="LN">29</FONT><A NAME="129"></A>                <FONT ID="StringLiteral">"unilever c"</FONT>, <FONT ID="StringLiteral">"62"</FONT>,
+<FONT ID="LN">30</FONT><A NAME="130"></A>                <FONT ID="StringLiteral">"vendex kbb"</FONT>, <FONT ID="StringLiteral">"16"</FONT>,
+<FONT ID="LN">31</FONT><A NAME="131"></A>                <FONT ID="StringLiteral">"vnu"</FONT>, <FONT ID="StringLiteral">"49"</FONT>,
+<FONT ID="LN">32</FONT><A NAME="132"></A>                <FONT ID="StringLiteral">"wolt-kluw c"</FONT>, <FONT ID="StringLiteral">"25"</FONT>};
+<FONT ID="LN">33</FONT><A NAME="133"></A>
+<FONT ID="LN">34</FONT><A NAME="134"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">35</FONT><A NAME="135"></A>            <FONT ID="Return">return</FONT> Rand.randomLong(<FONT ID="IntegerLiteral">2000</FONT>, <FONT ID="IntegerLiteral">4000</FONT>);
+<FONT ID="LN">36</FONT><A NAME="136"></A>        }
+<FONT ID="LN">37</FONT><A NAME="137"></A>
+<FONT ID="LN">38</FONT><A NAME="138"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">39</FONT><A NAME="139"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/stocks/aex"</FONT>);
+<FONT ID="LN">40</FONT><A NAME="140"></A>            <FONT ID="Int">int</FONT> stockNumber = Rand.randomInt(<FONT ID="IntegerLiteral">0</FONT>, (stocks.length) / <FONT ID="IntegerLiteral">2</FONT> - <FONT ID="IntegerLiteral">1</FONT>);
+<FONT ID="LN">41</FONT><A NAME="141"></A>            <FONT ID="Int">int</FONT> nextStockIndex = <FONT ID="IntegerLiteral">2</FONT> * stockNumber;
+<FONT ID="LN">42</FONT><A NAME="142"></A>
+<FONT ID="LN">43</FONT><A NAME="143"></A>            event.setField(<FONT ID="StringLiteral">"number"</FONT>, <FONT ID="StringLiteral">""</FONT> + stockNumber);
+<FONT ID="LN">44</FONT><A NAME="144"></A>            event.setField(<FONT ID="StringLiteral">"name"</FONT>, stocks[nextStockIndex]);
+<FONT ID="LN">45</FONT><A NAME="145"></A>            <FONT ID="If">if</FONT> (stocks[nextStockIndex + <FONT ID="IntegerLiteral">1</FONT>] == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">46</FONT><A NAME="146"></A>                stocks[nextStockIndex + <FONT ID="IntegerLiteral">1</FONT>] = <FONT ID="StringLiteral">""</FONT> + Rand.randomInt(<FONT ID="IntegerLiteral">50</FONT>, <FONT ID="IntegerLiteral">150</FONT>);
+<FONT ID="LN">47</FONT><A NAME="147"></A>            }
+<FONT ID="LN">48</FONT><A NAME="148"></A>            <FONT ID="Int">int</FONT> currentStockValue = <FONT ID="New">new</FONT> Integer(stocks[nextStockIndex + <FONT ID="IntegerLiteral">1</FONT>]).intValue();
+<FONT ID="LN">49</FONT><A NAME="149"></A>            <FONT ID="Int">int</FONT> newStockValue = currentStockValue + Rand.randomInt(-<FONT ID="IntegerLiteral">2</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<FONT ID="LN">50</FONT><A NAME="150"></A>
+<FONT ID="LN">51</FONT><A NAME="151"></A>            event.setField(<FONT ID="StringLiteral">"rate"</FONT>, <FONT ID="StringLiteral">""</FONT> + newStockValue + <FONT ID="StringLiteral">"."</FONT> + Rand.randomInt(<FONT ID="IntegerLiteral">0</FONT>, <FONT ID="IntegerLiteral">99</FONT>));
+<FONT ID="LN">52</FONT><A NAME="152"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">53</FONT><A NAME="153"></A>        }
+<FONT ID="LN">54</FONT><A NAME="154"></A>
+<FONT ID="LN">55</FONT><A NAME="155"></A>    }
+<FONT ID="LN">56</FONT><A NAME="156"></A>
+<FONT ID="LN">57</FONT><A NAME="157"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">58</FONT><A NAME="158"></A>     * Produces an URL event for automatic webpresentation.
+<FONT ID="LN">59</FONT><A NAME="159"></A>     */</FONT>
+<FONT ID="LN">60</FONT><A NAME="160"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WebPresentationEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">61</FONT><A NAME="161"></A>        String slideRootDir = <FONT ID="StringLiteral">"http://www.justobjects.org/cowcatcher/browse/j2ee/slides/"</FONT>;
+<FONT ID="LN">62</FONT><A NAME="162"></A>        String[] slideURLs = {
+<FONT ID="LN">63</FONT><A NAME="163"></A>                <FONT ID="StringLiteral">"ejb/j2ee/ejbover/slide.0.0.html"</FONT>,
+<FONT ID="LN">64</FONT><A NAME="164"></A>                <FONT ID="StringLiteral">"ejb/j2ee/ejbover/slide.0.1.html"</FONT>,
+<FONT ID="LN">65</FONT><A NAME="165"></A>                <FONT ID="StringLiteral">"ejb/j2ee/ejbover/slide.0.2.html"</FONT>,
+<FONT ID="LN">66</FONT><A NAME="166"></A>                <FONT ID="StringLiteral">"ejb/j2ee/ejbover/slide.0.3.html"</FONT>,
+<FONT ID="LN">67</FONT><A NAME="167"></A>                <FONT ID="StringLiteral">"ejb/j2ee/ejbover/slide.0.4.html"</FONT>
+<FONT ID="LN">68</FONT><A NAME="168"></A>        };
+<FONT ID="LN">69</FONT><A NAME="169"></A>
+<FONT ID="LN">70</FONT><A NAME="170"></A>        <FONT ID="Int">int</FONT> nextSlideNumber = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">71</FONT><A NAME="171"></A>
+<FONT ID="LN">72</FONT><A NAME="172"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">73</FONT><A NAME="173"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">5000</FONT>;
+<FONT ID="LN">74</FONT><A NAME="174"></A>        }
+<FONT ID="LN">75</FONT><A NAME="175"></A>
+<FONT ID="LN">76</FONT><A NAME="176"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">77</FONT><A NAME="177"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/webpres/auto"</FONT>);
+<FONT ID="LN">78</FONT><A NAME="178"></A>            event.setField(<FONT ID="StringLiteral">"url"</FONT>, slideRootDir + slideURLs[nextSlideNumber++]);
+<FONT ID="LN">79</FONT><A NAME="179"></A>            <FONT ID="If">if</FONT> (nextSlideNumber == slideURLs.length) {
+<FONT ID="LN">80</FONT><A NAME="180"></A>                nextSlideNumber = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">81</FONT><A NAME="181"></A>            }
+<FONT ID="LN">82</FONT><A NAME="182"></A>            <FONT ID="SingleLineComment">// Log.debug("Sending next slide url=" + event.getField("url"));
+<FONT ID="LN">83</FONT><A NAME="183"></A></FONT>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">84</FONT><A NAME="184"></A>        }
+<FONT ID="LN">85</FONT><A NAME="185"></A>    }
+<FONT ID="LN">86</FONT><A NAME="186"></A>
+<FONT ID="LN">87</FONT><A NAME="187"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">88</FONT><A NAME="188"></A>     * Produces an event related to the Dispatcher.getInstance(). status.
+<FONT ID="LN">89</FONT><A NAME="189"></A>     */</FONT>
+<FONT ID="LN">90</FONT><A NAME="190"></A>    <FONT ID="Static">static</FONT> <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestEventPullSource <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventPullSource.java.html">EventPullSource</A> {
+<FONT ID="LN">91</FONT><A NAME="191"></A>        <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> number = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">92</FONT><A NAME="192"></A>
+<FONT ID="LN">93</FONT><A NAME="193"></A>        <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getSleepTime() {
+<FONT ID="LN">94</FONT><A NAME="194"></A>            <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">2000</FONT>;
+<FONT ID="LN">95</FONT><A NAME="195"></A>        }
+<FONT ID="LN">96</FONT><A NAME="196"></A>
+<FONT ID="LN">97</FONT><A NAME="197"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> pullEvent() {
+<FONT ID="LN">98</FONT><A NAME="198"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = Event.createDataEvent(<FONT ID="StringLiteral">"/system/test"</FONT>);
+<FONT ID="LN">99</FONT><A NAME="199"></A>            <FONT ID="SingleLineComment">// p(Dispatcher.getInstance()..getStatus());
+<FONT ID="LN">00</FONT><A NAME="200"></A></FONT>            event.setField(<FONT ID="StringLiteral">"nr"</FONT>, <FONT ID="StringLiteral">""</FONT> + (number++));
+<FONT ID="LN">01</FONT><A NAME="201"></A>            event.setField(<FONT ID="StringLiteral">"time"</FONT>, <FONT ID="StringLiteral">""</FONT> + System.currentTimeMillis());
+<FONT ID="LN">02</FONT><A NAME="202"></A>            <FONT ID="Return">return</FONT> event;
+<FONT ID="LN">03</FONT><A NAME="203"></A>        }
+<FONT ID="LN">04</FONT><A NAME="204"></A>
+<FONT ID="LN">05</FONT><A NAME="205"></A>    }
+<FONT ID="LN">06</FONT><A NAME="206"></A>
+<FONT ID="LN">07</FONT><A NAME="207"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">08</FONT><A NAME="208"></A>     * Util: stderr print method.
+<FONT ID="LN">09</FONT><A NAME="209"></A>     */</FONT>
+<FONT ID="LN">10</FONT><A NAME="210"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> e(String s) {
+<FONT ID="LN">11</FONT><A NAME="211"></A>        System.out.println(s);
+<FONT ID="LN">12</FONT><A NAME="212"></A>    }
+<FONT ID="LN">13</FONT><A NAME="213"></A>
+<FONT ID="LN">14</FONT><A NAME="214"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">15</FONT><A NAME="215"></A>     * Util: stdout print method.
+<FONT ID="LN">16</FONT><A NAME="216"></A>     */</FONT>
+<FONT ID="LN">17</FONT><A NAME="217"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> p(String s) {
+<FONT ID="LN">18</FONT><A NAME="218"></A>        <FONT ID="SingleLineComment">// System.out.println(s);
+<FONT ID="LN">19</FONT><A NAME="219"></A></FONT>    }
+<FONT ID="LN">20</FONT><A NAME="220"></A>}
+<FONT ID="LN">21</FONT><A NAME="221"></A>
+<FONT ID="LN">22</FONT><A NAME="222"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">23</FONT><A NAME="223"></A> * $Log: TestEventPullSources.java,v $
+<FONT ID="LN">24</FONT><A NAME="224"></A> * Revision 1.10  2007/11/09 13:16:57  justb
+<FONT ID="LN">25</FONT><A NAME="225"></A> * use Rand from util package (and and Rand.java to pushlet client jar
+<FONT ID="LN">26</FONT><A NAME="226"></A> *
+<FONT ID="LN">27</FONT><A NAME="227"></A> * Revision 1.9  2005/02/28 09:14:56  justb
+<FONT ID="LN">28</FONT><A NAME="228"></A> * sessmgr/dispatcher factory/singleton support
+<FONT ID="LN">29</FONT><A NAME="229"></A> *
+<FONT ID="LN">30</FONT><A NAME="230"></A> * Revision 1.8  2005/02/21 16:59:17  justb
+<FONT ID="LN">31</FONT><A NAME="231"></A> * SessionManager and session lease introduced
+<FONT ID="LN">32</FONT><A NAME="232"></A> *
+<FONT ID="LN">33</FONT><A NAME="233"></A> * Revision 1.7  2005/02/18 10:07:23  justb
+<FONT ID="LN">34</FONT><A NAME="234"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">35</FONT><A NAME="235"></A> *
+<FONT ID="LN">36</FONT><A NAME="236"></A> * Revision 1.6  2005/02/18 09:54:15  justb
+<FONT ID="LN">37</FONT><A NAME="237"></A> * refactor: rename Publisher Dispatcher.getInstance(). and single Subscriber class
+<FONT ID="LN">38</FONT><A NAME="238"></A> *
+<FONT ID="LN">39</FONT><A NAME="239"></A> * Revision 1.5  2004/09/03 22:35:37  justb
+<FONT ID="LN">40</FONT><A NAME="240"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">41</FONT><A NAME="241"></A> *
+<FONT ID="LN">42</FONT><A NAME="242"></A> * Revision 1.4  2003/12/03 21:16:58  justb
+<FONT ID="LN">43</FONT><A NAME="243"></A> * *** empty log message ***
+<FONT ID="LN">44</FONT><A NAME="244"></A> *
+<FONT ID="LN">45</FONT><A NAME="245"></A> * Revision 1.3  2003/08/15 08:37:41  justb
+<FONT ID="LN">46</FONT><A NAME="246"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">47</FONT><A NAME="247"></A> *
+<FONT ID="LN">48</FONT><A NAME="248"></A> * Revision 1.2  2003/05/18 16:15:08  justb
+<FONT ID="LN">49</FONT><A NAME="249"></A> * support for XML encoded Events
+<FONT ID="LN">50</FONT><A NAME="250"></A> *
+<FONT ID="LN">51</FONT><A NAME="251"></A> * Revision 1.1.1.1  2002/09/24 21:02:33  justb
+<FONT ID="LN">52</FONT><A NAME="252"></A> * import to sourceforge
+<FONT ID="LN">53</FONT><A NAME="253"></A> *
+<FONT ID="LN">54</FONT><A NAME="254"></A> * Revision 1.1.1.1  2002/09/20 22:48:19  justb
+<FONT ID="LN">55</FONT><A NAME="255"></A> * import to SF
+<FONT ID="LN">56</FONT><A NAME="256"></A> *
+<FONT ID="LN">57</FONT><A NAME="257"></A> * Revision 1.1.1.1  2002/09/20 14:19:01  justb
+<FONT ID="LN">58</FONT><A NAME="258"></A> * first import into SF
+<FONT ID="LN">59</FONT><A NAME="259"></A> *
+<FONT ID="LN">60</FONT><A NAME="260"></A> * Revision 1.6  2002/07/29 10:17:22  just
+<FONT ID="LN">61</FONT><A NAME="261"></A> * no message
+<FONT ID="LN">62</FONT><A NAME="262"></A> *
+<FONT ID="LN">63</FONT><A NAME="263"></A> * Revision 1.5  2001/02/18 23:45:13  just
+<FONT ID="LN">64</FONT><A NAME="264"></A> * fixes for AEX
+<FONT ID="LN">65</FONT><A NAME="265"></A> *
+<FONT ID="LN">66</FONT><A NAME="266"></A> * Revision 1.4  2000/10/30 14:16:09  just
+<FONT ID="LN">67</FONT><A NAME="267"></A> * no message
+<FONT ID="LN">68</FONT><A NAME="268"></A> *
+<FONT ID="LN">69</FONT><A NAME="269"></A> * Revision 1.3  2000/08/31 12:49:50  just
+<FONT ID="LN">70</FONT><A NAME="270"></A> * added CVS comment tags for log and copyright
+<FONT ID="LN">71</FONT><A NAME="271"></A> *
+<FONT ID="LN">72</FONT><A NAME="272"></A> *
+<FONT ID="LN">73</FONT><A NAME="273"></A> */</FONT>
+<FONT ID="LN">74</FONT><A NAME="274"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestEventPullSources.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

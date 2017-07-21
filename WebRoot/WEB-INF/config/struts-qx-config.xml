@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" 
+	"http://struts.apache.org/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+	
+	<form-beans>
+		<form-bean name="LoginForm" type="com.sse.web.common.form.LoginForm" />
+	</form-beans>
+
+	<action-mappings>
+		
+		<!--<action name="LoginForm"
+			parameter="method" path="/login" scope="request"
+			type="com.sse.web.common.action.LoginAction">
+			<forward name="success" path="/index.html" />
+			<forward name="error" path="/login.html" />
+		</action>-->
+		
+		<!--登录-->
+		<action path="/loginAction" parameter="method" type="com.cn.qx.web.action.LoginAction"/>
+		<action path="/registerAction" parameter="method" type="com.cn.qx.web.action.RegisterAction"/>
+		<action path="/chatAction" parameter="method" type="com.cn.qx.web.action.ChatAction"/>
+	</action-mappings>
+	
+	<controller>
+		<set-property property="processorClass"
+			value="org.springframework.web.struts.AutowiringRequestProcessor" />
+	</controller>
+
+	<plug-in className="org.springframework.web.struts.ContextLoaderPlugIn">
+		<set-property property="contextConfigLocation"
+			value="/WEB-INF/applicationContext*.xml" />
+	</plug-in>
+	
+</struts-config>

@@ -1,0 +1,498 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.Subscriber (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Subscriber.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">nl.justobjects.pushlet.util.PushletException</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Rand.java.html">nl.justobjects.pushlet.util.Rand</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Sys.java.html">nl.justobjects.pushlet.util.Sys</A>;
+<FONT ID="LN">9 </FONT><A NAME="9"></A>
+<FONT ID="LN">10</FONT><A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<FONT ID="LN">12</FONT><A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="Import">import</FONT> java.net.URLEncoder;
+<FONT ID="LN">14</FONT><A NAME="14"></A>
+<FONT ID="LN">15</FONT><A NAME="15"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">16</FONT><A NAME="16"></A> * Handles data channel between dispatcher and client.
+<FONT ID="LN">17</FONT><A NAME="17"></A> *
+<FONT ID="LN">18</FONT><A NAME="18"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">19</FONT><A NAME="19"></A> * @version $Id: Subscriber.java,v 1.26 2007/11/23 14:33:07 justb Exp $
+<FONT ID="LN">20</FONT><A NAME="20"></A> */</FONT>
+<FONT ID="LN">21</FONT><A NAME="21"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Subscriber <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A>, <A HREF="../../../../nl/justobjects/pushlet/core/ConfigDefs.java.html">ConfigDefs</A> {
+<FONT ID="LN">22</FONT><A NAME="22"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> session;
+<FONT ID="LN">23</FONT><A NAME="23"></A>
+<FONT ID="LN">24</FONT><A NAME="24"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">25</FONT><A NAME="25"></A>     * Blocking queue.
+<FONT ID="LN">26</FONT><A NAME="26"></A>     */</FONT>
+<FONT ID="LN">27</FONT><A NAME="27"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventQueue.java.html">EventQueue</A> eventQueue = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/EventQueue.java.html">EventQueue</A>(Config.getIntProperty(QUEUE_SIZE));
+<FONT ID="LN">28</FONT><A NAME="28"></A>
+<FONT ID="LN">29</FONT><A NAME="29"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">30</FONT><A NAME="30"></A>     * URL to be used in refresh requests in pull/poll modes.
+<FONT ID="LN">31</FONT><A NAME="31"></A>     */</FONT>
+<FONT ID="LN">32</FONT><A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT> queueReadTimeoutMillis = Config.getLongProperty(QUEUE_READ_TIMEOUT_MILLIS);
+<FONT ID="LN">33</FONT><A NAME="33"></A>    <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT> queueWriteTimeoutMillis = Config.getLongProperty(QUEUE_WRITE_TIMEOUT_MILLIS);
+<FONT ID="LN">34</FONT><A NAME="34"></A>    <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT> refreshTimeoutMillis = Config.getLongProperty(PULL_REFRESH_TIMEOUT_MILLIS);
+<FONT ID="LN">35</FONT><A NAME="35"></A>    <FONT ID="Volatile">volatile</FONT> <FONT ID="Long">long</FONT> lastAlive = Sys.now();
+<FONT ID="LN">36</FONT><A NAME="36"></A>
+<FONT ID="LN">37</FONT><A NAME="37"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">38</FONT><A NAME="38"></A>     * Map of active subscriptions, keyed by their subscription id.
+<FONT ID="LN">39</FONT><A NAME="39"></A>     */</FONT>
+<FONT ID="LN">40</FONT><A NAME="40"></A>    <FONT ID="Private">private</FONT> Map subscriptions = Collections.synchronizedMap(<FONT ID="New">new</FONT> HashMap(<FONT ID="IntegerLiteral">3</FONT>));
+<FONT ID="LN">41</FONT><A NAME="41"></A>
+<FONT ID="LN">42</FONT><A NAME="42"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">43</FONT><A NAME="43"></A>     * Are we able to accept/send events ?.
+<FONT ID="LN">44</FONT><A NAME="44"></A>     */</FONT>
+<FONT ID="LN">45</FONT><A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Volatile">volatile</FONT> <FONT ID="Boolean">boolean</FONT> active;
+<FONT ID="LN">46</FONT><A NAME="46"></A>
+<FONT ID="LN">47</FONT><A NAME="47"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">48</FONT><A NAME="48"></A>     * Transfer mode (stream, pull, poll).
+<FONT ID="LN">49</FONT><A NAME="49"></A>     */</FONT>
+<FONT ID="LN">50</FONT><A NAME="50"></A>    <FONT ID="Private">private</FONT> String mode;
+<FONT ID="LN">51</FONT><A NAME="51"></A>
+<FONT ID="LN">52</FONT><A NAME="52"></A>
+<FONT ID="LN">53</FONT><A NAME="53"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">54</FONT><A NAME="54"></A>     * Protected constructor as we create through factory method.
+<FONT ID="LN">55</FONT><A NAME="55"></A>     */</FONT>
+<FONT ID="LN">56</FONT><A NAME="56"></A>    <FONT ID="Protected">protected</FONT> Subscriber() {
+<FONT ID="LN">57</FONT><A NAME="57"></A>    }
+<FONT ID="LN">58</FONT><A NAME="58"></A>
+<FONT ID="LN">59</FONT><A NAME="59"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">60</FONT><A NAME="60"></A>     * Create instance through factory method.
+<FONT ID="LN">61</FONT><A NAME="61"></A>     *
+<FONT ID="LN">62</FONT><A NAME="62"></A>     * @param aSession the parent Session
+<FONT ID="LN">63</FONT><A NAME="63"></A>     * @return a Subscriber object (or derived)
+<FONT ID="LN">64</FONT><A NAME="64"></A>     * @throws PushletException exception, usually misconfiguration
+<FONT ID="LN">65</FONT><A NAME="65"></A>     */</FONT>
+<FONT ID="LN">66</FONT><A NAME="66"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscriber.java.html">Subscriber</A> create(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">67</FONT><A NAME="67"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Subscriber.java.html">Subscriber</A> subscriber;
+<FONT ID="LN">68</FONT><A NAME="68"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">69</FONT><A NAME="69"></A>            subscriber = (<A HREF="../../../../nl/justobjects/pushlet/core/Subscriber.java.html">Subscriber</A>) Config.getClass(SUBSCRIBER_CLASS, <FONT ID="StringLiteral">"nl.justobjects.pushlet.core.Subscriber"</FONT>).newInstance();
+<FONT ID="LN">70</FONT><A NAME="70"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">71</FONT><A NAME="71"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Cannot instantiate Subscriber from config"</FONT>, t);
+<FONT ID="LN">72</FONT><A NAME="72"></A>        }
+<FONT ID="LN">73</FONT><A NAME="73"></A>
+<FONT ID="LN">74</FONT><A NAME="74"></A>        subscriber.session = aSession;
+<FONT ID="LN">75</FONT><A NAME="75"></A>        <FONT ID="Return">return</FONT> subscriber;
+<FONT ID="LN">76</FONT><A NAME="76"></A>    }
+<FONT ID="LN">77</FONT><A NAME="77"></A>
+<FONT ID="LN">78</FONT><A NAME="78"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() {
+<FONT ID="LN">79</FONT><A NAME="79"></A>        active = <FONT ID="True">true</FONT>;
+<FONT ID="LN">80</FONT><A NAME="80"></A>    }
+<FONT ID="LN">81</FONT><A NAME="81"></A>
+<FONT ID="LN">82</FONT><A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">83</FONT><A NAME="83"></A>        removeSubscriptions();
+<FONT ID="LN">84</FONT><A NAME="84"></A>        active = <FONT ID="False">false</FONT>;
+<FONT ID="LN">85</FONT><A NAME="85"></A>    }
+<FONT ID="LN">86</FONT><A NAME="86"></A>
+<FONT ID="LN">87</FONT><A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> bailout() {
+<FONT ID="LN">88</FONT><A NAME="88"></A>        session.stop();
+<FONT ID="LN">89</FONT><A NAME="89"></A>    }
+<FONT ID="LN">90</FONT><A NAME="90"></A>
+<FONT ID="LN">91</FONT><A NAME="91"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">92</FONT><A NAME="92"></A>     * Are we still active to handle events.
+<FONT ID="LN">93</FONT><A NAME="93"></A>     */</FONT>
+<FONT ID="LN">94</FONT><A NAME="94"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isActive() {
+<FONT ID="LN">95</FONT><A NAME="95"></A>        <FONT ID="Return">return</FONT> active;
+<FONT ID="LN">96</FONT><A NAME="96"></A>    }
+<FONT ID="LN">97</FONT><A NAME="97"></A>
+<FONT ID="LN">98</FONT><A NAME="98"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">99</FONT><A NAME="99"></A>     * Return client session.
+<FONT ID="LN">00</FONT><A NAME="100"></A>     */</FONT>
+<FONT ID="LN">01</FONT><A NAME="101"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> getSession() {
+<FONT ID="LN">02</FONT><A NAME="102"></A>        <FONT ID="Return">return</FONT> session;
+<FONT ID="LN">03</FONT><A NAME="103"></A>    }
+<FONT ID="LN">04</FONT><A NAME="104"></A>
+<FONT ID="LN">05</FONT><A NAME="105"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">06</FONT><A NAME="106"></A>     * Get (session) id.
+<FONT ID="LN">07</FONT><A NAME="107"></A>     */</FONT>
+<FONT ID="LN">08</FONT><A NAME="108"></A>    <FONT ID="Public">public</FONT> String getId() {
+<FONT ID="LN">09</FONT><A NAME="109"></A>        <FONT ID="Return">return</FONT> session.getId();
+<FONT ID="LN">10</FONT><A NAME="110"></A>    }
+<FONT ID="LN">11</FONT><A NAME="111"></A>
+<FONT ID="LN">12</FONT><A NAME="112"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">13</FONT><A NAME="113"></A>     * Return subscriptions.
+<FONT ID="LN">14</FONT><A NAME="114"></A>     */</FONT>
+<FONT ID="LN">15</FONT><A NAME="115"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A>[] getSubscriptions() {
+<FONT ID="LN">16</FONT><A NAME="116"></A>        <FONT ID="SingleLineComment">// todo: Optimize
+<FONT ID="LN">17</FONT><A NAME="117"></A></FONT>        <FONT ID="Return">return</FONT> (<A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A>[]) subscriptions.values().toArray(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A>[<FONT ID="IntegerLiteral">0</FONT>]);
+<FONT ID="LN">18</FONT><A NAME="118"></A>    }
+<FONT ID="LN">19</FONT><A NAME="119"></A>
+<FONT ID="LN">20</FONT><A NAME="120"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">21</FONT><A NAME="121"></A>     * Add a subscription.
+<FONT ID="LN">22</FONT><A NAME="122"></A>     */</FONT>
+<FONT ID="LN">23</FONT><A NAME="123"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> addSubscription(String aSubject, String aLabel) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">24</FONT><A NAME="124"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription = Subscription.create(aSubject, aLabel);
+<FONT ID="LN">25</FONT><A NAME="125"></A>        subscriptions.put(subscription.getId(), subscription);
+<FONT ID="LN">26</FONT><A NAME="126"></A>        info(<FONT ID="StringLiteral">"Subscription added subject="</FONT> + aSubject + <FONT ID="StringLiteral">" sid="</FONT> + subscription.getId() + <FONT ID="StringLiteral">" label="</FONT> + aLabel);
+<FONT ID="LN">27</FONT><A NAME="127"></A>        <FONT ID="Return">return</FONT> subscription;
+<FONT ID="LN">28</FONT><A NAME="128"></A>    }
+<FONT ID="LN">29</FONT><A NAME="129"></A>
+<FONT ID="LN">30</FONT><A NAME="130"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">31</FONT><A NAME="131"></A>     * Remove a subscription.
+<FONT ID="LN">32</FONT><A NAME="132"></A>     */</FONT>
+<FONT ID="LN">33</FONT><A NAME="133"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> removeSubscription(String aSubscriptionId) {
+<FONT ID="LN">34</FONT><A NAME="134"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription = (<A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A>) subscriptions.remove(aSubscriptionId);
+<FONT ID="LN">35</FONT><A NAME="135"></A>        <FONT ID="If">if</FONT> (subscription == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">36</FONT><A NAME="136"></A>            warn(<FONT ID="StringLiteral">"No subscription found sid="</FONT> + aSubscriptionId);
+<FONT ID="LN">37</FONT><A NAME="137"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<FONT ID="LN">38</FONT><A NAME="138"></A>        }
+<FONT ID="LN">39</FONT><A NAME="139"></A>        info(<FONT ID="StringLiteral">"Subscription removed subject="</FONT> + subscription.getSubject() + <FONT ID="StringLiteral">" sid="</FONT> + subscription.getId() + <FONT ID="StringLiteral">" label="</FONT> + subscription.getLabel());
+<FONT ID="LN">40</FONT><A NAME="140"></A>        <FONT ID="Return">return</FONT> subscription;
+<FONT ID="LN">41</FONT><A NAME="141"></A>    }
+<FONT ID="LN">42</FONT><A NAME="142"></A>
+<FONT ID="LN">43</FONT><A NAME="143"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">44</FONT><A NAME="144"></A>     * Remove all subscriptions.
+<FONT ID="LN">45</FONT><A NAME="145"></A>     */</FONT>
+<FONT ID="LN">46</FONT><A NAME="146"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> removeSubscriptions() {
+<FONT ID="LN">47</FONT><A NAME="147"></A>        subscriptions.clear();
+<FONT ID="LN">48</FONT><A NAME="148"></A>    }
+<FONT ID="LN">49</FONT><A NAME="149"></A>
+<FONT ID="LN">50</FONT><A NAME="150"></A>    <FONT ID="Public">public</FONT> String getMode() {
+<FONT ID="LN">51</FONT><A NAME="151"></A>        <FONT ID="Return">return</FONT> mode;
+<FONT ID="LN">52</FONT><A NAME="152"></A>    }
+<FONT ID="LN">53</FONT><A NAME="153"></A>
+<FONT ID="LN">54</FONT><A NAME="154"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setMode(String aMode) {
+<FONT ID="LN">55</FONT><A NAME="155"></A>        mode = aMode;
+<FONT ID="LN">56</FONT><A NAME="156"></A>    }
+<FONT ID="LN">57</FONT><A NAME="157"></A>
+<FONT ID="LN">58</FONT><A NAME="158"></A>    <FONT ID="Public">public</FONT> <FONT ID="Long">long</FONT> getRefreshTimeMillis() {
+<FONT ID="LN">59</FONT><A NAME="159"></A>        String minWaitProperty = PULL_REFRESH_WAIT_MIN_MILLIS;
+<FONT ID="LN">60</FONT><A NAME="160"></A>        String maxWaitProperty = PULL_REFRESH_WAIT_MAX_MILLIS;
+<FONT ID="LN">61</FONT><A NAME="161"></A>        <FONT ID="If">if</FONT> (mode.equals((MODE_POLL))) {
+<FONT ID="LN">62</FONT><A NAME="162"></A>            minWaitProperty = POLL_REFRESH_WAIT_MIN_MILLIS;
+<FONT ID="LN">63</FONT><A NAME="163"></A>            maxWaitProperty = POLL_REFRESH_WAIT_MAX_MILLIS;
+<FONT ID="LN">64</FONT><A NAME="164"></A>
+<FONT ID="LN">65</FONT><A NAME="165"></A>        }
+<FONT ID="LN">66</FONT><A NAME="166"></A>        <FONT ID="Return">return</FONT> Rand.randomLong(Config.getLongProperty(minWaitProperty),
+<FONT ID="LN">67</FONT><A NAME="167"></A>                Config.getLongProperty(maxWaitProperty));
+<FONT ID="LN">68</FONT><A NAME="168"></A>    }
+<FONT ID="LN">69</FONT><A NAME="169"></A>
+<FONT ID="LN">70</FONT><A NAME="170"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">71</FONT><A NAME="171"></A>     * Get events from queue and push to client.
+<FONT ID="LN">72</FONT><A NAME="172"></A>     */</FONT>
+<FONT ID="LN">73</FONT><A NAME="173"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fetchEvents(<A HREF="../../../../nl/justobjects/pushlet/core/Command.java.html">Command</A> aCommand) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">74</FONT><A NAME="174"></A>
+<FONT ID="LN">75</FONT><A NAME="175"></A>        String refreshURL = aCommand.httpReq.getRequestURI() + <FONT ID="StringLiteral">"?"</FONT> + P_ID + <FONT ID="StringLiteral">"="</FONT> + session.getId() + <FONT ID="StringLiteral">"&amp;"</FONT> + P_EVENT + <FONT ID="StringLiteral">"="</FONT> + E_REFRESH;
+<FONT ID="LN">76</FONT><A NAME="176"></A>
+<FONT ID="LN">77</FONT><A NAME="177"></A>        <FONT ID="SingleLineComment">// This is the only thing required to support "poll" mode
+<FONT ID="LN">78</FONT><A NAME="178"></A></FONT>        <FONT ID="If">if</FONT> (mode.equals(MODE_POLL)) {
+<FONT ID="LN">79</FONT><A NAME="179"></A>            queueReadTimeoutMillis = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">80</FONT><A NAME="180"></A>            refreshTimeoutMillis = Config.getLongProperty(POLL_REFRESH_TIMEOUT_MILLIS);
+<FONT ID="LN">81</FONT><A NAME="181"></A>        }
+<FONT ID="LN">82</FONT><A NAME="182"></A>
+<FONT ID="LN">83</FONT><A NAME="183"></A>        <FONT ID="SingleLineComment">// Required for fast bailout (tomcat)
+<FONT ID="LN">84</FONT><A NAME="184"></A></FONT>        aCommand.httpRsp.setBufferSize(<FONT ID="IntegerLiteral">128</FONT>);
+<FONT ID="LN">85</FONT><A NAME="185"></A>
+<FONT ID="LN">86</FONT><A NAME="186"></A>        <FONT ID="SingleLineComment">// Try to prevent caching in any form.
+<FONT ID="LN">87</FONT><A NAME="187"></A></FONT>        aCommand.sendResponseHeaders();
+<FONT ID="LN">88</FONT><A NAME="188"></A>
+<FONT ID="LN">89</FONT><A NAME="189"></A>        <FONT ID="SingleLineComment">// Let clientAdapter determine how to send event
+<FONT ID="LN">90</FONT><A NAME="190"></A></FONT>        <A HREF="../../../../nl/justobjects/pushlet/core/ClientAdapter.java.html">ClientAdapter</A> clientAdapter = aCommand.getClientAdapter();
+<FONT ID="LN">91</FONT><A NAME="191"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> responseEvent = aCommand.getResponseEvent();
+<FONT ID="LN">92</FONT><A NAME="192"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">93</FONT><A NAME="193"></A>            clientAdapter.start();
+<FONT ID="LN">94</FONT><A NAME="194"></A>
+<FONT ID="LN">95</FONT><A NAME="195"></A>            <FONT ID="SingleLineComment">// Send first event (usually hb-ack or listen-ack)
+<FONT ID="LN">96</FONT><A NAME="196"></A></FONT>            clientAdapter.push(responseEvent);
+<FONT ID="LN">97</FONT><A NAME="197"></A>
+<FONT ID="LN">98</FONT><A NAME="198"></A>            <FONT ID="SingleLineComment">// In pull/poll mode and when response is listen-ack or join-listen-ack,
+<FONT ID="LN">99</FONT><A NAME="199"></A></FONT>            <FONT ID="SingleLineComment">// return and force refresh immediately
+<FONT ID="LN">00</FONT><A NAME="200"></A></FONT>            <FONT ID="SingleLineComment">// such that the client recieves response immediately over this channel.
+<FONT ID="LN">01</FONT><A NAME="201"></A></FONT>            <FONT ID="SingleLineComment">// This is usually when loading the browser app for the first time
+<FONT ID="LN">02</FONT><A NAME="202"></A></FONT>            <FONT ID="If">if</FONT> ((mode.equals(MODE_POLL) || mode.equals(MODE_PULL))
+<FONT ID="LN">03</FONT><A NAME="203"></A>                    &amp;&amp; responseEvent.getEventType().endsWith(Protocol.E_LISTEN_ACK)) {
+<FONT ID="LN">04</FONT><A NAME="204"></A>                sendRefresh(clientAdapter, refreshURL);
+<FONT ID="LN">05</FONT><A NAME="205"></A>
+<FONT ID="LN">06</FONT><A NAME="206"></A>                <FONT ID="SingleLineComment">// We should come back later with refresh event...
+<FONT ID="LN">07</FONT><A NAME="207"></A></FONT>                <FONT ID="Return">return</FONT>;
+<FONT ID="LN">08</FONT><A NAME="208"></A>            }
+<FONT ID="LN">09</FONT><A NAME="209"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">10</FONT><A NAME="210"></A>            bailout();
+<FONT ID="LN">11</FONT><A NAME="211"></A>            <FONT ID="Return">return</FONT>;
+<FONT ID="LN">12</FONT><A NAME="212"></A>        }
+<FONT ID="LN">13</FONT><A NAME="213"></A>
+<FONT ID="LN">14</FONT><A NAME="214"></A>
+<FONT ID="LN">15</FONT><A NAME="215"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>[] events = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">16</FONT><A NAME="216"></A>
+<FONT ID="LN">17</FONT><A NAME="217"></A>        <FONT ID="SingleLineComment">// Main loop: as long as connected, get events and push to client
+<FONT ID="LN">18</FONT><A NAME="218"></A></FONT>        <FONT ID="Long">long</FONT> eventSeqNr = <FONT ID="IntegerLiteral">1</FONT>;
+<FONT ID="LN">19</FONT><A NAME="219"></A>        <FONT ID="While">while</FONT> (isActive()) {
+<FONT ID="LN">20</FONT><A NAME="220"></A>            <FONT ID="SingleLineComment">// Indicate we are still alive
+<FONT ID="LN">21</FONT><A NAME="221"></A></FONT>            lastAlive = Sys.now();
+<FONT ID="LN">22</FONT><A NAME="222"></A>
+<FONT ID="LN">23</FONT><A NAME="223"></A>            <FONT ID="SingleLineComment">// Update session time to live
+<FONT ID="LN">24</FONT><A NAME="224"></A></FONT>            session.kick();
+<FONT ID="LN">25</FONT><A NAME="225"></A>
+<FONT ID="LN">26</FONT><A NAME="226"></A>            <FONT ID="SingleLineComment">// Get next events; blocks until timeout or entire contents
+<FONT ID="LN">27</FONT><A NAME="227"></A></FONT>            <FONT ID="SingleLineComment">// of event queue is returned. Note that "poll" mode
+<FONT ID="LN">28</FONT><A NAME="228"></A></FONT>            <FONT ID="SingleLineComment">// will return immediately when queue is empty.
+<FONT ID="LN">29</FONT><A NAME="229"></A></FONT>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">30</FONT><A NAME="230"></A>                <FONT ID="SingleLineComment">// Put heartbeat in queue when starting to listen in stream mode
+<FONT ID="LN">31</FONT><A NAME="231"></A></FONT>                <FONT ID="SingleLineComment">// This speeds up the return of *_LISTEN_ACK
+<FONT ID="LN">32</FONT><A NAME="232"></A></FONT>                <FONT ID="If">if</FONT> (mode.equals(MODE_STREAM) &amp;&amp; eventSeqNr == <FONT ID="IntegerLiteral">1</FONT>) {
+<FONT ID="LN">33</FONT><A NAME="233"></A>                    eventQueue.enQueue(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_HEARTBEAT));
+<FONT ID="LN">34</FONT><A NAME="234"></A>                }
+<FONT ID="LN">35</FONT><A NAME="235"></A>
+<FONT ID="LN">36</FONT><A NAME="236"></A>                events = eventQueue.deQueueAll(queueReadTimeoutMillis);
+<FONT ID="LN">37</FONT><A NAME="237"></A>            } <FONT ID="Catch">catch</FONT> (InterruptedException ie) {
+<FONT ID="LN">38</FONT><A NAME="238"></A>                warn(<FONT ID="StringLiteral">"interrupted"</FONT>);
+<FONT ID="LN">39</FONT><A NAME="239"></A>                bailout();
+<FONT ID="LN">40</FONT><A NAME="240"></A>            }
+<FONT ID="LN">41</FONT><A NAME="241"></A>
+<FONT ID="LN">42</FONT><A NAME="242"></A>            <FONT ID="SingleLineComment">// Send heartbeat when no events received
+<FONT ID="LN">43</FONT><A NAME="243"></A></FONT>            <FONT ID="If">if</FONT> (events == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">44</FONT><A NAME="244"></A>                events = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>[<FONT ID="IntegerLiteral">1</FONT>];
+<FONT ID="LN">45</FONT><A NAME="245"></A>                events[<FONT ID="IntegerLiteral">0</FONT>] = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_HEARTBEAT);
+<FONT ID="LN">46</FONT><A NAME="246"></A>            }
+<FONT ID="LN">47</FONT><A NAME="247"></A>
+<FONT ID="LN">48</FONT><A NAME="248"></A>            <FONT ID="SingleLineComment">// ASSERT: one or more events available
+<FONT ID="LN">49</FONT><A NAME="249"></A></FONT>
+<FONT ID="LN">50</FONT><A NAME="250"></A>            <FONT ID="SingleLineComment">// Send events to client using adapter
+<FONT ID="LN">51</FONT><A NAME="251"></A></FONT>            <FONT ID="SingleLineComment">// debug("received event count=" + events.length);
+<FONT ID="LN">52</FONT><A NAME="252"></A></FONT>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; events.length; i++) {
+<FONT ID="LN">53</FONT><A NAME="253"></A>                <FONT ID="SingleLineComment">// Check for abort event
+<FONT ID="LN">54</FONT><A NAME="254"></A></FONT>                <FONT ID="If">if</FONT> (events[i].getEventType().equals(E_ABORT)) {
+<FONT ID="LN">55</FONT><A NAME="255"></A>                    warn(<FONT ID="StringLiteral">"Aborting Subscriber"</FONT>);
+<FONT ID="LN">56</FONT><A NAME="256"></A>                    bailout();
+<FONT ID="LN">57</FONT><A NAME="257"></A>                }
+<FONT ID="LN">58</FONT><A NAME="258"></A>
+<FONT ID="LN">59</FONT><A NAME="259"></A>                <FONT ID="SingleLineComment">// Push next Event to client
+<FONT ID="LN">60</FONT><A NAME="260"></A></FONT>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">61</FONT><A NAME="261"></A>                    <FONT ID="SingleLineComment">// Set sequence number
+<FONT ID="LN">62</FONT><A NAME="262"></A></FONT>                    events[i].setField(P_SEQ, eventSeqNr++);
+<FONT ID="LN">63</FONT><A NAME="263"></A>
+<FONT ID="LN">64</FONT><A NAME="264"></A>                    <FONT ID="SingleLineComment">// Push to client through client adapter
+<FONT ID="LN">65</FONT><A NAME="265"></A></FONT>                    clientAdapter.push(events[i]);
+<FONT ID="LN">66</FONT><A NAME="266"></A>                } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">67</FONT><A NAME="267"></A>                    bailout();
+<FONT ID="LN">68</FONT><A NAME="268"></A>                    <FONT ID="Return">return</FONT>;
+<FONT ID="LN">69</FONT><A NAME="269"></A>                }
+<FONT ID="LN">70</FONT><A NAME="270"></A>            }
+<FONT ID="LN">71</FONT><A NAME="271"></A>
+<FONT ID="LN">72</FONT><A NAME="272"></A>            <FONT ID="SingleLineComment">// Force client refresh request in pull or poll modes
+<FONT ID="LN">73</FONT><A NAME="273"></A></FONT>            <FONT ID="If">if</FONT> (mode.equals(MODE_PULL) || mode.equals(MODE_POLL)) {
+<FONT ID="LN">74</FONT><A NAME="274"></A>                sendRefresh(clientAdapter, refreshURL);
+<FONT ID="LN">75</FONT><A NAME="275"></A>
+<FONT ID="LN">76</FONT><A NAME="276"></A>                <FONT ID="SingleLineComment">// Always leave loop in pull/poll mode
+<FONT ID="LN">77</FONT><A NAME="277"></A></FONT>                <FONT ID="Break">break</FONT>;
+<FONT ID="LN">78</FONT><A NAME="278"></A>            }
+<FONT ID="LN">79</FONT><A NAME="279"></A>        }
+<FONT ID="LN">80</FONT><A NAME="280"></A>    }
+<FONT ID="LN">81</FONT><A NAME="281"></A>
+<FONT ID="LN">82</FONT><A NAME="282"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">83</FONT><A NAME="283"></A>     * Determine if we should receive event.
+<FONT ID="LN">84</FONT><A NAME="284"></A>     */</FONT>
+<FONT ID="LN">85</FONT><A NAME="285"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> match(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event) {
+<FONT ID="LN">86</FONT><A NAME="286"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A>[] subscriptions = getSubscriptions();
+<FONT ID="LN">87</FONT><A NAME="287"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; subscriptions.length; i++) {
+<FONT ID="LN">88</FONT><A NAME="288"></A>            <FONT ID="If">if</FONT> (subscriptions[i].match(event)) {
+<FONT ID="LN">89</FONT><A NAME="289"></A>                <FONT ID="Return">return</FONT> subscriptions[i];
+<FONT ID="LN">90</FONT><A NAME="290"></A>            }
+<FONT ID="LN">91</FONT><A NAME="291"></A>        }
+<FONT ID="LN">92</FONT><A NAME="292"></A>        <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<FONT ID="LN">93</FONT><A NAME="293"></A>    }
+<FONT ID="LN">94</FONT><A NAME="294"></A>
+<FONT ID="LN">95</FONT><A NAME="295"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">96</FONT><A NAME="296"></A>     * Event from Dispatcher: enqueue it.
+<FONT ID="LN">97</FONT><A NAME="297"></A>     */</FONT>
+<FONT ID="LN">98</FONT><A NAME="298"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> onEvent(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> theEvent) {
+<FONT ID="LN">99</FONT><A NAME="299"></A>        <FONT ID="If">if</FONT> (!isActive()) {
+<FONT ID="LN">00</FONT><A NAME="300"></A>            <FONT ID="Return">return</FONT>;
+<FONT ID="LN">01</FONT><A NAME="301"></A>        }
+<FONT ID="LN">02</FONT><A NAME="302"></A>
+<FONT ID="LN">03</FONT><A NAME="303"></A>        <FONT ID="SingleLineComment">// p("send: queue event: "+theEvent.getSubject());
+<FONT ID="LN">04</FONT><A NAME="304"></A></FONT>
+<FONT ID="LN">05</FONT><A NAME="305"></A>        <FONT ID="SingleLineComment">// Check if we had any active continuation for at
+<FONT ID="LN">06</FONT><A NAME="306"></A></FONT>        <FONT ID="SingleLineComment">// least 'timeOut' millisecs. If the client has left this
+<FONT ID="LN">07</FONT><A NAME="307"></A></FONT>        <FONT ID="SingleLineComment">// instance there would be no way of knowing otherwise.
+<FONT ID="LN">08</FONT><A NAME="308"></A></FONT>        <FONT ID="Long">long</FONT> now = Sys.now();
+<FONT ID="LN">09</FONT><A NAME="309"></A>        <FONT ID="If">if</FONT> (now - lastAlive &gt; refreshTimeoutMillis) {
+<FONT ID="LN">10</FONT><A NAME="310"></A>            warn(<FONT ID="StringLiteral">"not alive for at least: "</FONT> + refreshTimeoutMillis + <FONT ID="StringLiteral">"ms, leaving..."</FONT>);
+<FONT ID="LN">11</FONT><A NAME="311"></A>            bailout();
+<FONT ID="LN">12</FONT><A NAME="312"></A>            <FONT ID="Return">return</FONT>;
+<FONT ID="LN">13</FONT><A NAME="313"></A>        }
+<FONT ID="LN">14</FONT><A NAME="314"></A>
+<FONT ID="LN">15</FONT><A NAME="315"></A>        <FONT ID="SingleLineComment">// Put event in queue; leave if queue full
+<FONT ID="LN">16</FONT><A NAME="316"></A></FONT>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">17</FONT><A NAME="317"></A>            <FONT ID="If">if</FONT> (!eventQueue.enQueue(theEvent, queueWriteTimeoutMillis)) {
+<FONT ID="LN">18</FONT><A NAME="318"></A>                warn(<FONT ID="StringLiteral">"queue full, bailing out..."</FONT>);
+<FONT ID="LN">19</FONT><A NAME="319"></A>                bailout();
+<FONT ID="LN">20</FONT><A NAME="320"></A>            }
+<FONT ID="LN">21</FONT><A NAME="321"></A>
+<FONT ID="LN">22</FONT><A NAME="322"></A>            <FONT ID="SingleLineComment">// ASSERTION : Event in queue.
+<FONT ID="LN">23</FONT><A NAME="323"></A></FONT>            <FONT ID="SingleLineComment">// see fetchEvents() where Events are dequeued and pushed to the client.
+<FONT ID="LN">24</FONT><A NAME="324"></A></FONT>        } <FONT ID="Catch">catch</FONT> (InterruptedException ie) {
+<FONT ID="LN">25</FONT><A NAME="325"></A>            bailout();
+<FONT ID="LN">26</FONT><A NAME="326"></A>        }
+<FONT ID="LN">27</FONT><A NAME="327"></A>
+<FONT ID="LN">28</FONT><A NAME="328"></A>    }
+<FONT ID="LN">29</FONT><A NAME="329"></A>
+<FONT ID="LN">30</FONT><A NAME="330"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">31</FONT><A NAME="331"></A>     * Send refresh command to pull/poll clients.
+<FONT ID="LN">32</FONT><A NAME="332"></A>     */</FONT>
+<FONT ID="LN">33</FONT><A NAME="333"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> sendRefresh(<A HREF="../../../../nl/justobjects/pushlet/core/ClientAdapter.java.html">ClientAdapter</A> aClientAdapter, String aRefreshURL) {
+<FONT ID="LN">34</FONT><A NAME="334"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> refreshEvent = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_REFRESH);
+<FONT ID="LN">35</FONT><A NAME="335"></A>
+<FONT ID="LN">36</FONT><A NAME="336"></A>        <FONT ID="SingleLineComment">// Set wait time and url for refresh
+<FONT ID="LN">37</FONT><A NAME="337"></A></FONT>        refreshEvent.setField(P_WAIT, <FONT ID="StringLiteral">""</FONT> + getRefreshTimeMillis());
+<FONT ID="LN">38</FONT><A NAME="338"></A>        refreshEvent.setField(P_URL, aRefreshURL);
+<FONT ID="LN">39</FONT><A NAME="339"></A>
+<FONT ID="LN">40</FONT><A NAME="340"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">41</FONT><A NAME="341"></A>            <FONT ID="SingleLineComment">// Push to client through client adapter
+<FONT ID="LN">42</FONT><A NAME="342"></A></FONT>            aClientAdapter.push(refreshEvent);
+<FONT ID="LN">43</FONT><A NAME="343"></A>
+<FONT ID="LN">44</FONT><A NAME="344"></A>            <FONT ID="SingleLineComment">// Stop this round until refresh event
+<FONT ID="LN">45</FONT><A NAME="345"></A></FONT>            aClientAdapter.stop();
+<FONT ID="LN">46</FONT><A NAME="346"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">47</FONT><A NAME="347"></A>            <FONT ID="SingleLineComment">// Leave on any exception
+<FONT ID="LN">48</FONT><A NAME="348"></A></FONT>            bailout();
+<FONT ID="LN">49</FONT><A NAME="349"></A>        }
+<FONT ID="LN">50</FONT><A NAME="350"></A>    }
+<FONT ID="LN">51</FONT><A NAME="351"></A>
+<FONT ID="LN">52</FONT><A NAME="352"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">53</FONT><A NAME="353"></A>     * Info.
+<FONT ID="LN">54</FONT><A NAME="354"></A>     */</FONT>
+<FONT ID="LN">55</FONT><A NAME="355"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> info(String s) {
+<FONT ID="LN">56</FONT><A NAME="356"></A>        session.info(<FONT ID="StringLiteral">"[Subscriber] "</FONT> + s);
+<FONT ID="LN">57</FONT><A NAME="357"></A>    }
+<FONT ID="LN">58</FONT><A NAME="358"></A>
+<FONT ID="LN">59</FONT><A NAME="359"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">60</FONT><A NAME="360"></A>     * Exceptional print util.
+<FONT ID="LN">61</FONT><A NAME="361"></A>     */</FONT>
+<FONT ID="LN">62</FONT><A NAME="362"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> warn(String s) {
+<FONT ID="LN">63</FONT><A NAME="363"></A>        session.warn(<FONT ID="StringLiteral">"[Subscriber] "</FONT> + s);
+<FONT ID="LN">64</FONT><A NAME="364"></A>    }
+<FONT ID="LN">65</FONT><A NAME="365"></A>
+<FONT ID="LN">66</FONT><A NAME="366"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">67</FONT><A NAME="367"></A>     * Exceptional print util.
+<FONT ID="LN">68</FONT><A NAME="368"></A>     */</FONT>
+<FONT ID="LN">69</FONT><A NAME="369"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> debug(String s) {
+<FONT ID="LN">70</FONT><A NAME="370"></A>        session.debug(<FONT ID="StringLiteral">"[Subscriber] "</FONT> + s);
+<FONT ID="LN">71</FONT><A NAME="371"></A>    }
+<FONT ID="LN">72</FONT><A NAME="372"></A>
+<FONT ID="LN">73</FONT><A NAME="373"></A>
+<FONT ID="LN">74</FONT><A NAME="374"></A>    <FONT ID="Public">public</FONT> String toString() {
+<FONT ID="LN">75</FONT><A NAME="375"></A>        <FONT ID="Return">return</FONT> session.toString();
+<FONT ID="LN">76</FONT><A NAME="376"></A>    }
+<FONT ID="LN">77</FONT><A NAME="377"></A>}
+<FONT ID="LN">78</FONT><A NAME="378"></A>
+<FONT ID="LN">79</FONT><A NAME="379"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">80</FONT><A NAME="380"></A> * $Log: Subscriber.java,v $
+<FONT ID="LN">81</FONT><A NAME="381"></A> * Revision 1.26  2007/11/23 14:33:07  justb
+<FONT ID="LN">82</FONT><A NAME="382"></A> * core classes now configurable through factory
+<FONT ID="LN">83</FONT><A NAME="383"></A> *
+<FONT ID="LN">84</FONT><A NAME="384"></A> * Revision 1.25  2007/11/10 15:53:15  justb
+<FONT ID="LN">85</FONT><A NAME="385"></A> * put heartbeat in queue when start fetching events in stream-mode
+<FONT ID="LN">86</FONT><A NAME="386"></A> *
+<FONT ID="LN">87</FONT><A NAME="387"></A> * Revision 1.24  2006/10/19 12:33:40  justb
+<FONT ID="LN">88</FONT><A NAME="388"></A> * add atomic join-listen support (one request)
+<FONT ID="LN">89</FONT><A NAME="389"></A> *
+<FONT ID="LN">90</FONT><A NAME="390"></A> * Revision 1.22  2006/05/06 00:06:28  justb
+<FONT ID="LN">91</FONT><A NAME="391"></A> * first rough version AJAX client
+<FONT ID="LN">92</FONT><A NAME="392"></A> *
+<FONT ID="LN">93</FONT><A NAME="393"></A> * Revision 1.21  2005/02/28 12:45:59  justb
+<FONT ID="LN">94</FONT><A NAME="394"></A> * introduced Command class
+<FONT ID="LN">95</FONT><A NAME="395"></A> *
+<FONT ID="LN">96</FONT><A NAME="396"></A> * Revision 1.20  2005/02/21 16:59:09  justb
+<FONT ID="LN">97</FONT><A NAME="397"></A> * SessionManager and session lease introduced
+<FONT ID="LN">98</FONT><A NAME="398"></A> *
+<FONT ID="LN">99</FONT><A NAME="399"></A> * Revision 1.19  2005/02/21 12:32:28  justb
+<FONT ID="LN">00</FONT><A NAME="400"></A> * fixed publish event in Controller
+<FONT ID="LN">01</FONT><A NAME="401"></A> *
+<FONT ID="LN">02</FONT><A NAME="402"></A> * Revision 1.18  2005/02/21 11:50:46  justb
+<FONT ID="LN">03</FONT><A NAME="403"></A> * ohase1 of refactoring Subscriber into Session/Controller/Subscriber
+<FONT ID="LN">04</FONT><A NAME="404"></A> *
+<FONT ID="LN">05</FONT><A NAME="405"></A> * Revision 1.17  2005/02/20 13:05:32  justb
+<FONT ID="LN">06</FONT><A NAME="406"></A> * removed the Postlet (integrated in Pushlet protocol)
+<FONT ID="LN">07</FONT><A NAME="407"></A> *
+<FONT ID="LN">08</FONT><A NAME="408"></A> * Revision 1.16  2005/02/18 12:36:47  justb
+<FONT ID="LN">09</FONT><A NAME="409"></A> * changes for renaming and configurability
+<FONT ID="LN">10</FONT><A NAME="410"></A> *
+<FONT ID="LN">11</FONT><A NAME="411"></A> * Revision 1.15  2005/02/18 10:07:23  justb
+<FONT ID="LN">12</FONT><A NAME="412"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">13</FONT><A NAME="413"></A> *
+<FONT ID="LN">14</FONT><A NAME="414"></A> * Revision 1.14  2005/02/18 09:54:15  justb
+<FONT ID="LN">15</FONT><A NAME="415"></A> * refactor: rename Publisher Dispatcher and single Subscriber class
+<FONT ID="LN">16</FONT><A NAME="416"></A> *
+<FONT ID="LN">17</FONT><A NAME="417"></A> * Revision 1.13  2005/02/16 14:39:34  justb
+<FONT ID="LN">18</FONT><A NAME="418"></A> * fixed leave handling and added "poll" mode
+<FONT ID="LN">19</FONT><A NAME="419"></A> *
+<FONT ID="LN">20</FONT><A NAME="420"></A> * Revision 1.12  2005/01/24 13:42:00  justb
+<FONT ID="LN">21</FONT><A NAME="421"></A> * new protocol changes (p_listen)
+<FONT ID="LN">22</FONT><A NAME="422"></A> *
+<FONT ID="LN">23</FONT><A NAME="423"></A> * Revision 1.11  2005/01/13 14:47:15  justb
+<FONT ID="LN">24</FONT><A NAME="424"></A> * control evt: send response on same (control) connection
+<FONT ID="LN">25</FONT><A NAME="425"></A> *
+<FONT ID="LN">26</FONT><A NAME="426"></A> * Revision 1.10  2004/10/24 20:50:35  justb
+<FONT ID="LN">27</FONT><A NAME="427"></A> * refine subscription with label and sending sid and label on events
+<FONT ID="LN">28</FONT><A NAME="428"></A> *
+<FONT ID="LN">29</FONT><A NAME="429"></A> * Revision 1.9  2004/10/24 12:58:18  justb
+<FONT ID="LN">30</FONT><A NAME="430"></A> * revised client and test classes for new protocol
+<FONT ID="LN">31</FONT><A NAME="431"></A> *
+<FONT ID="LN">32</FONT><A NAME="432"></A> * Revision 1.8  2004/09/26 21:39:43  justb
+<FONT ID="LN">33</FONT><A NAME="433"></A> * allow multiple subscriptions and out-of-band requests
+<FONT ID="LN">34</FONT><A NAME="434"></A> *
+<FONT ID="LN">35</FONT><A NAME="435"></A> * Revision 1.7  2004/09/20 22:01:38  justb
+<FONT ID="LN">36</FONT><A NAME="436"></A> * more changes for new protocol
+<FONT ID="LN">37</FONT><A NAME="437"></A> *
+<FONT ID="LN">38</FONT><A NAME="438"></A> * Revision 1.6  2004/09/03 22:35:37  justb
+<FONT ID="LN">39</FONT><A NAME="439"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">40</FONT><A NAME="440"></A> *
+<FONT ID="LN">41</FONT><A NAME="441"></A> * Revision 1.5  2004/08/13 23:36:05  justb
+<FONT ID="LN">42</FONT><A NAME="442"></A> * rewrite of Pullet into Pushlet "pull" mode
+<FONT ID="LN">43</FONT><A NAME="443"></A> *
+<FONT ID="LN">44</FONT><A NAME="444"></A> * Revision 1.4  2004/03/10 14:01:55  justb
+<FONT ID="LN">45</FONT><A NAME="445"></A> * formatting and *Subscriber refactoring
+<FONT ID="LN">46</FONT><A NAME="446"></A> *
+<FONT ID="LN">47</FONT><A NAME="447"></A> * Revision 1.3  2003/08/15 08:37:40  justb
+<FONT ID="LN">48</FONT><A NAME="448"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">49</FONT><A NAME="449"></A> *
+<FONT ID="LN">50</FONT><A NAME="450"></A> * Revision 1.2  2003/05/18 16:15:08  justb
+<FONT ID="LN">51</FONT><A NAME="451"></A> * support for XML encoded Events
+<FONT ID="LN">52</FONT><A NAME="452"></A> *
+<FONT ID="LN">53</FONT><A NAME="453"></A> * Revision 1.1.1.1  2002/09/24 21:02:32  justb
+<FONT ID="LN">54</FONT><A NAME="454"></A> * import to sourceforge
+<FONT ID="LN">55</FONT><A NAME="455"></A> *
+<FONT ID="LN">56</FONT><A NAME="456"></A> * Revision 1.1.1.1  2002/09/20 22:48:18  justb
+<FONT ID="LN">57</FONT><A NAME="457"></A> * import to SF
+<FONT ID="LN">58</FONT><A NAME="458"></A> *
+<FONT ID="LN">59</FONT><A NAME="459"></A> * Revision 1.1.1.1  2002/09/20 14:19:04  justb
+<FONT ID="LN">60</FONT><A NAME="460"></A> * first import into SF
+<FONT ID="LN">61</FONT><A NAME="461"></A> *
+<FONT ID="LN">62</FONT><A NAME="462"></A> * Revision 1.3  2002/04/15 20:42:41  just
+<FONT ID="LN">63</FONT><A NAME="463"></A> * reformatting and renaming GuardedQueue to EventQueue
+<FONT ID="LN">64</FONT><A NAME="464"></A> *
+<FONT ID="LN">65</FONT><A NAME="465"></A> * Revision 1.2  2000/08/21 20:48:29  just
+<FONT ID="LN">66</FONT><A NAME="466"></A> * added CVS log and id tags plus copyrights
+<FONT ID="LN">67</FONT><A NAME="467"></A> *
+<FONT ID="LN">68</FONT><A NAME="468"></A> *
+<FONT ID="LN">69</FONT><A NAME="469"></A> */</FONT>
+<FONT ID="LN">70</FONT><A NAME="470"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Subscriber.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

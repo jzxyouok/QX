@@ -1,0 +1,28 @@
+GET /pushlet/pushlet.srv?p_time=1109600369&p_event=join-listen&p_format=xml&p_subject="/test/ping"  HTTP/1.1
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/1.4.2_05
+Host: localhost:8080
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+HTTP/1.1 200 OK
+Expires: Sat, 6 May 1995 12:00:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Date: Mon, 28 Feb 2005 14:19:29 GMT
+Server: Apache-Coyote/1.1
+
+51
+<event p_id="doqogedigo" p_time="1109600369" p_event="join-listen-ack" p_format="xml" />
+
+a0
+<event p_id="doqogedigo" time="1109600369678" p_sid="heqod" seqNr="1" p_from="doqogedigo" p_seq="1" p_time="1109600369" p_event="data" p_subject="/test/ping" />
+
+a0
+<event p_id="doqogedigo" time="1109600372701" p_sid="heqod" seqNr="2" p_from="doqogedigo" p_seq="2" p_time="1109600372" p_event="data" p_subject="/test/ping" />
+

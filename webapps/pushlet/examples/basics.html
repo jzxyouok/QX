@@ -1,0 +1,77 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Just van den Broecke">
+   <meta http-equiv="Pragma" content="no-cache">
+   <link href="../assets/style.css" rel="stylesheet">
+   <script type="text/javascript" src="../assets/util.js"></script>
+     <script type="text/javascript">
+   function viewSource(uri) {
+		var cvsURLprefix='http://pushlets.cvs.sourceforge.net/pushlets/pushlets/';
+		var cvsURLpostfix='?view=markup';
+		var url = cvsURLprefix + uri + cvsURLpostfix;
+
+		window.open(url, 'cvs');
+    }
+    </script>
+   <title>Pushlet Mechanism Basics</title>
+</head>
+<body>
+
+<H2>Pushlet Mechanism Basics</H2>
+These show some examples of how to get to the basics of pushlets. Each example has a description
+a link to run it and links to the related source files.
+<P>
+<table border=1 cellpadding=8 width="90%">
+<tr>
+<td><b>Name</b></td><td><b>Description</b></td><td><b>Run</b></td><td><b>Source</b></td>
+</tr>
+
+<tr>
+<td>HTML Push</td>
+<td>Here we just contiously push HTML from a JSP in a loop with a sleep() interval.
+Notice that the HTML is just appended. This is mainly annoying ;-).</td>
+<td><A HREF="javascript:openBareScrollingWindow('basicex', 'basics/push-html-stream.jsp', 200, 200)">run</A></td> 
+<td>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/basics/push-html-stream.jsp')">push-html-stream.jsp</A><BR>
+</td>
+</tr>
+
+
+<tr>
+<td>JavaScript Push</td>
+<td>Here we take it a bit further. This forms the basis of pushlets. The example page consists
+of a parent window with two frames, a JSP frame that is hidden and a display frame. The JSP pushes
+<i>lines of JavaScript into the hidden frame</i>. These are executed within the parent frame.
+The parent frame writes the content into the display frame.
+</td>
+<td><A HREF="javascript:openBareWindow('basicex', 'basics/push-js-stream.html', 200, 200)">run</A></td> 
+<td>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/basics/push-js-stream.html')">push-js-stream.html</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/basics/push-js-stream-pusher.jsp')">push-js-stream-pusher.jsp</A><BR>
+<A HREF="javascript:viewSource('webapps/pushlet/examples/basics/push-js-stream-display.html')">push-js-stream-display.html</A><BR>
+
+</td>
+</tr>
+<!--
+<tr>
+<td>Multipart Response</td>
+<td>Netscape supports a nifty feature called <i>Multipart Response</i>. Using a content
+type of "multipart/x-mixed-replace", a server (here a servlet) is able to refresh the content of
+the document during transmission. This is done by indicating that a new document starts
+(called document-part). The underlying format uses Multipart MIME like in email.
+Instead of sending HTML we can now push a line of JavaScript in a document part. 
+In pushlets the server checks if the browser supports this feature. If not the above
+streaming is used. A utility class <code>MultipartHttpResponse </code> is used.
+</td>
+<td><A HREF="javascript:openBareWindow('basicex', '/pushlet/servlet/multipart', 300, 200)">run</A></td> 
+<td>
+<A HREF="javascript:viewSource('src/nl/justobjects/pushlet/test/MultipartHttpResponse.java')">MultipartHttpResponse.java</A><BR>
+<A HREF="javascript:viewSource('src/nl/justobjects/pushlet/test/MultipartHttpResponseTest.java')">MultipartHttpResponseTest.java</A><BR>
+</td>
+</tr>
+-->
+</table>
+</body>
+</html>

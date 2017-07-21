@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+  <head>
+  <!--
+  $Id: webpres-teacher.html,v 1.6 2006/05/25 10:47:04 justb Exp $
+  author: Just van den Broecke
+   -->
+
+  <title>Teacher - WebPres</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Pragma" content="no-cache" />
+      <style type="text/css">
+    body {
+	  margin: 0px;
+	}
+
+    .frame {
+      position: fixed;
+      padding: 0px 0px 0px 0px;
+      width: 100%;
+      height: 100%;
+      left: 0px;
+      right: 0px;
+      z-index: 0;
+    }
+
+   </style>
+  <script type="text/javascript"src="../../lib/js-pushlet-client.js"></script>
+
+  <script type="text/javascript">
+
+var currentSlideURL = "";
+var newSlideURL = "";
+var subject = '/webpres/cow';
+
+function getSlideURL() {
+	if (slideFrame) {
+		return slideFrame.document.location.href;
+	} else {
+	 	return null;
+	 }
+}
+
+function sendURL(url) {
+   // alert('send url: ' + url);
+   p_publish(subject, 'url', url);
+}
+
+function init() {
+	// Join for publication only (no need to listen)
+    p_join(subject);
+	newSlideURL = getSlideURL();
+	currentSlideURL = getSlideURL();
+	urlListener();
+}
+
+function urlListener() {
+		newSlideURL = getSlideURL();
+		
+		if (newSlideURL) {
+        	if (newSlideURL != currentSlideURL) {
+        		//alert('page changed to ' +  newSlideURL);
+        		currentSlideURL = newSlideURL;
+        		sendURL(newSlideURL);
+        	}
+        }
+        
+        // Loop forever
+		setTimeout("urlListener()", 250);
+}
+
+  </script>
+</head>
+<body bgcolor="#cccccc" onload="init()">
+  <div class="frame">
+    <iframe id="slideFrame" name="slideFrame" width="100%" height="100%" src="webpres-teacher-content.html" scrolling="no" frameborder="1">
+    </iframe>
+  </div>
+  <script type="text/javascript">p_embed()</script>
+</body>
+</html>

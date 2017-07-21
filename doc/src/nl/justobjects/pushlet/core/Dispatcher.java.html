@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.Dispatcher (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Dispatcher.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Log.java.html">nl.justobjects.pushlet.util.Log</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">nl.justobjects.pushlet.util.PushletException</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A>
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> java.lang.reflect.Method;
+<FONT ID="LN">10</FONT><A NAME="10"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<FONT ID="LN">12</FONT><A NAME="12"></A>
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">14</FONT><A NAME="14"></A> * Routes Events to Subscribers.
+<FONT ID="LN">15</FONT><A NAME="15"></A> *
+<FONT ID="LN">16</FONT><A NAME="16"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">17</FONT><A NAME="17"></A> * @version $Id: Dispatcher.java,v 1.9 2007/12/04 13:55:53 justb Exp $
+<FONT ID="LN">18</FONT><A NAME="18"></A> */</FONT>
+<FONT ID="LN">19</FONT><A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Dispatcher <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A>, <A HREF="../../../../nl/justobjects/pushlet/core/ConfigDefs.java.html">ConfigDefs</A> {
+<FONT ID="LN">20</FONT><A NAME="20"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">21</FONT><A NAME="21"></A>     * Singleton pattern:  single instance.
+<FONT ID="LN">22</FONT><A NAME="22"></A>     */</FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Dispatcher.java.html">Dispatcher</A> instance;
+<FONT ID="LN">24</FONT><A NAME="24"></A>    <FONT ID="Protected">protected</FONT> SessionManagerVisitor sessionManagerVisitor;
+<FONT ID="LN">25</FONT><A NAME="25"></A>
+<FONT ID="LN">26</FONT><A NAME="26"></A>    <FONT ID="Static">static</FONT> {
+<FONT ID="LN">27</FONT><A NAME="27"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">28</FONT><A NAME="28"></A>            instance = (<A HREF="../../../../nl/justobjects/pushlet/core/Dispatcher.java.html">Dispatcher</A>) Config.getClass(DISPATCHER_CLASS, <FONT ID="StringLiteral">"nl.justobjects.pushlet.core.Dispatcher"</FONT>).newInstance();
+<FONT ID="LN">29</FONT><A NAME="29"></A>            Log.info(<FONT ID="StringLiteral">"Dispatcher created className="</FONT> + instance.getClass());
+<FONT ID="LN">30</FONT><A NAME="30"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">31</FONT><A NAME="31"></A>            Log.fatal(<FONT ID="StringLiteral">"Cannot instantiate Dispatcher from config"</FONT>, t);
+<FONT ID="LN">32</FONT><A NAME="32"></A>        }
+<FONT ID="LN">33</FONT><A NAME="33"></A>    }
+<FONT ID="LN">34</FONT><A NAME="34"></A>
+<FONT ID="LN">35</FONT><A NAME="35"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">36</FONT><A NAME="36"></A>     * Singleton pattern with factory method: protected constructor.
+<FONT ID="LN">37</FONT><A NAME="37"></A>     */</FONT>
+<FONT ID="LN">38</FONT><A NAME="38"></A>    <FONT ID="Protected">protected</FONT> Dispatcher() {
+<FONT ID="LN">39</FONT><A NAME="39"></A>
+<FONT ID="LN">40</FONT><A NAME="40"></A>    }
+<FONT ID="LN">41</FONT><A NAME="41"></A>
+<FONT ID="LN">42</FONT><A NAME="42"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">43</FONT><A NAME="43"></A>     * Singleton pattern: get single instance.
+<FONT ID="LN">44</FONT><A NAME="44"></A>     */</FONT>
+<FONT ID="LN">45</FONT><A NAME="45"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Dispatcher.java.html">Dispatcher</A> getInstance() {
+<FONT ID="LN">46</FONT><A NAME="46"></A>        <FONT ID="Return">return</FONT> instance;
+<FONT ID="LN">47</FONT><A NAME="47"></A>    }
+<FONT ID="LN">48</FONT><A NAME="48"></A>
+<FONT ID="LN">49</FONT><A NAME="49"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">50</FONT><A NAME="50"></A>     * Send event to all subscribers.
+<FONT ID="LN">51</FONT><A NAME="51"></A>     */</FONT>
+<FONT ID="LN">52</FONT><A NAME="52"></A>    <FONT ID="Public">public</FONT> <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Void">void</FONT> broadcast(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> anEvent) {
+<FONT ID="LN">53</FONT><A NAME="53"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">54</FONT><A NAME="54"></A>            <FONT ID="SingleLineComment">// Let the SessionManager loop through Sessions, calling
+<FONT ID="LN">55</FONT><A NAME="55"></A></FONT>            <FONT ID="SingleLineComment">// our Visitor Method for each Session. This is done to guard
+<FONT ID="LN">56</FONT><A NAME="56"></A></FONT>            <FONT ID="SingleLineComment">// synchronization with SessionManager and to optimize by
+<FONT ID="LN">57</FONT><A NAME="57"></A></FONT>            <FONT ID="SingleLineComment">// not getting an array of all sessions.
+<FONT ID="LN">58</FONT><A NAME="58"></A></FONT>            Object[] args = <FONT ID="New">new</FONT> Object[<FONT ID="IntegerLiteral">2</FONT>];
+<FONT ID="LN">59</FONT><A NAME="59"></A>            args[<FONT ID="IntegerLiteral">1</FONT>] = anEvent;
+<FONT ID="LN">60</FONT><A NAME="60"></A>            Method method = sessionManagerVisitor.getMethod(<FONT ID="StringLiteral">"visitBroadcast"</FONT>);
+<FONT ID="LN">61</FONT><A NAME="61"></A>            SessionManager.getInstance().apply(sessionManagerVisitor, method, args);
+<FONT ID="LN">62</FONT><A NAME="62"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">63</FONT><A NAME="63"></A>            Log.error(<FONT ID="StringLiteral">"Error calling SessionManager.apply: "</FONT>, t);
+<FONT ID="LN">64</FONT><A NAME="64"></A>        }
+<FONT ID="LN">65</FONT><A NAME="65"></A>    }
+<FONT ID="LN">66</FONT><A NAME="66"></A>
+<FONT ID="LN">67</FONT><A NAME="67"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">68</FONT><A NAME="68"></A>     * Send event to subscribers matching Event subject.
+<FONT ID="LN">69</FONT><A NAME="69"></A>     */</FONT>
+<FONT ID="LN">70</FONT><A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Void">void</FONT> multicast(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> anEvent) {
+<FONT ID="LN">71</FONT><A NAME="71"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">72</FONT><A NAME="72"></A>            <FONT ID="SingleLineComment">// Let the SessionManager loop through Sessions, calling
+<FONT ID="LN">73</FONT><A NAME="73"></A></FONT>            <FONT ID="SingleLineComment">// our Visitor Method for each Session. This is done to guard
+<FONT ID="LN">74</FONT><A NAME="74"></A></FONT>            <FONT ID="SingleLineComment">// synchronization with SessionManager and to optimize by
+<FONT ID="LN">75</FONT><A NAME="75"></A></FONT>            <FONT ID="SingleLineComment">// not getting an array of all sessions.
+<FONT ID="LN">76</FONT><A NAME="76"></A></FONT>            Method method = sessionManagerVisitor.getMethod(<FONT ID="StringLiteral">"visitMulticast"</FONT>);
+<FONT ID="LN">77</FONT><A NAME="77"></A>            Object[] args = <FONT ID="New">new</FONT> Object[<FONT ID="IntegerLiteral">2</FONT>];
+<FONT ID="LN">78</FONT><A NAME="78"></A>            args[<FONT ID="IntegerLiteral">1</FONT>] = anEvent;
+<FONT ID="LN">79</FONT><A NAME="79"></A>            SessionManager.getInstance().apply(sessionManagerVisitor, method, args);
+<FONT ID="LN">80</FONT><A NAME="80"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">81</FONT><A NAME="81"></A>            Log.error(<FONT ID="StringLiteral">"Error calling SessionManager.apply: "</FONT>, t);
+<FONT ID="LN">82</FONT><A NAME="82"></A>        }
+<FONT ID="LN">83</FONT><A NAME="83"></A>    }
+<FONT ID="LN">84</FONT><A NAME="84"></A>
+<FONT ID="LN">85</FONT><A NAME="85"></A>
+<FONT ID="LN">86</FONT><A NAME="86"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">87</FONT><A NAME="87"></A>     * Send event to specific subscriber.
+<FONT ID="LN">88</FONT><A NAME="88"></A>     */</FONT>
+<FONT ID="LN">89</FONT><A NAME="89"></A>    <FONT ID="Public">public</FONT> <FONT ID="Synchronized">synchronized</FONT> <FONT ID="Void">void</FONT> unicast(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event, String aSessionId) {
+<FONT ID="LN">90</FONT><A NAME="90"></A>        <FONT ID="SingleLineComment">// Get subscriber to send event to
+<FONT ID="LN">91</FONT><A NAME="91"></A></FONT>        <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> session = SessionManager.getInstance().getSession(aSessionId);
+<FONT ID="LN">92</FONT><A NAME="92"></A>        <FONT ID="If">if</FONT> (session == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">93</FONT><A NAME="93"></A>            Log.warn(<FONT ID="StringLiteral">"unicast: session with id="</FONT> + aSessionId + <FONT ID="StringLiteral">" does not exist"</FONT>);
+<FONT ID="LN">94</FONT><A NAME="94"></A>            <FONT ID="Return">return</FONT>;
+<FONT ID="LN">95</FONT><A NAME="95"></A>        }
+<FONT ID="LN">96</FONT><A NAME="96"></A>
+<FONT ID="LN">97</FONT><A NAME="97"></A>        <FONT ID="SingleLineComment">// Send Event to subscriber.
+<FONT ID="LN">98</FONT><A NAME="98"></A></FONT>        session.getSubscriber().onEvent((<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>) event.clone());
+<FONT ID="LN">99</FONT><A NAME="99"></A>    }
+<FONT ID="LN">00</FONT><A NAME="100"></A>
+<FONT ID="LN">01</FONT><A NAME="101"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">02</FONT><A NAME="102"></A>     * Start Dispatcher.
+<FONT ID="LN">03</FONT><A NAME="103"></A>     */</FONT>
+<FONT ID="LN">04</FONT><A NAME="104"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">05</FONT><A NAME="105"></A>        Log.info(<FONT ID="StringLiteral">"Dispatcher started"</FONT>);
+<FONT ID="LN">06</FONT><A NAME="106"></A>
+<FONT ID="LN">07</FONT><A NAME="107"></A>        <FONT ID="SingleLineComment">// Create callback for SessionManager visits.
+<FONT ID="LN">08</FONT><A NAME="108"></A></FONT>        sessionManagerVisitor = <FONT ID="New">new</FONT> SessionManagerVisitor();
+<FONT ID="LN">09</FONT><A NAME="109"></A>    }
+<FONT ID="LN">10</FONT><A NAME="110"></A>
+<FONT ID="LN">11</FONT><A NAME="111"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">12</FONT><A NAME="112"></A>     * Stop Dispatcher.
+<FONT ID="LN">13</FONT><A NAME="113"></A>     */</FONT>
+<FONT ID="LN">14</FONT><A NAME="114"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">15</FONT><A NAME="115"></A>        <FONT ID="SingleLineComment">// Send abort control event to all subscribers.
+<FONT ID="LN">16</FONT><A NAME="116"></A></FONT>        Log.info(<FONT ID="StringLiteral">"Dispatcher stopped: broadcast abort to all subscribers"</FONT>);
+<FONT ID="LN">17</FONT><A NAME="117"></A>        broadcast(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(E_ABORT));
+<FONT ID="LN">18</FONT><A NAME="118"></A>    }
+<FONT ID="LN">19</FONT><A NAME="119"></A>
+<FONT ID="LN">20</FONT><A NAME="120"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">21</FONT><A NAME="121"></A>     * Supplies Visitor methods for callbacks from SessionManager.
+<FONT ID="LN">22</FONT><A NAME="122"></A>     */</FONT>
+<FONT ID="LN">23</FONT><A NAME="123"></A>    <FONT ID="Private">private</FONT> <FONT ID="Class">class</FONT> SessionManagerVisitor {
+<FONT ID="LN">24</FONT><A NAME="124"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map visitorMethods = <FONT ID="New">new</FONT> HashMap(<FONT ID="IntegerLiteral">2</FONT>);
+<FONT ID="LN">25</FONT><A NAME="125"></A>
+<FONT ID="LN">26</FONT><A NAME="126"></A>        SessionManagerVisitor() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">27</FONT><A NAME="127"></A>
+<FONT ID="LN">28</FONT><A NAME="128"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">29</FONT><A NAME="129"></A>                <FONT ID="SingleLineComment">// Setup Visitor Methods for callback from SessionManager
+<FONT ID="LN">30</FONT><A NAME="130"></A></FONT>                <FONT ID="SingleLineComment">// This is a slight opitmization over creating Method objects
+<FONT ID="LN">31</FONT><A NAME="131"></A></FONT>                <FONT ID="SingleLineComment">// on each invokation.
+<FONT ID="LN">32</FONT><A NAME="132"></A></FONT>                Class[] argsClasses = {<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>.<FONT ID="Class">class</FONT>, <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>.<FONT ID="Class">class</FONT>};
+<FONT ID="LN">33</FONT><A NAME="133"></A>                visitorMethods.put(<FONT ID="StringLiteral">"visitMulticast"</FONT>, <FONT ID="This">this</FONT>.getClass().getMethod(<FONT ID="StringLiteral">"visitMulticast"</FONT>, argsClasses));
+<FONT ID="LN">34</FONT><A NAME="134"></A>                visitorMethods.put(<FONT ID="StringLiteral">"visitBroadcast"</FONT>, <FONT ID="This">this</FONT>.getClass().getMethod(<FONT ID="StringLiteral">"visitBroadcast"</FONT>, argsClasses));
+<FONT ID="LN">35</FONT><A NAME="135"></A>            } <FONT ID="Catch">catch</FONT> (NoSuchMethodException e) {
+<FONT ID="LN">36</FONT><A NAME="136"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Failed to setup SessionManagerVisitor"</FONT>, e);
+<FONT ID="LN">37</FONT><A NAME="137"></A>            }
+<FONT ID="LN">38</FONT><A NAME="138"></A>        }
+<FONT ID="LN">39</FONT><A NAME="139"></A>
+<FONT ID="LN">40</FONT><A NAME="140"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">41</FONT><A NAME="141"></A>         * Return Visitor Method by name.
+<FONT ID="LN">42</FONT><A NAME="142"></A>         */</FONT>
+<FONT ID="LN">43</FONT><A NAME="143"></A>        <FONT ID="Public">public</FONT> Method getMethod(String aName) {
+<FONT ID="LN">44</FONT><A NAME="144"></A>            <FONT ID="Return">return</FONT> (Method) visitorMethods.get(aName);
+<FONT ID="LN">45</FONT><A NAME="145"></A>
+<FONT ID="LN">46</FONT><A NAME="146"></A>        }
+<FONT ID="LN">47</FONT><A NAME="147"></A>
+<FONT ID="LN">48</FONT><A NAME="148"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">49</FONT><A NAME="149"></A>         * Visitor method called by SessionManager.
+<FONT ID="LN">50</FONT><A NAME="150"></A>         */</FONT>
+<FONT ID="LN">51</FONT><A NAME="151"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> visitBroadcast(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession, <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event) {
+<FONT ID="LN">52</FONT><A NAME="152"></A>            aSession.getSubscriber().onEvent((<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>) event.clone());
+<FONT ID="LN">53</FONT><A NAME="153"></A>        }
+<FONT ID="LN">54</FONT><A NAME="154"></A>
+<FONT ID="LN">55</FONT><A NAME="155"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">56</FONT><A NAME="156"></A>         * Visitor method called by SessionManager.
+<FONT ID="LN">57</FONT><A NAME="157"></A>         */</FONT>
+<FONT ID="LN">58</FONT><A NAME="158"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> visitMulticast(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession, <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event) {
+<FONT ID="LN">59</FONT><A NAME="159"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Subscriber.java.html">Subscriber</A> subscriber = aSession.getSubscriber();
+<FONT ID="LN">60</FONT><A NAME="160"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> clonedEvent;
+<FONT ID="LN">61</FONT><A NAME="161"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Subscription.java.html">Subscription</A> subscription;
+<FONT ID="LN">62</FONT><A NAME="162"></A>
+<FONT ID="LN">63</FONT><A NAME="163"></A>            <FONT ID="SingleLineComment">// Send only if the subscriber's criteria
+<FONT ID="LN">64</FONT><A NAME="164"></A></FONT>            <FONT ID="SingleLineComment">// match the event.
+<FONT ID="LN">65</FONT><A NAME="165"></A></FONT>            <FONT ID="If">if</FONT> ((subscription = subscriber.match(event)) != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">66</FONT><A NAME="166"></A>                <FONT ID="SingleLineComment">// Personalize event
+<FONT ID="LN">67</FONT><A NAME="167"></A></FONT>                clonedEvent = (<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>) event.clone();
+<FONT ID="LN">68</FONT><A NAME="168"></A>
+<FONT ID="LN">69</FONT><A NAME="169"></A>                <FONT ID="SingleLineComment">// Set subscription id and optional label
+<FONT ID="LN">70</FONT><A NAME="170"></A></FONT>                clonedEvent.setField(P_SUBSCRIPTION_ID, subscription.getId());
+<FONT ID="LN">71</FONT><A NAME="171"></A>                <FONT ID="If">if</FONT> (subscription.getLabel() != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">72</FONT><A NAME="172"></A>                    event.setField(P_SUBSCRIPTION_LABEL, subscription.getLabel());
+<FONT ID="LN">73</FONT><A NAME="173"></A>                }
+<FONT ID="LN">74</FONT><A NAME="174"></A>
+<FONT ID="LN">75</FONT><A NAME="175"></A>                subscriber.onEvent(clonedEvent);
+<FONT ID="LN">76</FONT><A NAME="176"></A>            }
+<FONT ID="LN">77</FONT><A NAME="177"></A>        }
+<FONT ID="LN">78</FONT><A NAME="178"></A>    }
+<FONT ID="LN">79</FONT><A NAME="179"></A>}
+<FONT ID="LN">80</FONT><A NAME="180"></A>
+<FONT ID="LN">81</FONT><A NAME="181"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">82</FONT><A NAME="182"></A> * $Log: Dispatcher.java,v $
+<FONT ID="LN">83</FONT><A NAME="183"></A> * Revision 1.9  2007/12/04 13:55:53  justb
+<FONT ID="LN">84</FONT><A NAME="184"></A> * reimplement SessionManager concurrency (prev version was not thread-safe!)
+<FONT ID="LN">85</FONT><A NAME="185"></A> *
+<FONT ID="LN">86</FONT><A NAME="186"></A> * Revision 1.8  2007/11/23 14:33:07  justb
+<FONT ID="LN">87</FONT><A NAME="187"></A> * core classes now configurable through factory
+<FONT ID="LN">88</FONT><A NAME="188"></A> *
+<FONT ID="LN">89</FONT><A NAME="189"></A> * Revision 1.7  2005/02/28 12:45:59  justb
+<FONT ID="LN">90</FONT><A NAME="190"></A> * introduced Command class
+<FONT ID="LN">91</FONT><A NAME="191"></A> *
+<FONT ID="LN">92</FONT><A NAME="192"></A> * Revision 1.6  2005/02/28 09:14:55  justb
+<FONT ID="LN">93</FONT><A NAME="193"></A> * sessmgr/dispatcher factory/singleton support
+<FONT ID="LN">94</FONT><A NAME="194"></A> *
+<FONT ID="LN">95</FONT><A NAME="195"></A> * Revision 1.5  2005/02/21 16:59:06  justb
+<FONT ID="LN">96</FONT><A NAME="196"></A> * SessionManager and session lease introduced
+<FONT ID="LN">97</FONT><A NAME="197"></A> *
+<FONT ID="LN">98</FONT><A NAME="198"></A> * Revision 1.4  2005/02/21 11:50:46  justb
+<FONT ID="LN">99</FONT><A NAME="199"></A> * ohase1 of refactoring Subscriber into Session/Controller/Subscriber
+<FONT ID="LN">00</FONT><A NAME="200"></A> *
+<FONT ID="LN">01</FONT><A NAME="201"></A> * Revision 1.3  2005/02/18 12:36:47  justb
+<FONT ID="LN">02</FONT><A NAME="202"></A> * changes for renaming and configurability
+<FONT ID="LN">03</FONT><A NAME="203"></A> *
+<FONT ID="LN">04</FONT><A NAME="204"></A> * Revision 1.2  2005/02/18 10:07:23  justb
+<FONT ID="LN">05</FONT><A NAME="205"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">06</FONT><A NAME="206"></A> *
+<FONT ID="LN">07</FONT><A NAME="207"></A> * Revision 1.1  2005/02/18 09:54:15  justb
+<FONT ID="LN">08</FONT><A NAME="208"></A> * refactor: rename Publisher Dispatcher and single Subscriber class
+<FONT ID="LN">09</FONT><A NAME="209"></A> *
+<FONT ID="LN">10</FONT><A NAME="210"></A> * Revision 1.14  2005/02/16 14:39:34  justb
+<FONT ID="LN">11</FONT><A NAME="211"></A> * fixed leave handling and added "poll" mode
+<FONT ID="LN">12</FONT><A NAME="212"></A> *
+<FONT ID="LN">13</FONT><A NAME="213"></A> * Revision 1.13  2004/10/24 20:50:35  justb
+<FONT ID="LN">14</FONT><A NAME="214"></A> * refine subscription with label and sending sid and label on events
+<FONT ID="LN">15</FONT><A NAME="215"></A> *
+<FONT ID="LN">16</FONT><A NAME="216"></A> * Revision 1.12  2004/10/24 12:58:18  justb
+<FONT ID="LN">17</FONT><A NAME="217"></A> * revised client and test classes for new protocol
+<FONT ID="LN">18</FONT><A NAME="218"></A> *
+<FONT ID="LN">19</FONT><A NAME="219"></A> * Revision 1.11  2004/09/26 21:39:43  justb
+<FONT ID="LN">20</FONT><A NAME="220"></A> * allow multiple subscriptions and out-of-band requests
+<FONT ID="LN">21</FONT><A NAME="221"></A> *
+<FONT ID="LN">22</FONT><A NAME="222"></A> * Revision 1.10  2004/09/20 22:01:38  justb
+<FONT ID="LN">23</FONT><A NAME="223"></A> * more changes for new protocol
+<FONT ID="LN">24</FONT><A NAME="224"></A> *
+<FONT ID="LN">25</FONT><A NAME="225"></A> * Revision 1.9  2004/09/03 22:35:37  justb
+<FONT ID="LN">26</FONT><A NAME="226"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">27</FONT><A NAME="227"></A> *
+<FONT ID="LN">28</FONT><A NAME="228"></A> * Revision 1.8  2004/08/13 23:36:05  justb
+<FONT ID="LN">29</FONT><A NAME="229"></A> * rewrite of Pullet into Pushlet "pull" mode
+<FONT ID="LN">30</FONT><A NAME="230"></A> *
+<FONT ID="LN">31</FONT><A NAME="231"></A> * Revision 1.7  2004/08/12 13:18:54  justb
+<FONT ID="LN">32</FONT><A NAME="232"></A> * cosmetic changes
+<FONT ID="LN">33</FONT><A NAME="233"></A> *
+<FONT ID="LN">34</FONT><A NAME="234"></A> * Revision 1.6  2004/03/10 15:45:55  justb
+<FONT ID="LN">35</FONT><A NAME="235"></A> * many cosmetic changes
+<FONT ID="LN">36</FONT><A NAME="236"></A> *
+<FONT ID="LN">37</FONT><A NAME="237"></A> * Revision 1.5  2004/03/10 13:59:28  justb
+<FONT ID="LN">38</FONT><A NAME="238"></A> * rewrite using Collection classes and finer synchronization
+<FONT ID="LN">39</FONT><A NAME="239"></A> *
+<FONT ID="LN">40</FONT><A NAME="240"></A> * Revision 1.4  2003/08/15 08:37:40  justb
+<FONT ID="LN">41</FONT><A NAME="241"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">42</FONT><A NAME="242"></A> *
+<FONT ID="LN">43</FONT><A NAME="243"></A> * Revision 1.3  2003/08/12 08:54:40  justb
+<FONT ID="LN">44</FONT><A NAME="244"></A> * added getSubscriberCount() and use Log
+<FONT ID="LN">45</FONT><A NAME="245"></A> *
+<FONT ID="LN">46</FONT><A NAME="246"></A> * Revision 1.2  2003/05/18 16:15:08  justb
+<FONT ID="LN">47</FONT><A NAME="247"></A> * support for XML encoded Events
+<FONT ID="LN">48</FONT><A NAME="248"></A> *
+<FONT ID="LN">49</FONT><A NAME="249"></A> * Revision 1.1.1.1  2002/09/24 21:02:31  justb
+<FONT ID="LN">50</FONT><A NAME="250"></A> * import to sourceforge
+<FONT ID="LN">51</FONT><A NAME="251"></A> *
+<FONT ID="LN">52</FONT><A NAME="252"></A> * Revision 1.1.1.1  2002/09/20 22:48:18  justb
+<FONT ID="LN">53</FONT><A NAME="253"></A> * import to SF
+<FONT ID="LN">54</FONT><A NAME="254"></A> *
+<FONT ID="LN">55</FONT><A NAME="255"></A> * Revision 1.1.1.1  2002/09/20 14:19:04  justb
+<FONT ID="LN">56</FONT><A NAME="256"></A> * first import into SF
+<FONT ID="LN">57</FONT><A NAME="257"></A> *
+<FONT ID="LN">58</FONT><A NAME="258"></A> * Revision 1.3  2002/04/15 20:42:41  just
+<FONT ID="LN">59</FONT><A NAME="259"></A> * reformatting and renaming GuardedQueue to EventQueue
+<FONT ID="LN">60</FONT><A NAME="260"></A> *
+<FONT ID="LN">61</FONT><A NAME="261"></A> * Revision 1.2  2000/08/21 20:48:29  just
+<FONT ID="LN">62</FONT><A NAME="262"></A> * added CVS log and id tags plus copyrights
+<FONT ID="LN">63</FONT><A NAME="263"></A> *
+<FONT ID="LN">64</FONT><A NAME="264"></A> *
+<FONT ID="LN">65</FONT><A NAME="265"></A> */</FONT>
+<FONT ID="LN">66</FONT><A NAME="266"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Dispatcher.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

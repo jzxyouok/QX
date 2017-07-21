@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.Protocol (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Protocol.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2004 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A>
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">8 </FONT><A NAME="8"></A> * Constants for Pushlet protocols.
+<FONT ID="LN">9 </FONT><A NAME="9"></A> *
+<FONT ID="LN">10</FONT><A NAME="10"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">11</FONT><A NAME="11"></A> * @version $Id: Protocol.java,v 1.15 2007/11/23 14:33:07 justb Exp $
+<FONT ID="LN">12</FONT><A NAME="12"></A> */</FONT>
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> Protocol {
+<FONT ID="LN">14</FONT><A NAME="14"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">15</FONT><A NAME="15"></A>     * Default URI .
+<FONT ID="LN">16</FONT><A NAME="16"></A>     */</FONT>
+<FONT ID="LN">17</FONT><A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULT_SERVLET_URI = <FONT ID="StringLiteral">"/pushlet/pushlet.srv"</FONT>;
+<FONT ID="LN">18</FONT><A NAME="18"></A>
+<FONT ID="LN">19</FONT><A NAME="19"></A>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">20</FONT><A NAME="20"></A></FONT>    <FONT ID="SingleLineComment">// Common protocol header/parameter names
+<FONT ID="LN">21</FONT><A NAME="21"></A></FONT>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">22</FONT><A NAME="22"></A></FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">24</FONT><A NAME="24"></A>     * Event type (join, leave, data, subscribe etc) .
+<FONT ID="LN">25</FONT><A NAME="25"></A>     */</FONT>
+<FONT ID="LN">26</FONT><A NAME="26"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_EVENT = <FONT ID="StringLiteral">"p_event"</FONT>;
+<FONT ID="LN">27</FONT><A NAME="27"></A>
+<FONT ID="LN">28</FONT><A NAME="28"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">29</FONT><A NAME="29"></A>     * Time in seconds since 1970
+<FONT ID="LN">30</FONT><A NAME="30"></A>     */</FONT>
+<FONT ID="LN">31</FONT><A NAME="31"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_TIME = <FONT ID="StringLiteral">"p_time"</FONT>;
+<FONT ID="LN">32</FONT><A NAME="32"></A>
+<FONT ID="LN">33</FONT><A NAME="33"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">34</FONT><A NAME="34"></A>     * Event sequence number, numbers per-client.
+<FONT ID="LN">35</FONT><A NAME="35"></A>     */</FONT>
+<FONT ID="LN">36</FONT><A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_SEQ = <FONT ID="StringLiteral">"p_seq"</FONT>;
+<FONT ID="LN">37</FONT><A NAME="37"></A>
+<FONT ID="LN">38</FONT><A NAME="38"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">39</FONT><A NAME="39"></A>     * Subject (topic) of data event.
+<FONT ID="LN">40</FONT><A NAME="40"></A>     */</FONT>
+<FONT ID="LN">41</FONT><A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_SUBJECT = <FONT ID="StringLiteral">"p_subject"</FONT>;
+<FONT ID="LN">42</FONT><A NAME="42"></A>
+<FONT ID="LN">43</FONT><A NAME="43"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">44</FONT><A NAME="44"></A>     * Originator of Event.
+<FONT ID="LN">45</FONT><A NAME="45"></A>     */</FONT>
+<FONT ID="LN">46</FONT><A NAME="46"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_FROM = <FONT ID="StringLiteral">"p_from"</FONT>;
+<FONT ID="LN">47</FONT><A NAME="47"></A>
+<FONT ID="LN">48</FONT><A NAME="48"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">49</FONT><A NAME="49"></A>     * Addressee of Event, subject or client p_id.
+<FONT ID="LN">50</FONT><A NAME="50"></A>     */</FONT>
+<FONT ID="LN">51</FONT><A NAME="51"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_TO = <FONT ID="StringLiteral">"p_to"</FONT>;
+<FONT ID="LN">52</FONT><A NAME="52"></A>
+<FONT ID="LN">53</FONT><A NAME="53"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">54</FONT><A NAME="54"></A>     * Identifier for client instance within server.
+<FONT ID="LN">55</FONT><A NAME="55"></A>     */</FONT>
+<FONT ID="LN">56</FONT><A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_ID = <FONT ID="StringLiteral">"p_id"</FONT>;
+<FONT ID="LN">57</FONT><A NAME="57"></A>
+<FONT ID="LN">58</FONT><A NAME="58"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">59</FONT><A NAME="59"></A>     * Subscription id, identifies single subscription.
+<FONT ID="LN">60</FONT><A NAME="60"></A>     */</FONT>
+<FONT ID="LN">61</FONT><A NAME="61"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_SUBSCRIPTION_ID = <FONT ID="StringLiteral">"p_sid"</FONT>;
+<FONT ID="LN">62</FONT><A NAME="62"></A>
+<FONT ID="LN">63</FONT><A NAME="63"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">64</FONT><A NAME="64"></A>     * Format to receive events
+<FONT ID="LN">65</FONT><A NAME="65"></A>     */</FONT>
+<FONT ID="LN">66</FONT><A NAME="66"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_FORMAT = <FONT ID="StringLiteral">"p_format"</FONT>;
+<FONT ID="LN">67</FONT><A NAME="67"></A>
+<FONT ID="LN">68</FONT><A NAME="68"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">69</FONT><A NAME="69"></A>     * Protocol mode.
+<FONT ID="LN">70</FONT><A NAME="70"></A>     */</FONT>
+<FONT ID="LN">71</FONT><A NAME="71"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_MODE = <FONT ID="StringLiteral">"p_mode"</FONT>;
+<FONT ID="LN">72</FONT><A NAME="72"></A>
+<FONT ID="LN">73</FONT><A NAME="73"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">74</FONT><A NAME="74"></A>     * Reason for errors.
+<FONT ID="LN">75</FONT><A NAME="75"></A>     */</FONT>
+<FONT ID="LN">76</FONT><A NAME="76"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_REASON = <FONT ID="StringLiteral">"p_reason"</FONT>;
+<FONT ID="LN">77</FONT><A NAME="77"></A>
+<FONT ID="LN">78</FONT><A NAME="78"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">79</FONT><A NAME="79"></A>     * URL attribute.
+<FONT ID="LN">80</FONT><A NAME="80"></A>     */</FONT>
+<FONT ID="LN">81</FONT><A NAME="81"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_URL = <FONT ID="StringLiteral">"p_url"</FONT>;
+<FONT ID="LN">82</FONT><A NAME="82"></A>
+<FONT ID="LN">83</FONT><A NAME="83"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">84</FONT><A NAME="84"></A>     * Wait attribute.
+<FONT ID="LN">85</FONT><A NAME="85"></A>     */</FONT>
+<FONT ID="LN">86</FONT><A NAME="86"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_WAIT = <FONT ID="StringLiteral">"p_wait"</FONT>;
+<FONT ID="LN">87</FONT><A NAME="87"></A>
+<FONT ID="LN">88</FONT><A NAME="88"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">89</FONT><A NAME="89"></A>     * Subscription label, may be used to return user-specific
+<FONT ID="LN">90</FONT><A NAME="90"></A>     * token with a data event, e.g. the name of a function for a callback.
+<FONT ID="LN">91</FONT><A NAME="91"></A>     */</FONT>
+<FONT ID="LN">92</FONT><A NAME="92"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String P_SUBSCRIPTION_LABEL = <FONT ID="StringLiteral">"p_label"</FONT>;
+<FONT ID="LN">93</FONT><A NAME="93"></A>
+<FONT ID="LN">94</FONT><A NAME="94"></A>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">95</FONT><A NAME="95"></A></FONT>    <FONT ID="SingleLineComment">// Event values with direction for P_EVENT (C=client, S=server)
+<FONT ID="LN">96</FONT><A NAME="96"></A></FONT>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">97</FONT><A NAME="97"></A></FONT>
+<FONT ID="LN">98</FONT><A NAME="98"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">99</FONT><A NAME="99"></A>     * C--&gt;S Request to join server.
+<FONT ID="LN">00</FONT><A NAME="100"></A>     */</FONT>
+<FONT ID="LN">01</FONT><A NAME="101"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_JOIN = <FONT ID="StringLiteral">"join"</FONT>;
+<FONT ID="LN">02</FONT><A NAME="102"></A>
+<FONT ID="LN">03</FONT><A NAME="103"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">04</FONT><A NAME="104"></A>     * S--&gt;C Acknowledgement of join.
+<FONT ID="LN">05</FONT><A NAME="105"></A>     */</FONT>
+<FONT ID="LN">06</FONT><A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_JOIN_ACK = <FONT ID="StringLiteral">"join-ack"</FONT>;
+<FONT ID="LN">07</FONT><A NAME="107"></A>
+<FONT ID="LN">08</FONT><A NAME="108"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">09</FONT><A NAME="109"></A>     * C--&gt;S Request to join server.
+<FONT ID="LN">10</FONT><A NAME="110"></A>     */</FONT>
+<FONT ID="LN">11</FONT><A NAME="111"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_JOIN_LISTEN = <FONT ID="StringLiteral">"join-listen"</FONT>;
+<FONT ID="LN">12</FONT><A NAME="112"></A>
+<FONT ID="LN">13</FONT><A NAME="113"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">14</FONT><A NAME="114"></A>     * S--&gt;C Acknowledgement of join.
+<FONT ID="LN">15</FONT><A NAME="115"></A>     */</FONT>
+<FONT ID="LN">16</FONT><A NAME="116"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_JOIN_LISTEN_ACK = <FONT ID="StringLiteral">"join-listen-ack"</FONT>;
+<FONT ID="LN">17</FONT><A NAME="117"></A>
+<FONT ID="LN">18</FONT><A NAME="118"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">19</FONT><A NAME="119"></A>     * C--&gt;S Client starts listening.
+<FONT ID="LN">20</FONT><A NAME="120"></A>     */</FONT>
+<FONT ID="LN">21</FONT><A NAME="121"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_LISTEN = <FONT ID="StringLiteral">"listen"</FONT>;
+<FONT ID="LN">22</FONT><A NAME="122"></A>
+<FONT ID="LN">23</FONT><A NAME="123"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">24</FONT><A NAME="124"></A>     * S--&gt;C Ack of listen.
+<FONT ID="LN">25</FONT><A NAME="125"></A>     */</FONT>
+<FONT ID="LN">26</FONT><A NAME="126"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_LISTEN_ACK = <FONT ID="StringLiteral">"listen-ack"</FONT>;
+<FONT ID="LN">27</FONT><A NAME="127"></A>
+<FONT ID="LN">28</FONT><A NAME="128"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">29</FONT><A NAME="129"></A>     * C--&gt;S Client leaves server.
+<FONT ID="LN">30</FONT><A NAME="130"></A>     */</FONT>
+<FONT ID="LN">31</FONT><A NAME="131"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_LEAVE = <FONT ID="StringLiteral">"leave"</FONT>;
+<FONT ID="LN">32</FONT><A NAME="132"></A>
+<FONT ID="LN">33</FONT><A NAME="133"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">34</FONT><A NAME="134"></A>     * S--&gt;C Ack of leave.
+<FONT ID="LN">35</FONT><A NAME="135"></A>     */</FONT>
+<FONT ID="LN">36</FONT><A NAME="136"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_LEAVE_ACK = <FONT ID="StringLiteral">"leave-ack"</FONT>;
+<FONT ID="LN">37</FONT><A NAME="137"></A>
+<FONT ID="LN">38</FONT><A NAME="138"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">39</FONT><A NAME="139"></A>     * C--&gt;S Publish to subject.
+<FONT ID="LN">40</FONT><A NAME="140"></A>     */</FONT>
+<FONT ID="LN">41</FONT><A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_PUBLISH = <FONT ID="StringLiteral">"publish"</FONT>;
+<FONT ID="LN">42</FONT><A NAME="142"></A>
+<FONT ID="LN">43</FONT><A NAME="143"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">44</FONT><A NAME="144"></A>     * S--&gt;C Publish to subject acknowledge.
+<FONT ID="LN">45</FONT><A NAME="145"></A>     */</FONT>
+<FONT ID="LN">46</FONT><A NAME="146"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_PUBLISH_ACK = <FONT ID="StringLiteral">"publish-ack"</FONT>;
+<FONT ID="LN">47</FONT><A NAME="147"></A>
+<FONT ID="LN">48</FONT><A NAME="148"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">49</FONT><A NAME="149"></A>     * C--&gt;S Subscribe to subject request.
+<FONT ID="LN">50</FONT><A NAME="150"></A>     */</FONT>
+<FONT ID="LN">51</FONT><A NAME="151"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_SUBSCRIBE = <FONT ID="StringLiteral">"subscribe"</FONT>;
+<FONT ID="LN">52</FONT><A NAME="152"></A>
+<FONT ID="LN">53</FONT><A NAME="153"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">54</FONT><A NAME="154"></A>     * S--&gt;C Subscribe to subject acknowledge.
+<FONT ID="LN">55</FONT><A NAME="155"></A>     */</FONT>
+<FONT ID="LN">56</FONT><A NAME="156"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_SUBSCRIBE_ACK = <FONT ID="StringLiteral">"subscribe-ack"</FONT>;
+<FONT ID="LN">57</FONT><A NAME="157"></A>
+<FONT ID="LN">58</FONT><A NAME="158"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">59</FONT><A NAME="159"></A>     * C--&gt;S Unsubscribe from subject request.
+<FONT ID="LN">60</FONT><A NAME="160"></A>     */</FONT>
+<FONT ID="LN">61</FONT><A NAME="161"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_UNSUBSCRIBE = <FONT ID="StringLiteral">"unsubscribe"</FONT>;
+<FONT ID="LN">62</FONT><A NAME="162"></A>
+<FONT ID="LN">63</FONT><A NAME="163"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">64</FONT><A NAME="164"></A>     * S--C Unsubscribe from subject acknowledge.
+<FONT ID="LN">65</FONT><A NAME="165"></A>     */</FONT>
+<FONT ID="LN">66</FONT><A NAME="166"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_UNSUBSCRIBE_ACK = <FONT ID="StringLiteral">"unsubscribe-ack"</FONT>;
+<FONT ID="LN">67</FONT><A NAME="167"></A>
+<FONT ID="LN">68</FONT><A NAME="168"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">69</FONT><A NAME="169"></A>     * S--&gt;C Client error response, transitional error.
+<FONT ID="LN">70</FONT><A NAME="170"></A>     */</FONT>
+<FONT ID="LN">71</FONT><A NAME="171"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_NACK = <FONT ID="StringLiteral">"nack"</FONT>;
+<FONT ID="LN">72</FONT><A NAME="172"></A>
+<FONT ID="LN">73</FONT><A NAME="173"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">74</FONT><A NAME="174"></A>     * S--&gt;C Client should abort, permanent error.
+<FONT ID="LN">75</FONT><A NAME="175"></A>     */</FONT>
+<FONT ID="LN">76</FONT><A NAME="176"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_ABORT = <FONT ID="StringLiteral">"abort"</FONT>;
+<FONT ID="LN">77</FONT><A NAME="177"></A>
+<FONT ID="LN">78</FONT><A NAME="178"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">79</FONT><A NAME="179"></A>     * S--&gt;C Data.
+<FONT ID="LN">80</FONT><A NAME="180"></A>     */</FONT>
+<FONT ID="LN">81</FONT><A NAME="181"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_DATA = <FONT ID="StringLiteral">"data"</FONT>;
+<FONT ID="LN">82</FONT><A NAME="182"></A>
+<FONT ID="LN">83</FONT><A NAME="183"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">84</FONT><A NAME="184"></A>     * S--&gt;C or C--&gt;S Heartbeat.
+<FONT ID="LN">85</FONT><A NAME="185"></A>     */</FONT>
+<FONT ID="LN">86</FONT><A NAME="186"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_HEARTBEAT = <FONT ID="StringLiteral">"hb"</FONT>;
+<FONT ID="LN">87</FONT><A NAME="187"></A>
+<FONT ID="LN">88</FONT><A NAME="188"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">89</FONT><A NAME="189"></A>     * S--&gt;C S--&gt;C or C--&gt;S Heartbeat confirmed.
+<FONT ID="LN">90</FONT><A NAME="190"></A>     */</FONT>
+<FONT ID="LN">91</FONT><A NAME="191"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_HEARTBEAT_ACK = <FONT ID="StringLiteral">"hb-ack"</FONT>;
+<FONT ID="LN">92</FONT><A NAME="192"></A>
+<FONT ID="LN">93</FONT><A NAME="193"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">94</FONT><A NAME="194"></A>     * S--&gt;C or C--&gt;S client refresh of data channel.
+<FONT ID="LN">95</FONT><A NAME="195"></A>     */</FONT>
+<FONT ID="LN">96</FONT><A NAME="196"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_REFRESH = <FONT ID="StringLiteral">"refresh"</FONT>;
+<FONT ID="LN">97</FONT><A NAME="197"></A>
+<FONT ID="LN">98</FONT><A NAME="198"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">99</FONT><A NAME="199"></A>     * S--&gt;C client should refresh data channel.
+<FONT ID="LN">00</FONT><A NAME="200"></A>     */</FONT>
+<FONT ID="LN">01</FONT><A NAME="201"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String E_REFRESH_ACK = <FONT ID="StringLiteral">"refresh-ack"</FONT>;
+<FONT ID="LN">02</FONT><A NAME="202"></A>
+<FONT ID="LN">03</FONT><A NAME="203"></A>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">04</FONT><A NAME="204"></A></FONT>    <FONT ID="SingleLineComment">// Values for P_FORMAT parameter
+<FONT ID="LN">05</FONT><A NAME="205"></A></FONT>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">06</FONT><A NAME="206"></A></FONT>
+<FONT ID="LN">07</FONT><A NAME="207"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">08</FONT><A NAME="208"></A>     * JavaScript callback.
+<FONT ID="LN">09</FONT><A NAME="209"></A>     */</FONT>
+<FONT ID="LN">10</FONT><A NAME="210"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String FORMAT_JAVASCRIPT = <FONT ID="StringLiteral">"js"</FONT>;
+<FONT ID="LN">11</FONT><A NAME="211"></A>
+<FONT ID="LN">12</FONT><A NAME="212"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">13</FONT><A NAME="213"></A>     * Java serialized object.
+<FONT ID="LN">14</FONT><A NAME="214"></A>     */</FONT>
+<FONT ID="LN">15</FONT><A NAME="215"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String FORMAT_SERIALIZED_JAVA_OBJECT = <FONT ID="StringLiteral">"ser"</FONT>;
+<FONT ID="LN">16</FONT><A NAME="216"></A>
+<FONT ID="LN">17</FONT><A NAME="217"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">18</FONT><A NAME="218"></A>     * Stream of XML documents.
+<FONT ID="LN">19</FONT><A NAME="219"></A>     */</FONT>
+<FONT ID="LN">20</FONT><A NAME="220"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String FORMAT_XML = <FONT ID="StringLiteral">"xml"</FONT>;
+<FONT ID="LN">21</FONT><A NAME="221"></A>
+<FONT ID="LN">22</FONT><A NAME="222"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">23</FONT><A NAME="223"></A>     * Single XML document containing zero or more events.
+<FONT ID="LN">24</FONT><A NAME="224"></A>     */</FONT>
+<FONT ID="LN">25</FONT><A NAME="225"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String FORMAT_XML_STRICT = <FONT ID="StringLiteral">"xml-strict"</FONT>;
+<FONT ID="LN">26</FONT><A NAME="226"></A>
+<FONT ID="LN">27</FONT><A NAME="227"></A>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">28</FONT><A NAME="228"></A></FONT>    <FONT ID="SingleLineComment">// Values for P_MODE parameter
+<FONT ID="LN">29</FONT><A NAME="229"></A></FONT>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">30</FONT><A NAME="230"></A></FONT>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String MODE_STREAM = <FONT ID="StringLiteral">"stream"</FONT>;
+<FONT ID="LN">31</FONT><A NAME="231"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String MODE_PULL = <FONT ID="StringLiteral">"pull"</FONT>;
+<FONT ID="LN">32</FONT><A NAME="232"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String MODE_POLL = <FONT ID="StringLiteral">"poll"</FONT>;
+<FONT ID="LN">33</FONT><A NAME="233"></A>
+<FONT ID="LN">34</FONT><A NAME="234"></A>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">35</FONT><A NAME="235"></A></FONT>    <FONT ID="SingleLineComment">// Values for special/reserved subjects
+<FONT ID="LN">36</FONT><A NAME="236"></A></FONT>    <FONT ID="SingleLineComment">// TODO: use these to publish events when clients do these actions
+<FONT ID="LN">37</FONT><A NAME="237"></A></FONT>    <FONT ID="SingleLineComment">// TODO: Dispatcher may intercept these subjects to send cached events
+<FONT ID="LN">38</FONT><A NAME="238"></A></FONT>    <FONT ID="SingleLineComment">//
+<FONT ID="LN">39</FONT><A NAME="239"></A></FONT>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SUBJECT_META = <FONT ID="StringLiteral">"/meta"</FONT>;
+<FONT ID="LN">40</FONT><A NAME="240"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SUBJECT_META_SUBS = SUBJECT_META + <FONT ID="StringLiteral">"/subs"</FONT>;
+<FONT ID="LN">41</FONT><A NAME="241"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SUBJECT_META_JOINS = SUBJECT_META + <FONT ID="StringLiteral">"/joins"</FONT>;
+<FONT ID="LN">42</FONT><A NAME="242"></A>
+<FONT ID="LN">43</FONT><A NAME="243"></A>
+<FONT ID="LN">44</FONT><A NAME="244"></A>}
+<FONT ID="LN">45</FONT><A NAME="245"></A>
+<FONT ID="LN">46</FONT><A NAME="246"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">47</FONT><A NAME="247"></A>  * $Log: Protocol.java,v $
+<FONT ID="LN">48</FONT><A NAME="248"></A>  * Revision 1.15  2007/11/23 14:33:07  justb
+<FONT ID="LN">49</FONT><A NAME="249"></A>  * core classes now configurable through factory
+<FONT ID="LN">50</FONT><A NAME="250"></A>  *
+<FONT ID="LN">51</FONT><A NAME="251"></A>  * Revision 1.14  2006/10/19 12:33:40  justb
+<FONT ID="LN">52</FONT><A NAME="252"></A>  * add atomic join-listen support (one request)
+<FONT ID="LN">53</FONT><A NAME="253"></A>  *
+<FONT ID="LN">54</FONT><A NAME="254"></A>  * Revision 1.13  2005/05/06 19:44:00  justb
+<FONT ID="LN">55</FONT><A NAME="255"></A>  * added xml-strict format
+<FONT ID="LN">56</FONT><A NAME="256"></A>  *
+<FONT ID="LN">57</FONT><A NAME="257"></A>  * Revision 1.12  2005/02/28 13:05:59  justb
+<FONT ID="LN">58</FONT><A NAME="258"></A>  * introduced join-listen protocol service
+<FONT ID="LN">59</FONT><A NAME="259"></A>  *
+<FONT ID="LN">60</FONT><A NAME="260"></A>  * Revision 1.11  2005/02/28 12:45:59  justb
+<FONT ID="LN">61</FONT><A NAME="261"></A>  * introduced Command class
+<FONT ID="LN">62</FONT><A NAME="262"></A>  *
+<FONT ID="LN">63</FONT><A NAME="263"></A>  * Revision 1.10  2005/02/16 12:16:17  justb
+<FONT ID="LN">64</FONT><A NAME="264"></A>  * added support for "poll" mode
+<FONT ID="LN">65</FONT><A NAME="265"></A>  *
+<FONT ID="LN">66</FONT><A NAME="266"></A>  * Revision 1.9  2005/01/24 22:46:02  justb
+<FONT ID="LN">67</FONT><A NAME="267"></A>  * getting safari to work
+<FONT ID="LN">68</FONT><A NAME="268"></A>  *
+<FONT ID="LN">69</FONT><A NAME="269"></A>  * Revision 1.8  2005/01/24 13:42:00  justb
+<FONT ID="LN">70</FONT><A NAME="270"></A>  * new protocol changes (p_listen)
+<FONT ID="LN">71</FONT><A NAME="271"></A>  *
+<FONT ID="LN">72</FONT><A NAME="272"></A>  * Revision 1.7  2005/01/18 16:47:10  justb
+<FONT ID="LN">73</FONT><A NAME="273"></A>  * protocol changes for v2 and publishing from pushlet client
+<FONT ID="LN">74</FONT><A NAME="274"></A>  *
+<FONT ID="LN">75</FONT><A NAME="275"></A>  * Revision 1.6  2005/01/13 14:47:15  justb
+<FONT ID="LN">76</FONT><A NAME="276"></A>  * control evt: send response on same (control) connection
+<FONT ID="LN">77</FONT><A NAME="277"></A>  *
+<FONT ID="LN">78</FONT><A NAME="278"></A>  * Revision 1.5  2004/10/24 13:52:52  justb
+<FONT ID="LN">79</FONT><A NAME="279"></A>  * small fixes in client lib
+<FONT ID="LN">80</FONT><A NAME="280"></A>  *
+<FONT ID="LN">81</FONT><A NAME="281"></A>  * Revision 1.4  2004/10/24 12:58:18  justb
+<FONT ID="LN">82</FONT><A NAME="282"></A>  * revised client and test classes for new protocol
+<FONT ID="LN">83</FONT><A NAME="283"></A>  *
+<FONT ID="LN">84</FONT><A NAME="284"></A>  * Revision 1.3  2004/09/20 22:01:38  justb
+<FONT ID="LN">85</FONT><A NAME="285"></A>  * more changes for new protocol
+<FONT ID="LN">86</FONT><A NAME="286"></A>  *
+<FONT ID="LN">87</FONT><A NAME="287"></A>  * Revision 1.2  2004/09/03 22:35:37  justb
+<FONT ID="LN">88</FONT><A NAME="288"></A>  * Almost complete rewrite, just checking in now
+<FONT ID="LN">89</FONT><A NAME="289"></A>  *
+<FONT ID="LN">90</FONT><A NAME="290"></A>  * Revision 1.1  2004/09/03 21:02:20  justb
+<FONT ID="LN">91</FONT><A NAME="291"></A>  * make more formalized protocol
+<FONT ID="LN">92</FONT><A NAME="292"></A>  *
+<FONT ID="LN">93</FONT><A NAME="293"></A>  *
+<FONT ID="LN">94</FONT><A NAME="294"></A>  */</FONT>
+<FONT ID="LN">95</FONT><A NAME="295"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Protocol.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

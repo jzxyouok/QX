@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.BrowserAdapter (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">BrowserAdapter.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Log.java.html">nl.justobjects.pushlet.util.Log</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A>
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<FONT ID="LN">10</FONT><A NAME="10"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Iterator;
+<FONT ID="LN">12</FONT><A NAME="12"></A>
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">14</FONT><A NAME="14"></A> * Generic implementation of ClientAdapter for browser clients.
+<FONT ID="LN">15</FONT><A NAME="15"></A> *
+<FONT ID="LN">16</FONT><A NAME="16"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">17</FONT><A NAME="17"></A> * @version $Id: BrowserAdapter.java,v 1.6 2007/11/09 13:15:35 justb Exp $
+<FONT ID="LN">18</FONT><A NAME="18"></A> */</FONT>
+<FONT ID="LN">19</FONT><A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> BrowserAdapter <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/ClientAdapter.java.html">ClientAdapter</A>, <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A> {
+<FONT ID="LN">20</FONT><A NAME="20"></A>
+<FONT ID="LN">21</FONT><A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String START_DOCUMENT =
+<FONT ID="LN">22</FONT><A NAME="22"></A>            <FONT ID="StringLiteral">"&lt;html&gt;&lt;head&gt;&lt;meta http-equiv=\"Pragma\" content=\"no-cache\"&gt;&lt;meta http-equiv=\"Expires\" content=\"Tue, 31 Dec 1997 23:59:59 GMT\"&gt;&lt;/head&gt;"</FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>                    + <FONT ID="StringLiteral">"&lt;body&gt;"</FONT>
+<FONT ID="LN">24</FONT><A NAME="24"></A>                    + <FONT ID="StringLiteral">"\n&lt;script language=\"JavaScript\"&gt; var url=\" \"; \nfunction refresh() { document.location.href=url; }&lt;/script&gt;"</FONT>;
+<FONT ID="LN">25</FONT><A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String END_DOCUMENT = <FONT ID="StringLiteral">"&lt;/body&gt;&lt;/html&gt;"</FONT>;
+<FONT ID="LN">26</FONT><A NAME="26"></A>
+<FONT ID="LN">27</FONT><A NAME="27"></A>    <FONT ID="Private">private</FONT> PrintWriter servletOut;
+<FONT ID="LN">28</FONT><A NAME="28"></A>    <FONT ID="Private">private</FONT> HttpServletResponse servletRsp;
+<FONT ID="LN">29</FONT><A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> bytesSent;
+<FONT ID="LN">30</FONT><A NAME="30"></A>
+<FONT ID="LN">31</FONT><A NAME="31"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">32</FONT><A NAME="32"></A>     * Constructor.
+<FONT ID="LN">33</FONT><A NAME="33"></A>     */</FONT>
+<FONT ID="LN">34</FONT><A NAME="34"></A>    <FONT ID="Public">public</FONT> BrowserAdapter(HttpServletResponse aServletResponse) {
+<FONT ID="LN">35</FONT><A NAME="35"></A>        servletRsp = aServletResponse;
+<FONT ID="LN">36</FONT><A NAME="36"></A>    }
+<FONT ID="LN">37</FONT><A NAME="37"></A>
+<FONT ID="LN">38</FONT><A NAME="38"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">39</FONT><A NAME="39"></A>     * Generic init.
+<FONT ID="LN">40</FONT><A NAME="40"></A>     */</FONT>
+<FONT ID="LN">41</FONT><A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">42</FONT><A NAME="42"></A>        <FONT ID="SingleLineComment">// Keep servlet request/response objects until page ends in stop()
+<FONT ID="LN">43</FONT><A NAME="43"></A></FONT>        <FONT ID="SingleLineComment">// Content type as HTML
+<FONT ID="LN">44</FONT><A NAME="44"></A></FONT>        servletRsp.setStatus(HttpServletResponse.SC_OK);
+<FONT ID="LN">45</FONT><A NAME="45"></A>        servletRsp.setContentType(<FONT ID="StringLiteral">"text/html;charset=UTF-8"</FONT>);
+<FONT ID="LN">46</FONT><A NAME="46"></A>
+<FONT ID="LN">47</FONT><A NAME="47"></A>        <FONT ID="SingleLineComment">// http://www.junlu.com/msg/45902.html
+<FONT ID="LN">48</FONT><A NAME="48"></A></FONT>        <FONT ID="SingleLineComment">// Log.debug("bufsize=" + aRsp.getBufferSize());
+<FONT ID="LN">49</FONT><A NAME="49"></A></FONT>        servletOut = servletRsp.getWriter();
+<FONT ID="LN">50</FONT><A NAME="50"></A>        send(START_DOCUMENT);
+<FONT ID="LN">51</FONT><A NAME="51"></A>    }
+<FONT ID="LN">52</FONT><A NAME="52"></A>
+<FONT ID="LN">53</FONT><A NAME="53"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">54</FONT><A NAME="54"></A>     * Push Event to client.
+<FONT ID="LN">55</FONT><A NAME="55"></A>     */</FONT>
+<FONT ID="LN">56</FONT><A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> push(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> anEvent) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">57</FONT><A NAME="57"></A>        Log.debug(<FONT ID="StringLiteral">"BCA event="</FONT> + anEvent.toXML());
+<FONT ID="LN">58</FONT><A NAME="58"></A>
+<FONT ID="LN">59</FONT><A NAME="59"></A>        <FONT ID="SingleLineComment">// Check if we should refresh
+<FONT ID="LN">60</FONT><A NAME="60"></A></FONT>        <FONT ID="If">if</FONT> (anEvent.getEventType().equals(Protocol.E_REFRESH)) {
+<FONT ID="LN">61</FONT><A NAME="61"></A>            <FONT ID="SingleLineComment">// Append refresh and tail of HTML document
+<FONT ID="LN">62</FONT><A NAME="62"></A></FONT>            <FONT ID="SingleLineComment">// Construct the JS callback line to be sent as last line of doc.
+<FONT ID="LN">63</FONT><A NAME="63"></A></FONT>            <FONT ID="SingleLineComment">// This will refresh the request using the unique id to determine
+<FONT ID="LN">64</FONT><A NAME="64"></A></FONT>            <FONT ID="SingleLineComment">// the subscriber instance on the server. The client will wait for
+<FONT ID="LN">65</FONT><A NAME="65"></A></FONT>            <FONT ID="SingleLineComment">// a number of milliseconds.
+<FONT ID="LN">66</FONT><A NAME="66"></A></FONT>            <FONT ID="Long">long</FONT> refreshWaitMillis = Long.parseLong(anEvent.getField(P_WAIT));
+<FONT ID="LN">67</FONT><A NAME="67"></A>
+<FONT ID="LN">68</FONT><A NAME="68"></A>            <FONT ID="SingleLineComment">// Create servlet request for requesting next events (refresh)
+<FONT ID="LN">69</FONT><A NAME="69"></A></FONT>            String url = anEvent.getField(P_URL);
+<FONT ID="LN">70</FONT><A NAME="70"></A>            String jsRefreshTrigger = <FONT ID="StringLiteral">"\n&lt;script language=\"JavaScript\"&gt;url=\'"</FONT> + url + <FONT ID="StringLiteral">"\';\n setTimeout(\"refresh()\", "</FONT> + refreshWaitMillis + <FONT ID="StringLiteral">");\n&lt;/script&gt;"</FONT>;
+<FONT ID="LN">71</FONT><A NAME="71"></A>
+<FONT ID="LN">72</FONT><A NAME="72"></A>
+<FONT ID="LN">73</FONT><A NAME="73"></A>            send(jsRefreshTrigger + END_DOCUMENT);
+<FONT ID="LN">74</FONT><A NAME="74"></A>        } <FONT ID="Else">else</FONT> {
+<FONT ID="LN">75</FONT><A NAME="75"></A>            send(event2JavaScript(anEvent));
+<FONT ID="LN">76</FONT><A NAME="76"></A>        }
+<FONT ID="LN">77</FONT><A NAME="77"></A>    }
+<FONT ID="LN">78</FONT><A NAME="78"></A>
+<FONT ID="LN">79</FONT><A NAME="79"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">80</FONT><A NAME="80"></A>     * End HTML page in client browser.
+<FONT ID="LN">81</FONT><A NAME="81"></A>     */</FONT>
+<FONT ID="LN">82</FONT><A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">83</FONT><A NAME="83"></A>        <FONT ID="SingleLineComment">// To be garbage collected if adapter remains active
+<FONT ID="LN">84</FONT><A NAME="84"></A></FONT>        servletOut = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">85</FONT><A NAME="85"></A>    }
+<FONT ID="LN">86</FONT><A NAME="86"></A>
+<FONT ID="LN">87</FONT><A NAME="87"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">88</FONT><A NAME="88"></A>     * Send any string to browser.
+<FONT ID="LN">89</FONT><A NAME="89"></A>     */</FONT>
+<FONT ID="LN">90</FONT><A NAME="90"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> send(String s) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">91</FONT><A NAME="91"></A>        <FONT ID="SingleLineComment">// Send string to browser.
+<FONT ID="LN">92</FONT><A NAME="92"></A></FONT>        <FONT ID="SingleLineComment">// Log.debug("Adapter: sending: " + s);
+<FONT ID="LN">93</FONT><A NAME="93"></A></FONT>        <FONT ID="If">if</FONT> (servletOut == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">94</FONT><A NAME="94"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IOException(<FONT ID="StringLiteral">"Client adapter was stopped"</FONT>);
+<FONT ID="LN">95</FONT><A NAME="95"></A>        }
+<FONT ID="LN">96</FONT><A NAME="96"></A>
+<FONT ID="LN">97</FONT><A NAME="97"></A>        servletOut.print(s);
+<FONT ID="LN">98</FONT><A NAME="98"></A>
+<FONT ID="LN">99</FONT><A NAME="99"></A>        servletOut.flush();
+<FONT ID="LN">00</FONT><A NAME="100"></A>
+<FONT ID="LN">01</FONT><A NAME="101"></A>        <FONT ID="SingleLineComment">// Note: this doesn't seem to have effect
+<FONT ID="LN">02</FONT><A NAME="102"></A></FONT>        <FONT ID="SingleLineComment">// in Tomcat 4/5 if the client already disconnected.
+<FONT ID="LN">03</FONT><A NAME="103"></A></FONT>        servletRsp.flushBuffer();
+<FONT ID="LN">04</FONT><A NAME="104"></A>
+<FONT ID="LN">05</FONT><A NAME="105"></A>        bytesSent += s.length();
+<FONT ID="LN">06</FONT><A NAME="106"></A>        Log.debug(<FONT ID="StringLiteral">"bytesSent= "</FONT> + bytesSent);
+<FONT ID="LN">07</FONT><A NAME="107"></A>        <FONT ID="SingleLineComment">// Log.debug("BCA sent event: " + s);
+<FONT ID="LN">08</FONT><A NAME="108"></A></FONT>    }
+<FONT ID="LN">09</FONT><A NAME="109"></A>
+<FONT ID="LN">10</FONT><A NAME="110"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">11</FONT><A NAME="111"></A>     * Converts the Java Event to a JavaScript function call in browser page.
+<FONT ID="LN">12</FONT><A NAME="112"></A>     */</FONT>
+<FONT ID="LN">13</FONT><A NAME="113"></A>    <FONT ID="Protected">protected</FONT> String event2JavaScript(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">14</FONT><A NAME="114"></A>
+<FONT ID="LN">15</FONT><A NAME="115"></A>        <FONT ID="SingleLineComment">// Convert the event to a comma-separated string.
+<FONT ID="LN">16</FONT><A NAME="116"></A></FONT>        String jsArgs = <FONT ID="StringLiteral">""</FONT>;
+<FONT ID="LN">17</FONT><A NAME="117"></A>        <FONT ID="For">for</FONT> (Iterator iter = event.getFieldNames(); iter.hasNext();) {
+<FONT ID="LN">18</FONT><A NAME="118"></A>            String name = (String) iter.next();
+<FONT ID="LN">19</FONT><A NAME="119"></A>            String value = event.getField(name);
+<FONT ID="LN">20</FONT><A NAME="120"></A>            String nextArgument = (jsArgs.equals(<FONT ID="StringLiteral">""</FONT>) ? <FONT ID="StringLiteral">""</FONT> : <FONT ID="StringLiteral">","</FONT>) + <FONT ID="StringLiteral">"'"</FONT> + name + <FONT ID="StringLiteral">"'"</FONT> + <FONT ID="StringLiteral">", \""</FONT> + value + <FONT ID="StringLiteral">"\""</FONT>;
+<FONT ID="LN">21</FONT><A NAME="121"></A>            jsArgs += nextArgument;
+<FONT ID="LN">22</FONT><A NAME="122"></A>        }
+<FONT ID="LN">23</FONT><A NAME="123"></A>
+<FONT ID="LN">24</FONT><A NAME="124"></A>        <FONT ID="SingleLineComment">// Construct and return the function call */
+<FONT ID="LN">25</FONT><A NAME="125"></A></FONT>        <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"&lt;script language=\"JavaScript\"&gt;parent.push("</FONT> + jsArgs + <FONT ID="StringLiteral">");&lt;/script&gt;"</FONT>;
+<FONT ID="LN">26</FONT><A NAME="126"></A>    }
+<FONT ID="LN">27</FONT><A NAME="127"></A>
+<FONT ID="LN">28</FONT><A NAME="128"></A>}
+<FONT ID="LN">29</FONT><A NAME="129"></A>
+<FONT ID="LN">30</FONT><A NAME="130"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">31</FONT><A NAME="131"></A> * $Log: BrowserAdapter.java,v $
+<FONT ID="LN">32</FONT><A NAME="132"></A> * Revision 1.6  2007/11/09 13:15:35  justb
+<FONT ID="LN">33</FONT><A NAME="133"></A> * add charset=UTF-8 in returned HTTP content types
+<FONT ID="LN">34</FONT><A NAME="134"></A> *
+<FONT ID="LN">35</FONT><A NAME="135"></A> * Revision 1.5  2006/05/15 11:52:53  justb
+<FONT ID="LN">36</FONT><A NAME="136"></A> * updates mainly for AJAX client
+<FONT ID="LN">37</FONT><A NAME="137"></A> *
+<FONT ID="LN">38</FONT><A NAME="138"></A> * Revision 1.4  2006/05/06 00:10:11  justb
+<FONT ID="LN">39</FONT><A NAME="139"></A> * various chgs but not too serious...
+<FONT ID="LN">40</FONT><A NAME="140"></A> *
+<FONT ID="LN">41</FONT><A NAME="141"></A> * Revision 1.3  2005/02/28 12:45:59  justb
+<FONT ID="LN">42</FONT><A NAME="142"></A> * introduced Command class
+<FONT ID="LN">43</FONT><A NAME="143"></A> *
+<FONT ID="LN">44</FONT><A NAME="144"></A> * Revision 1.2  2005/02/21 11:50:44  justb
+<FONT ID="LN">45</FONT><A NAME="145"></A> * ohase1 of refactoring Subscriber into Session/Controller/Subscriber
+<FONT ID="LN">46</FONT><A NAME="146"></A> *
+<FONT ID="LN">47</FONT><A NAME="147"></A> * Revision 1.1  2005/02/18 10:07:23  justb
+<FONT ID="LN">48</FONT><A NAME="148"></A> * many renamings of classes (make names compact)
+<FONT ID="LN">49</FONT><A NAME="149"></A> *
+<FONT ID="LN">50</FONT><A NAME="150"></A> * Revision 1.12  2005/02/15 13:30:23  justb
+<FONT ID="LN">51</FONT><A NAME="151"></A> * changes for Tomcat buffering (now working in tc4 and 5.0)
+<FONT ID="LN">52</FONT><A NAME="152"></A> *
+<FONT ID="LN">53</FONT><A NAME="153"></A> * Revision 1.11  2005/01/24 22:45:58  justb
+<FONT ID="LN">54</FONT><A NAME="154"></A> * getting safari to work
+<FONT ID="LN">55</FONT><A NAME="155"></A> *
+<FONT ID="LN">56</FONT><A NAME="156"></A> * Revision 1.10  2005/01/18 16:46:27  justb
+<FONT ID="LN">57</FONT><A NAME="157"></A> * buffer size setting ignored by tomcat workings
+<FONT ID="LN">58</FONT><A NAME="158"></A> *
+<FONT ID="LN">59</FONT><A NAME="159"></A> * Revision 1.9  2004/10/24 12:58:18  justb
+<FONT ID="LN">60</FONT><A NAME="160"></A> * revised client and test classes for new protocol
+<FONT ID="LN">61</FONT><A NAME="161"></A> *
+<FONT ID="LN">62</FONT><A NAME="162"></A> * Revision 1.8  2004/09/20 22:01:38  justb
+<FONT ID="LN">63</FONT><A NAME="163"></A> * more changes for new protocol
+<FONT ID="LN">64</FONT><A NAME="164"></A> *
+<FONT ID="LN">65</FONT><A NAME="165"></A> * Revision 1.7  2004/09/03 22:35:37  justb
+<FONT ID="LN">66</FONT><A NAME="166"></A> * Almost complete rewrite, just checking in now
+<FONT ID="LN">67</FONT><A NAME="167"></A> *
+<FONT ID="LN">68</FONT><A NAME="168"></A> * Revision 1.6  2004/08/15 16:00:15  justb
+<FONT ID="LN">69</FONT><A NAME="169"></A> * enhancements to pull mode
+<FONT ID="LN">70</FONT><A NAME="170"></A> *
+<FONT ID="LN">71</FONT><A NAME="171"></A> * Revision 1.5  2004/08/13 23:36:05  justb
+<FONT ID="LN">72</FONT><A NAME="172"></A> * rewrite of Pullet into Pushlet "pull" mode
+<FONT ID="LN">73</FONT><A NAME="173"></A> *
+<FONT ID="LN">74</FONT><A NAME="174"></A> * Revision 1.4  2003/08/15 08:37:40  justb
+<FONT ID="LN">75</FONT><A NAME="175"></A> * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">76</FONT><A NAME="176"></A> *
+<FONT ID="LN">77</FONT><A NAME="177"></A> * Revision 1.3  2003/08/12 09:57:05  justb
+<FONT ID="LN">78</FONT><A NAME="178"></A> * replaced all print statements to Log.*() calls
+<FONT ID="LN">79</FONT><A NAME="179"></A> *
+<FONT ID="LN">80</FONT><A NAME="180"></A> * Revision 1.2  2003/05/18 16:15:07  justb
+<FONT ID="LN">81</FONT><A NAME="181"></A> * support for XML encoded Events
+<FONT ID="LN">82</FONT><A NAME="182"></A> *
+<FONT ID="LN">83</FONT><A NAME="183"></A> * Revision 1.1.1.1  2002/09/24 21:02:30  justb
+<FONT ID="LN">84</FONT><A NAME="184"></A> * import to sourceforge
+<FONT ID="LN">85</FONT><A NAME="185"></A> *
+<FONT ID="LN">86</FONT><A NAME="186"></A> * Revision 1.1.1.1  2002/09/20 22:48:17  justb
+<FONT ID="LN">87</FONT><A NAME="187"></A> * import to SF
+<FONT ID="LN">88</FONT><A NAME="188"></A> *
+<FONT ID="LN">89</FONT><A NAME="189"></A> * Revision 1.1.1.1  2002/09/20 14:19:02  justb
+<FONT ID="LN">90</FONT><A NAME="190"></A> * first import into SF
+<FONT ID="LN">91</FONT><A NAME="191"></A> *
+<FONT ID="LN">92</FONT><A NAME="192"></A> * Revision 1.5  2002/04/15 20:42:41  just
+<FONT ID="LN">93</FONT><A NAME="193"></A> * reformatting and renaming GuardedQueue to EventQueue
+<FONT ID="LN">94</FONT><A NAME="194"></A> *
+<FONT ID="LN">95</FONT><A NAME="195"></A> * Revision 1.4  2000/12/27 22:39:35  just
+<FONT ID="LN">96</FONT><A NAME="196"></A> * no message
+<FONT ID="LN">97</FONT><A NAME="197"></A> *
+<FONT ID="LN">98</FONT><A NAME="198"></A> * Revision 1.3  2000/10/30 14:15:47  just
+<FONT ID="LN">99</FONT><A NAME="199"></A> * no message
+<FONT ID="LN">00</FONT><A NAME="200"></A> *
+<FONT ID="LN">01</FONT><A NAME="201"></A> *
+<FONT ID="LN">02</FONT><A NAME="202"></A> */</FONT>
+<FONT ID="LN">03</FONT><A NAME="203"></A>
+<FONT ID="LN">04</FONT><A NAME="204"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">BrowserAdapter.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

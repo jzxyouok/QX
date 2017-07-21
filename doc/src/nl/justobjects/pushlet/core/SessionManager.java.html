@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.SessionManager (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SessionManager.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Log.java.html">nl.justobjects.pushlet.util.Log</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">nl.justobjects.pushlet.util.PushletException</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Rand.java.html">nl.justobjects.pushlet.util.Rand</A>;
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/Sys.java.html">nl.justobjects.pushlet.util.Sys</A>;
+<FONT ID="LN">10</FONT><A NAME="10"></A>
+<FONT ID="LN">11</FONT><A NAME="11"></A><FONT ID="Import">import</FONT> java.rmi.server.UID;
+<FONT ID="LN">12</FONT><A NAME="12"></A><FONT ID="Import">import</FONT> java.util.*;
+<FONT ID="LN">13</FONT><A NAME="13"></A><FONT ID="Import">import</FONT> java.lang.reflect.Method;
+<FONT ID="LN">14</FONT><A NAME="14"></A><FONT ID="Import">import</FONT> java.lang.reflect.InvocationTargetException;
+<FONT ID="LN">15</FONT><A NAME="15"></A>
+<FONT ID="LN">16</FONT><A NAME="16"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">17</FONT><A NAME="17"></A> * Manages lifecycle of Sessions.
+<FONT ID="LN">18</FONT><A NAME="18"></A> *
+<FONT ID="LN">19</FONT><A NAME="19"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">20</FONT><A NAME="20"></A> * @version $Id: SessionManager.java,v 1.12 2007/12/04 13:55:53 justb Exp $
+<FONT ID="LN">21</FONT><A NAME="21"></A> */</FONT>
+<FONT ID="LN">22</FONT><A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SessionManager <FONT ID="Implements">implements</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/ConfigDefs.java.html">ConfigDefs</A> {
+<FONT ID="LN">23</FONT><A NAME="23"></A>
+<FONT ID="LN">24</FONT><A NAME="24"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">25</FONT><A NAME="25"></A>     * Singleton pattern:  single instance.
+<FONT ID="LN">26</FONT><A NAME="26"></A>     */</FONT>
+<FONT ID="LN">27</FONT><A NAME="27"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/SessionManager.java.html">SessionManager</A> instance;
+<FONT ID="LN">28</FONT><A NAME="28"></A>
+<FONT ID="LN">29</FONT><A NAME="29"></A>    <FONT ID="Static">static</FONT> {
+<FONT ID="LN">30</FONT><A NAME="30"></A>        <FONT ID="SingleLineComment">// Singleton + factory pattern:  create single instance
+<FONT ID="LN">31</FONT><A NAME="31"></A></FONT>        <FONT ID="SingleLineComment">// from configured class name
+<FONT ID="LN">32</FONT><A NAME="32"></A></FONT>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">33</FONT><A NAME="33"></A>            instance = (<A HREF="../../../../nl/justobjects/pushlet/core/SessionManager.java.html">SessionManager</A>) Config.getClass(SESSION_MANAGER_CLASS, <FONT ID="StringLiteral">"nl.justobjects.pushlet.core.SessionManager"</FONT>).newInstance();
+<FONT ID="LN">34</FONT><A NAME="34"></A>            Log.info(<FONT ID="StringLiteral">"SessionManager created className="</FONT> + instance.getClass());
+<FONT ID="LN">35</FONT><A NAME="35"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">36</FONT><A NAME="36"></A>            Log.fatal(<FONT ID="StringLiteral">"Cannot instantiate SessionManager from config"</FONT>, t);
+<FONT ID="LN">37</FONT><A NAME="37"></A>        }
+<FONT ID="LN">38</FONT><A NAME="38"></A>    }
+<FONT ID="LN">39</FONT><A NAME="39"></A>
+<FONT ID="LN">40</FONT><A NAME="40"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">41</FONT><A NAME="41"></A>     * Timer to schedule session leasing TimerTasks.
+<FONT ID="LN">42</FONT><A NAME="42"></A>     */</FONT>
+<FONT ID="LN">43</FONT><A NAME="43"></A>    <FONT ID="Private">private</FONT> Timer timer;
+<FONT ID="LN">44</FONT><A NAME="44"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Long">long</FONT> TIMER_INTERVAL_MILLIS = <FONT ID="IntegerLiteral">60000</FONT>;
+<FONT ID="LN">45</FONT><A NAME="45"></A>
+<FONT ID="LN">46</FONT><A NAME="46"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">47</FONT><A NAME="47"></A>     * Map of active sessions, keyed by their id, all access is through mutex.
+<FONT ID="LN">48</FONT><A NAME="48"></A>     */</FONT>
+<FONT ID="LN">49</FONT><A NAME="49"></A>    <FONT ID="Private">private</FONT> Map sessions = <FONT ID="New">new</FONT> HashMap(<FONT ID="IntegerLiteral">13</FONT>);
+<FONT ID="LN">50</FONT><A NAME="50"></A>
+<FONT ID="LN">51</FONT><A NAME="51"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">52</FONT><A NAME="52"></A>     * Cache of Sessions for iteration and to allow concurrent modification.
+<FONT ID="LN">53</FONT><A NAME="53"></A>     */</FONT>
+<FONT ID="LN">54</FONT><A NAME="54"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[] sessionCache = <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[<FONT ID="IntegerLiteral">0</FONT>];
+<FONT ID="LN">55</FONT><A NAME="55"></A>
+<FONT ID="LN">56</FONT><A NAME="56"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">57</FONT><A NAME="57"></A>     * State of SessionCache, becomes true whenever sessionCache out of sync with sessions Map.
+<FONT ID="LN">58</FONT><A NAME="58"></A>     */</FONT>
+<FONT ID="LN">59</FONT><A NAME="59"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> sessionCacheDirty = <FONT ID="False">false</FONT>;
+<FONT ID="LN">60</FONT><A NAME="60"></A>
+<FONT ID="LN">61</FONT><A NAME="61"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">62</FONT><A NAME="62"></A>     * Lock for any operation on Sessions (Session Map and/or -cache).
+<FONT ID="LN">63</FONT><A NAME="63"></A>     */</FONT>
+<FONT ID="LN">64</FONT><A NAME="64"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Object mutex = <FONT ID="New">new</FONT> Object();
+<FONT ID="LN">65</FONT><A NAME="65"></A>
+<FONT ID="LN">66</FONT><A NAME="66"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">67</FONT><A NAME="67"></A>     * Singleton pattern: protected constructor needed for derived classes.
+<FONT ID="LN">68</FONT><A NAME="68"></A>     */</FONT>
+<FONT ID="LN">69</FONT><A NAME="69"></A>    <FONT ID="Protected">protected</FONT> SessionManager() {
+<FONT ID="LN">70</FONT><A NAME="70"></A>    }
+<FONT ID="LN">71</FONT><A NAME="71"></A>
+<FONT ID="LN">72</FONT><A NAME="72"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">73</FONT><A NAME="73"></A>     * Visitor pattern implementation for Session iteration.
+<FONT ID="LN">74</FONT><A NAME="74"></A>     * &lt;p/&gt;
+<FONT ID="LN">75</FONT><A NAME="75"></A>     * This method can be used to iterate over all Sessions in a threadsafe way.
+<FONT ID="LN">76</FONT><A NAME="76"></A>     * See Dispatcher.multicast and broadcast methods for examples.
+<FONT ID="LN">77</FONT><A NAME="77"></A>     *
+<FONT ID="LN">78</FONT><A NAME="78"></A>     * @param visitor the object that should implement method parm
+<FONT ID="LN">79</FONT><A NAME="79"></A>     * @param method  the method to be called from visitor
+<FONT ID="LN">80</FONT><A NAME="80"></A>     * @param args  arguments to be passed in visit method, args[0] will always be Session object
+<FONT ID="LN">81</FONT><A NAME="81"></A>     */</FONT>
+<FONT ID="LN">82</FONT><A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> apply(Object visitor, Method method, Object[] args) {
+<FONT ID="LN">83</FONT><A NAME="83"></A>
+<FONT ID="LN">84</FONT><A NAME="84"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">85</FONT><A NAME="85"></A>
+<FONT ID="LN">86</FONT><A NAME="86"></A>            <FONT ID="SingleLineComment">// Refresh Session cache if required
+<FONT ID="LN">87</FONT><A NAME="87"></A></FONT>            <FONT ID="SingleLineComment">// We use a cache for two reasons:
+<FONT ID="LN">88</FONT><A NAME="88"></A></FONT>            <FONT ID="SingleLineComment">// 1. to prevent concurrent modification from within visitor method
+<FONT ID="LN">89</FONT><A NAME="89"></A></FONT>            <FONT ID="SingleLineComment">// 2. some optimization (vs setting up Iterator for each apply()
+<FONT ID="LN">90</FONT><A NAME="90"></A></FONT>            <FONT ID="If">if</FONT> (sessionCacheDirty) {
+<FONT ID="LN">91</FONT><A NAME="91"></A>                <FONT ID="SingleLineComment">// Clear out existing cache
+<FONT ID="LN">92</FONT><A NAME="92"></A></FONT>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; sessionCache.length; i++) {
+<FONT ID="LN">93</FONT><A NAME="93"></A>                    sessionCache[i] = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">94</FONT><A NAME="94"></A>                }
+<FONT ID="LN">95</FONT><A NAME="95"></A>
+<FONT ID="LN">96</FONT><A NAME="96"></A>                <FONT ID="SingleLineComment">// Refill cache and update state
+<FONT ID="LN">97</FONT><A NAME="97"></A></FONT>                sessionCache = (<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[]) sessions.values().toArray(sessionCache);
+<FONT ID="LN">98</FONT><A NAME="98"></A>                sessionCacheDirty = <FONT ID="False">false</FONT>;
+<FONT ID="LN">99</FONT><A NAME="99"></A>            }
+<FONT ID="LN">00</FONT><A NAME="100"></A>
+<FONT ID="LN">01</FONT><A NAME="101"></A>            <FONT ID="SingleLineComment">// Valid session cache: loop and call supplied Visitor method
+<FONT ID="LN">02</FONT><A NAME="102"></A></FONT>            <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> nextSession;
+<FONT ID="LN">03</FONT><A NAME="103"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; sessionCache.length; i++) {
+<FONT ID="LN">04</FONT><A NAME="104"></A>                nextSession = sessionCache[i];
+<FONT ID="LN">05</FONT><A NAME="105"></A>
+<FONT ID="LN">06</FONT><A NAME="106"></A>                <FONT ID="SingleLineComment">// Session cache may not be entirely filled
+<FONT ID="LN">07</FONT><A NAME="107"></A></FONT>                <FONT ID="If">if</FONT> (nextSession == <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">08</FONT><A NAME="108"></A>                    <FONT ID="Break">break</FONT>;
+<FONT ID="LN">09</FONT><A NAME="109"></A>                }
+<FONT ID="LN">10</FONT><A NAME="110"></A>
+<FONT ID="LN">11</FONT><A NAME="111"></A>                <FONT ID="Try">try</FONT> {
+<FONT ID="LN">12</FONT><A NAME="112"></A>                    <FONT ID="SingleLineComment">// First argument is always a Session object
+<FONT ID="LN">13</FONT><A NAME="113"></A></FONT>                    args[<FONT ID="IntegerLiteral">0</FONT>] = nextSession;
+<FONT ID="LN">14</FONT><A NAME="114"></A>
+<FONT ID="LN">15</FONT><A NAME="115"></A>                    <FONT ID="SingleLineComment">// Use Java reflection to call the method passed by the Visitor
+<FONT ID="LN">16</FONT><A NAME="116"></A></FONT>                    method.invoke(visitor, args);
+<FONT ID="LN">17</FONT><A NAME="117"></A>                } <FONT ID="Catch">catch</FONT> (IllegalAccessException e) {
+<FONT ID="LN">18</FONT><A NAME="118"></A>                    Log.warn(<FONT ID="StringLiteral">"apply: illegal method access: "</FONT>, e);
+<FONT ID="LN">19</FONT><A NAME="119"></A>                } <FONT ID="Catch">catch</FONT> (InvocationTargetException e) {
+<FONT ID="LN">20</FONT><A NAME="120"></A>                    Log.warn(<FONT ID="StringLiteral">"apply: method invoke: "</FONT>, e);
+<FONT ID="LN">21</FONT><A NAME="121"></A>                }
+<FONT ID="LN">22</FONT><A NAME="122"></A>            }
+<FONT ID="LN">23</FONT><A NAME="123"></A>        }
+<FONT ID="LN">24</FONT><A NAME="124"></A>    }
+<FONT ID="LN">25</FONT><A NAME="125"></A>
+<FONT ID="LN">26</FONT><A NAME="126"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">27</FONT><A NAME="127"></A>     * Create new Session (but add later).
+<FONT ID="LN">28</FONT><A NAME="128"></A>     */</FONT>
+<FONT ID="LN">29</FONT><A NAME="129"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> createSession(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> anEvent) <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">30</FONT><A NAME="130"></A>        <FONT ID="SingleLineComment">// Trivial
+<FONT ID="LN">31</FONT><A NAME="131"></A></FONT>        <FONT ID="Return">return</FONT> Session.create(createSessionId());
+<FONT ID="LN">32</FONT><A NAME="132"></A>    }
+<FONT ID="LN">33</FONT><A NAME="133"></A>
+<FONT ID="LN">34</FONT><A NAME="134"></A>
+<FONT ID="LN">35</FONT><A NAME="135"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">36</FONT><A NAME="136"></A>     * Singleton pattern: get single instance.
+<FONT ID="LN">37</FONT><A NAME="137"></A>     */</FONT>
+<FONT ID="LN">38</FONT><A NAME="138"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/SessionManager.java.html">SessionManager</A> getInstance() {
+<FONT ID="LN">39</FONT><A NAME="139"></A>        <FONT ID="Return">return</FONT> instance;
+<FONT ID="LN">40</FONT><A NAME="140"></A>    }
+<FONT ID="LN">41</FONT><A NAME="141"></A>
+<FONT ID="LN">42</FONT><A NAME="142"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">43</FONT><A NAME="143"></A>     * Get Session by session id.
+<FONT ID="LN">44</FONT><A NAME="144"></A>     */</FONT>
+<FONT ID="LN">45</FONT><A NAME="145"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> getSession(String anId) {
+<FONT ID="LN">46</FONT><A NAME="146"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">47</FONT><A NAME="147"></A>            <FONT ID="Return">return</FONT> (<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>) sessions.get(anId);
+<FONT ID="LN">48</FONT><A NAME="148"></A>        }
+<FONT ID="LN">49</FONT><A NAME="149"></A>    }
+<FONT ID="LN">50</FONT><A NAME="150"></A>
+<FONT ID="LN">51</FONT><A NAME="151"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">52</FONT><A NAME="152"></A>     * Get copy of listening Sessions.
+<FONT ID="LN">53</FONT><A NAME="153"></A>     */</FONT>
+<FONT ID="LN">54</FONT><A NAME="154"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[] getSessions() {
+<FONT ID="LN">55</FONT><A NAME="155"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">56</FONT><A NAME="156"></A>            <FONT ID="Return">return</FONT> (<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[]) sessions.values().toArray(<FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[<FONT ID="IntegerLiteral">0</FONT>]);
+<FONT ID="LN">57</FONT><A NAME="157"></A>        }
+<FONT ID="LN">58</FONT><A NAME="158"></A>    }
+<FONT ID="LN">59</FONT><A NAME="159"></A>
+<FONT ID="LN">60</FONT><A NAME="160"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">61</FONT><A NAME="161"></A>     * Get number of listening Sessions.
+<FONT ID="LN">62</FONT><A NAME="162"></A>     */</FONT>
+<FONT ID="LN">63</FONT><A NAME="163"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSessionCount() {
+<FONT ID="LN">64</FONT><A NAME="164"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">65</FONT><A NAME="165"></A>            <FONT ID="Return">return</FONT> sessions.size();
+<FONT ID="LN">66</FONT><A NAME="166"></A>        }
+<FONT ID="LN">67</FONT><A NAME="167"></A>    }
+<FONT ID="LN">68</FONT><A NAME="168"></A>
+<FONT ID="LN">69</FONT><A NAME="169"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">70</FONT><A NAME="170"></A>     * Get status info.
+<FONT ID="LN">71</FONT><A NAME="171"></A>     */</FONT>
+<FONT ID="LN">72</FONT><A NAME="172"></A>    <FONT ID="Public">public</FONT> String getStatus() {
+<FONT ID="LN">73</FONT><A NAME="173"></A>        <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>[] sessions = getSessions();
+<FONT ID="LN">74</FONT><A NAME="174"></A>        StringBuffer statusBuffer = <FONT ID="New">new</FONT> StringBuffer();
+<FONT ID="LN">75</FONT><A NAME="175"></A>        statusBuffer.append(<FONT ID="StringLiteral">"SessionMgr: "</FONT> + sessions.length + <FONT ID="StringLiteral">" sessions \\n"</FONT>);
+<FONT ID="LN">76</FONT><A NAME="176"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; sessions.length; i++) {
+<FONT ID="LN">77</FONT><A NAME="177"></A>            statusBuffer.append(sessions[i] + <FONT ID="StringLiteral">"\\n"</FONT>);
+<FONT ID="LN">78</FONT><A NAME="178"></A>        }
+<FONT ID="LN">79</FONT><A NAME="179"></A>        <FONT ID="Return">return</FONT> statusBuffer.toString();
+<FONT ID="LN">80</FONT><A NAME="180"></A>    }
+<FONT ID="LN">81</FONT><A NAME="181"></A>
+<FONT ID="LN">82</FONT><A NAME="182"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">83</FONT><A NAME="183"></A>     * Is Session present?.
+<FONT ID="LN">84</FONT><A NAME="184"></A>     */</FONT>
+<FONT ID="LN">85</FONT><A NAME="185"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> hasSession(String anId) {
+<FONT ID="LN">86</FONT><A NAME="186"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">87</FONT><A NAME="187"></A>            <FONT ID="Return">return</FONT> sessions.containsKey(anId);
+<FONT ID="LN">88</FONT><A NAME="188"></A>        }
+<FONT ID="LN">89</FONT><A NAME="189"></A>    }
+<FONT ID="LN">90</FONT><A NAME="190"></A>
+<FONT ID="LN">91</FONT><A NAME="191"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">92</FONT><A NAME="192"></A>     * Add session.
+<FONT ID="LN">93</FONT><A NAME="193"></A>     */</FONT>
+<FONT ID="LN">94</FONT><A NAME="194"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addSession(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> session) {
+<FONT ID="LN">95</FONT><A NAME="195"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">96</FONT><A NAME="196"></A>            sessions.put(session.getId(), session);
+<FONT ID="LN">97</FONT><A NAME="197"></A>            sessionCacheDirty = <FONT ID="True">true</FONT>;
+<FONT ID="LN">98</FONT><A NAME="198"></A>        }
+<FONT ID="LN">99</FONT><A NAME="199"></A>        <FONT ID="SingleLineComment">// log(session.getId() + " at " + session.getAddress() + " adding ");
+<FONT ID="LN">00</FONT><A NAME="200"></A></FONT>        info(session.getId() + <FONT ID="StringLiteral">" at "</FONT> + session.getAddress() + <FONT ID="StringLiteral">" added "</FONT>);
+<FONT ID="LN">01</FONT><A NAME="201"></A>    }
+<FONT ID="LN">02</FONT><A NAME="202"></A>
+<FONT ID="LN">03</FONT><A NAME="203"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">04</FONT><A NAME="204"></A>     * Register session for removal.
+<FONT ID="LN">05</FONT><A NAME="205"></A>     */</FONT>
+<FONT ID="LN">06</FONT><A NAME="206"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> removeSession(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession) {
+<FONT ID="LN">07</FONT><A NAME="207"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">08</FONT><A NAME="208"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> session = (<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>) sessions.remove(aSession.getId());
+<FONT ID="LN">09</FONT><A NAME="209"></A>            <FONT ID="If">if</FONT> (session != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">10</FONT><A NAME="210"></A>                info(session.getId() + <FONT ID="StringLiteral">" at "</FONT> + session.getAddress() + <FONT ID="StringLiteral">" removed "</FONT>);
+<FONT ID="LN">11</FONT><A NAME="211"></A>            }
+<FONT ID="LN">12</FONT><A NAME="212"></A>            sessionCacheDirty = <FONT ID="True">true</FONT>;
+<FONT ID="LN">13</FONT><A NAME="213"></A>            <FONT ID="Return">return</FONT> session;
+<FONT ID="LN">14</FONT><A NAME="214"></A>        }
+<FONT ID="LN">15</FONT><A NAME="215"></A>    }
+<FONT ID="LN">16</FONT><A NAME="216"></A>
+<FONT ID="LN">17</FONT><A NAME="217"></A>
+<FONT ID="LN">18</FONT><A NAME="218"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">19</FONT><A NAME="219"></A>     * Starts us.
+<FONT ID="LN">20</FONT><A NAME="220"></A>     */</FONT>
+<FONT ID="LN">21</FONT><A NAME="221"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">22</FONT><A NAME="222"></A>        <FONT ID="If">if</FONT> (timer != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">23</FONT><A NAME="223"></A>            stop();
+<FONT ID="LN">24</FONT><A NAME="224"></A>        }
+<FONT ID="LN">25</FONT><A NAME="225"></A>        timer = <FONT ID="New">new</FONT> Timer(<FONT ID="False">false</FONT>);
+<FONT ID="LN">26</FONT><A NAME="226"></A>        timer.schedule(<FONT ID="New">new</FONT> AgingTimerTask(), TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
+<FONT ID="LN">27</FONT><A NAME="227"></A>        info(<FONT ID="StringLiteral">"started; interval="</FONT> + TIMER_INTERVAL_MILLIS + <FONT ID="StringLiteral">"ms"</FONT>);
+<FONT ID="LN">28</FONT><A NAME="228"></A>    }
+<FONT ID="LN">29</FONT><A NAME="229"></A>
+<FONT ID="LN">30</FONT><A NAME="230"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">31</FONT><A NAME="231"></A>     * Stopis us.
+<FONT ID="LN">32</FONT><A NAME="232"></A>     */</FONT>
+<FONT ID="LN">33</FONT><A NAME="233"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() {
+<FONT ID="LN">34</FONT><A NAME="234"></A>        <FONT ID="If">if</FONT> (timer != <FONT ID="Null">null</FONT>) {
+<FONT ID="LN">35</FONT><A NAME="235"></A>            timer.cancel();
+<FONT ID="LN">36</FONT><A NAME="236"></A>            timer = <FONT ID="Null">null</FONT>;
+<FONT ID="LN">37</FONT><A NAME="237"></A>        }
+<FONT ID="LN">38</FONT><A NAME="238"></A>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">39</FONT><A NAME="239"></A>            sessions.clear();
+<FONT ID="LN">40</FONT><A NAME="240"></A>        }
+<FONT ID="LN">41</FONT><A NAME="241"></A>        info(<FONT ID="StringLiteral">"stopped"</FONT>);
+<FONT ID="LN">42</FONT><A NAME="242"></A>    }
+<FONT ID="LN">43</FONT><A NAME="243"></A>
+<FONT ID="LN">44</FONT><A NAME="244"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">45</FONT><A NAME="245"></A>     * Create unique Session id.
+<FONT ID="LN">46</FONT><A NAME="246"></A>     */</FONT>
+<FONT ID="LN">47</FONT><A NAME="247"></A>    <FONT ID="Protected">protected</FONT> String createSessionId() {
+<FONT ID="LN">48</FONT><A NAME="248"></A>        <FONT ID="SingleLineComment">// Use UUID if specified in config (thanks Uli Romahn)
+<FONT ID="LN">49</FONT><A NAME="249"></A></FONT>        <FONT ID="If">if</FONT> (Config.hasProperty(SESSION_ID_GENERATION) &amp;&amp; Config.getProperty(SESSION_ID_GENERATION).equals(SESSION_ID_GENERATION_UUID)) {
+<FONT ID="LN">50</FONT><A NAME="250"></A>            <FONT ID="SingleLineComment">// We want to be Java 1.4 compatible so use UID class (1.5+ we may use java.util.UUID). 
+<FONT ID="LN">51</FONT><A NAME="251"></A></FONT>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> UID().toString();
+<FONT ID="LN">52</FONT><A NAME="252"></A>        }
+<FONT ID="LN">53</FONT><A NAME="253"></A>
+<FONT ID="LN">54</FONT><A NAME="254"></A>        <FONT ID="SingleLineComment">// Other cases use random name
+<FONT ID="LN">55</FONT><A NAME="255"></A></FONT>
+<FONT ID="LN">56</FONT><A NAME="256"></A>        <FONT ID="SingleLineComment">// Create a unique session id
+<FONT ID="LN">57</FONT><A NAME="257"></A></FONT>        <FONT ID="SingleLineComment">// In 99.9999 % of the cases this should be generated at once
+<FONT ID="LN">58</FONT><A NAME="258"></A></FONT>        <FONT ID="SingleLineComment">// We need the mutext to prevent the chance of creating
+<FONT ID="LN">59</FONT><A NAME="259"></A></FONT>        <FONT ID="SingleLineComment">// same-valued ids (thanks Uli Romahn)
+<FONT ID="LN">60</FONT><A NAME="260"></A></FONT>        <FONT ID="Synchronized">synchronized</FONT> (mutex) {
+<FONT ID="LN">61</FONT><A NAME="261"></A>            String id;
+<FONT ID="LN">62</FONT><A NAME="262"></A>            <FONT ID="While">while</FONT> (<FONT ID="True">true</FONT>) {
+<FONT ID="LN">63</FONT><A NAME="263"></A>                id = Rand.randomName(Config.getIntProperty(SESSION_ID_SIZE));
+<FONT ID="LN">64</FONT><A NAME="264"></A>                <FONT ID="If">if</FONT> (!hasSession(id)) {
+<FONT ID="LN">65</FONT><A NAME="265"></A>                    <FONT ID="SingleLineComment">// Created unique session id
+<FONT ID="LN">66</FONT><A NAME="266"></A></FONT>                    <FONT ID="Break">break</FONT>;
+<FONT ID="LN">67</FONT><A NAME="267"></A>                }
+<FONT ID="LN">68</FONT><A NAME="268"></A>            }
+<FONT ID="LN">69</FONT><A NAME="269"></A>            <FONT ID="Return">return</FONT> id;
+<FONT ID="LN">70</FONT><A NAME="270"></A>        }
+<FONT ID="LN">71</FONT><A NAME="271"></A>    }
+<FONT ID="LN">72</FONT><A NAME="272"></A>
+<FONT ID="LN">73</FONT><A NAME="273"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">74</FONT><A NAME="274"></A>     * Util: stdout printing.
+<FONT ID="LN">75</FONT><A NAME="275"></A>     */</FONT>
+<FONT ID="LN">76</FONT><A NAME="276"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> info(String s) {
+<FONT ID="LN">77</FONT><A NAME="277"></A>        Log.info(<FONT ID="StringLiteral">"SessionManager: "</FONT> + <FONT ID="New">new</FONT> Date() + <FONT ID="StringLiteral">" "</FONT> + s);
+<FONT ID="LN">78</FONT><A NAME="278"></A>    }
+<FONT ID="LN">79</FONT><A NAME="279"></A>
+<FONT ID="LN">80</FONT><A NAME="280"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">81</FONT><A NAME="281"></A>     * Util: stdout printing.
+<FONT ID="LN">82</FONT><A NAME="282"></A>     */</FONT>
+<FONT ID="LN">83</FONT><A NAME="283"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> warn(String s) {
+<FONT ID="LN">84</FONT><A NAME="284"></A>        Log.warn(<FONT ID="StringLiteral">"SessionManager: "</FONT> + s);
+<FONT ID="LN">85</FONT><A NAME="285"></A>    }
+<FONT ID="LN">86</FONT><A NAME="286"></A>
+<FONT ID="LN">87</FONT><A NAME="287"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">88</FONT><A NAME="288"></A>     * Util: stdout printing.
+<FONT ID="LN">89</FONT><A NAME="289"></A>     */</FONT>
+<FONT ID="LN">90</FONT><A NAME="290"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> debug(String s) {
+<FONT ID="LN">91</FONT><A NAME="291"></A>        Log.debug(<FONT ID="StringLiteral">"SessionManager: "</FONT> + s);
+<FONT ID="LN">92</FONT><A NAME="292"></A>    }
+<FONT ID="LN">93</FONT><A NAME="293"></A>
+<FONT ID="LN">94</FONT><A NAME="294"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">95</FONT><A NAME="295"></A>     * Manages Session timeouts.
+<FONT ID="LN">96</FONT><A NAME="296"></A>     */</FONT>
+<FONT ID="LN">97</FONT><A NAME="297"></A>    <FONT ID="Private">private</FONT> <FONT ID="Class">class</FONT> AgingTimerTask <FONT ID="Extends">extends</FONT> TimerTask {
+<FONT ID="LN">98</FONT><A NAME="298"></A>        <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT> lastRun = Sys.now();
+<FONT ID="LN">99</FONT><A NAME="299"></A>        <FONT ID="Private">private</FONT> <FONT ID="Long">long</FONT> delta;
+<FONT ID="LN">00</FONT><A NAME="300"></A>        <FONT ID="Private">private</FONT> Method visitMethod;
+<FONT ID="LN">01</FONT><A NAME="301"></A>
+<FONT ID="LN">02</FONT><A NAME="302"></A>        <FONT ID="Public">public</FONT> AgingTimerTask() <FONT ID="Throws">throws</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A> {
+<FONT ID="LN">03</FONT><A NAME="303"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">04</FONT><A NAME="304"></A>                <FONT ID="SingleLineComment">// Setup Visitor Methods for callback from SessionManager
+<FONT ID="LN">05</FONT><A NAME="305"></A></FONT>                Class[] argsClasses = {<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A>.<FONT ID="Class">class</FONT>};
+<FONT ID="LN">06</FONT><A NAME="306"></A>                visitMethod = <FONT ID="This">this</FONT>.getClass().getMethod(<FONT ID="StringLiteral">"visit"</FONT>, argsClasses);
+<FONT ID="LN">07</FONT><A NAME="307"></A>            } <FONT ID="Catch">catch</FONT> (NoSuchMethodException e) {
+<FONT ID="LN">08</FONT><A NAME="308"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/util/PushletException.java.html">PushletException</A>(<FONT ID="StringLiteral">"Failed to setup AgingTimerTask"</FONT>, e);
+<FONT ID="LN">09</FONT><A NAME="309"></A>            }
+<FONT ID="LN">10</FONT><A NAME="310"></A>        }
+<FONT ID="LN">11</FONT><A NAME="311"></A>
+<FONT ID="LN">12</FONT><A NAME="312"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">13</FONT><A NAME="313"></A>         * Clock tick callback from Timer.
+<FONT ID="LN">14</FONT><A NAME="314"></A>         */</FONT>
+<FONT ID="LN">15</FONT><A NAME="315"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run() {
+<FONT ID="LN">16</FONT><A NAME="316"></A>            <FONT ID="Long">long</FONT> now = Sys.now();
+<FONT ID="LN">17</FONT><A NAME="317"></A>            delta = now - lastRun;
+<FONT ID="LN">18</FONT><A NAME="318"></A>            lastRun = now;
+<FONT ID="LN">19</FONT><A NAME="319"></A>            debug(<FONT ID="StringLiteral">"AgingTimerTask: tick"</FONT>);
+<FONT ID="LN">20</FONT><A NAME="320"></A>
+<FONT ID="LN">21</FONT><A NAME="321"></A>            <FONT ID="SingleLineComment">// Use Visitor pattern to loop through Session objects (see visit() below)
+<FONT ID="LN">22</FONT><A NAME="322"></A></FONT>            getInstance().apply(<FONT ID="This">this</FONT>, visitMethod, <FONT ID="New">new</FONT> Object[<FONT ID="IntegerLiteral">1</FONT>]);
+<FONT ID="LN">23</FONT><A NAME="323"></A>        }
+<FONT ID="LN">24</FONT><A NAME="324"></A>
+<FONT ID="LN">25</FONT><A NAME="325"></A>        <FONT ID="FormalComment">/**
+<FONT ID="LN">26</FONT><A NAME="326"></A>         * Callback from SessionManager during apply()
+<FONT ID="LN">27</FONT><A NAME="327"></A>         */</FONT>
+<FONT ID="LN">28</FONT><A NAME="328"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> visit(<A HREF="../../../../nl/justobjects/pushlet/core/Session.java.html">Session</A> aSession) {
+<FONT ID="LN">29</FONT><A NAME="329"></A>            <FONT ID="Try">try</FONT> {
+<FONT ID="LN">30</FONT><A NAME="330"></A>                <FONT ID="SingleLineComment">// Age the lease
+<FONT ID="LN">31</FONT><A NAME="331"></A></FONT>                aSession.age(delta);
+<FONT ID="LN">32</FONT><A NAME="332"></A>                debug(<FONT ID="StringLiteral">"AgingTimerTask: visit: "</FONT> + aSession);
+<FONT ID="LN">33</FONT><A NAME="333"></A>
+<FONT ID="LN">34</FONT><A NAME="334"></A>                <FONT ID="SingleLineComment">// Stop session if lease expired
+<FONT ID="LN">35</FONT><A NAME="335"></A></FONT>                <FONT ID="If">if</FONT> (aSession.isExpired()) {
+<FONT ID="LN">36</FONT><A NAME="336"></A>                    info(<FONT ID="StringLiteral">"AgingTimerTask: Session expired: "</FONT> + aSession);
+<FONT ID="LN">37</FONT><A NAME="337"></A>                    aSession.stop();
+<FONT ID="LN">38</FONT><A NAME="338"></A>                }
+<FONT ID="LN">39</FONT><A NAME="339"></A>            } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">40</FONT><A NAME="340"></A>                warn(<FONT ID="StringLiteral">"AgingTimerTask: Error in timer task : "</FONT> + t);
+<FONT ID="LN">41</FONT><A NAME="341"></A>            }
+<FONT ID="LN">42</FONT><A NAME="342"></A>        }
+<FONT ID="LN">43</FONT><A NAME="343"></A>    }
+<FONT ID="LN">44</FONT><A NAME="344"></A>}
+<FONT ID="LN">45</FONT><A NAME="345"></A>
+<FONT ID="LN">46</FONT><A NAME="346"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">47</FONT><A NAME="347"></A> * $Log: SessionManager.java,v $
+<FONT ID="LN">48</FONT><A NAME="348"></A> * Revision 1.12  2007/12/04 13:55:53  justb
+<FONT ID="LN">49</FONT><A NAME="349"></A> * reimplement SessionManager concurrency (prev version was not thread-safe!)
+<FONT ID="LN">50</FONT><A NAME="350"></A> *
+<FONT ID="LN">51</FONT><A NAME="351"></A> * Revision 1.11  2007/11/23 14:33:07  justb
+<FONT ID="LN">52</FONT><A NAME="352"></A> * core classes now configurable through factory
+<FONT ID="LN">53</FONT><A NAME="353"></A> *
+<FONT ID="LN">54</FONT><A NAME="354"></A> * Revision 1.10  2007/11/10 14:47:45  justb
+<FONT ID="LN">55</FONT><A NAME="355"></A> * make session key generation configurable (can use uuid)
+<FONT ID="LN">56</FONT><A NAME="356"></A> *
+<FONT ID="LN">57</FONT><A NAME="357"></A> * Revision 1.9  2007/11/10 14:17:18  justb
+<FONT ID="LN">58</FONT><A NAME="358"></A> * minor cosmetic changes just commit now
+<FONT ID="LN">59</FONT><A NAME="359"></A> *
+<FONT ID="LN">60</FONT><A NAME="360"></A> * Revision 1.8  2007/07/02 08:12:16  justb
+<FONT ID="LN">61</FONT><A NAME="361"></A> * redo to original version of session cache (with break, but nullify array first)
+<FONT ID="LN">62</FONT><A NAME="362"></A> *
+<FONT ID="LN">63</FONT><A NAME="363"></A> * Revision 1.7  2007/07/02 07:33:02  justb
+<FONT ID="LN">64</FONT><A NAME="364"></A> * small fix in sessionmgr for holes in sessioncache array (continue i.s.o. break)
+<FONT ID="LN">65</FONT><A NAME="365"></A> *
+<FONT ID="LN">66</FONT><A NAME="366"></A> * Revision 1.6  2006/11/18 12:13:47  justb
+<FONT ID="LN">67</FONT><A NAME="367"></A> * made SessionManager constructor protected to allow constructing derived classes
+<FONT ID="LN">68</FONT><A NAME="368"></A> *
+<FONT ID="LN">69</FONT><A NAME="369"></A> * Revision 1.5  2005/02/28 15:58:05  justb
+<FONT ID="LN">70</FONT><A NAME="370"></A> * added SimpleListener example
+<FONT ID="LN">71</FONT><A NAME="371"></A> *
+<FONT ID="LN">72</FONT><A NAME="372"></A> * Revision 1.4  2005/02/28 12:45:59  justb
+<FONT ID="LN">73</FONT><A NAME="373"></A> * introduced Command class
+<FONT ID="LN">74</FONT><A NAME="374"></A> *
+<FONT ID="LN">75</FONT><A NAME="375"></A> * Revision 1.3  2005/02/28 09:14:55  justb
+<FONT ID="LN">76</FONT><A NAME="376"></A> * sessmgr/dispatcher factory/singleton support
+<FONT ID="LN">77</FONT><A NAME="377"></A> *
+<FONT ID="LN">78</FONT><A NAME="378"></A> * Revision 1.2  2005/02/25 15:13:01  justb
+<FONT ID="LN">79</FONT><A NAME="379"></A> * session id generation more robust
+<FONT ID="LN">80</FONT><A NAME="380"></A> *
+<FONT ID="LN">81</FONT><A NAME="381"></A> * Revision 1.1  2005/02/21 16:59:09  justb
+<FONT ID="LN">82</FONT><A NAME="382"></A> * SessionManager and session lease introduced
+<FONT ID="LN">83</FONT><A NAME="383"></A> *
+<FONT ID="LN">84</FONT><A NAME="384"></A>
+<FONT ID="LN">85</FONT><A NAME="385"></A> *
+<FONT ID="LN">86</FONT><A NAME="386"></A> */</FONT>
+<FONT ID="LN">87</FONT><A NAME="387"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SessionManager.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

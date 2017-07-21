@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.core.EventParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">EventParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.core.index.html" target="packageFrame">nl.justobjects.pushlet.core</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> java.io.*;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<FONT ID="LN">8 </FONT><A NAME="8"></A>
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">10</FONT><A NAME="10"></A> * Parses XML into Event objects.
+<FONT ID="LN">11</FONT><A NAME="11"></A> *
+<FONT ID="LN">12</FONT><A NAME="12"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">13</FONT><A NAME="13"></A> * @version $Id: EventParser.java,v 1.3 2007/11/23 14:33:07 justb Exp $
+<FONT ID="LN">14</FONT><A NAME="14"></A> */</FONT>
+<FONT ID="LN">15</FONT><A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> EventParser {
+<FONT ID="LN">16</FONT><A NAME="16"></A>
+<FONT ID="LN">17</FONT><A NAME="17"></A>
+<FONT ID="LN">18</FONT><A NAME="18"></A>    <FONT ID="Private">private</FONT> EventParser() {
+<FONT ID="LN">19</FONT><A NAME="19"></A>    }
+<FONT ID="LN">20</FONT><A NAME="20"></A>
+<FONT ID="LN">21</FONT><A NAME="21"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">22</FONT><A NAME="22"></A>     * Parse Event from a File.
+<FONT ID="LN">23</FONT><A NAME="23"></A>     */</FONT>
+<FONT ID="LN">24</FONT><A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> parse(File aFile) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">25</FONT><A NAME="25"></A>        BufferedReader br = <FONT ID="New">new</FONT> BufferedReader(<FONT ID="New">new</FONT> FileReader(aFile));
+<FONT ID="LN">26</FONT><A NAME="26"></A>        <FONT ID="Return">return</FONT> parse(br);
+<FONT ID="LN">27</FONT><A NAME="27"></A>    }
+<FONT ID="LN">28</FONT><A NAME="28"></A>
+<FONT ID="LN">29</FONT><A NAME="29"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">30</FONT><A NAME="30"></A>     * Parse Event from input Reader.
+<FONT ID="LN">31</FONT><A NAME="31"></A>     */</FONT>
+<FONT ID="LN">32</FONT><A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> parse(Reader aReader) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">33</FONT><A NAME="33"></A>        StringBuffer preparsedString = <FONT ID="New">new</FONT> StringBuffer(<FONT ID="IntegerLiteral">24</FONT>);
+<FONT ID="LN">34</FONT><A NAME="34"></A>
+<FONT ID="LN">35</FONT><A NAME="35"></A>        <FONT ID="SingleLineComment">// First find the opening tag ('&lt;')
+<FONT ID="LN">36</FONT><A NAME="36"></A></FONT>        <FONT ID="Char">char</FONT> nextChar;
+<FONT ID="LN">37</FONT><A NAME="37"></A>        <FONT ID="While">while</FONT> ((nextChar = (<FONT ID="Char">char</FONT>) aReader.read()) != <FONT ID="CharacerLiteral">'&lt;'</FONT>) ;
+<FONT ID="LN">38</FONT><A NAME="38"></A>
+<FONT ID="LN">39</FONT><A NAME="39"></A>        <FONT ID="SingleLineComment">// Append '&lt;'
+<FONT ID="LN">40</FONT><A NAME="40"></A></FONT>        preparsedString.append(nextChar);
+<FONT ID="LN">41</FONT><A NAME="41"></A>
+<FONT ID="LN">42</FONT><A NAME="42"></A>        <FONT ID="SingleLineComment">// Then find end-tag ('&gt;'), appending all chars to preparsed string.
+<FONT ID="LN">43</FONT><A NAME="43"></A></FONT>        <FONT ID="Do">do</FONT> {
+<FONT ID="LN">44</FONT><A NAME="44"></A>            nextChar = (<FONT ID="Char">char</FONT>) aReader.read();
+<FONT ID="LN">45</FONT><A NAME="45"></A>            preparsedString.append(nextChar);
+<FONT ID="LN">46</FONT><A NAME="46"></A>        } <FONT ID="While">while</FONT> (nextChar != <FONT ID="CharacerLiteral">'&gt;'</FONT>);
+<FONT ID="LN">47</FONT><A NAME="47"></A>
+<FONT ID="LN">48</FONT><A NAME="48"></A>        <FONT ID="Return">return</FONT> parse(preparsedString.toString());
+<FONT ID="LN">49</FONT><A NAME="49"></A>    }
+<FONT ID="LN">50</FONT><A NAME="50"></A>
+<FONT ID="LN">51</FONT><A NAME="51"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">52</FONT><A NAME="52"></A>     * Parse Event from a String.
+<FONT ID="LN">53</FONT><A NAME="53"></A>     */</FONT>
+<FONT ID="LN">54</FONT><A NAME="54"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> parse(String aString) <FONT ID="Throws">throws</FONT> IOException {
+<FONT ID="LN">55</FONT><A NAME="55"></A>        aString = aString.trim();
+<FONT ID="LN">56</FONT><A NAME="56"></A>
+<FONT ID="LN">57</FONT><A NAME="57"></A>        <FONT ID="If">if</FONT> (!aString.startsWith(<FONT ID="StringLiteral">"&lt;"</FONT>) || !aString.endsWith(<FONT ID="StringLiteral">"/&gt;"</FONT>)) {
+<FONT ID="LN">58</FONT><A NAME="58"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IOException(<FONT ID="StringLiteral">"No start or end tag found while parsing event ["</FONT> + aString + <FONT ID="StringLiteral">"]"</FONT>);
+<FONT ID="LN">59</FONT><A NAME="59"></A>        }
+<FONT ID="LN">60</FONT><A NAME="60"></A>
+<FONT ID="LN">61</FONT><A NAME="61"></A>        <FONT ID="SingleLineComment">// Create the attributes object.
+<FONT ID="LN">62</FONT><A NAME="62"></A></FONT>        HashMap properties = <FONT ID="New">new</FONT> HashMap(<FONT ID="IntegerLiteral">3</FONT>);
+<FONT ID="LN">63</FONT><A NAME="63"></A>
+<FONT ID="LN">64</FONT><A NAME="64"></A>        <FONT ID="SingleLineComment">// Remove the start and end (&lt; ... /&gt;) from the string
+<FONT ID="LN">65</FONT><A NAME="65"></A></FONT>        aString = aString.substring(<FONT ID="IntegerLiteral">1</FONT>, aString.length() - <FONT ID="IntegerLiteral">2</FONT>).trim();
+<FONT ID="LN">66</FONT><A NAME="66"></A>
+<FONT ID="LN">67</FONT><A NAME="67"></A>        <FONT ID="Int">int</FONT> index = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">68</FONT><A NAME="68"></A>
+<FONT ID="LN">69</FONT><A NAME="69"></A>        <FONT ID="SingleLineComment">// Parse the tag
+<FONT ID="LN">70</FONT><A NAME="70"></A></FONT>        <FONT ID="While">while</FONT> (!Character.isWhitespace(aString.charAt(index))
+<FONT ID="LN">71</FONT><A NAME="71"></A>                &amp;&amp; (index &lt; aString.length())) {
+<FONT ID="LN">72</FONT><A NAME="72"></A>            index++;
+<FONT ID="LN">73</FONT><A NAME="73"></A>        }
+<FONT ID="LN">74</FONT><A NAME="74"></A>
+<FONT ID="LN">75</FONT><A NAME="75"></A>        <FONT ID="SingleLineComment">// We don't use the tag: remove from string
+<FONT ID="LN">76</FONT><A NAME="76"></A></FONT>        aString = aString.substring(index).trim();
+<FONT ID="LN">77</FONT><A NAME="77"></A>        index = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">78</FONT><A NAME="78"></A>
+<FONT ID="LN">79</FONT><A NAME="79"></A>        String attrName;
+<FONT ID="LN">80</FONT><A NAME="80"></A>        String attrValue;
+<FONT ID="LN">81</FONT><A NAME="81"></A>
+<FONT ID="LN">82</FONT><A NAME="82"></A>        <FONT ID="While">while</FONT> (index &lt; aString.length()) {
+<FONT ID="LN">83</FONT><A NAME="83"></A>
+<FONT ID="LN">84</FONT><A NAME="84"></A>            <FONT ID="SingleLineComment">// Parse attribute name
+<FONT ID="LN">85</FONT><A NAME="85"></A></FONT>            <FONT ID="While">while</FONT> ((aString.charAt(index) != <FONT ID="CharacerLiteral">'='</FONT>)
+<FONT ID="LN">86</FONT><A NAME="86"></A>                    &amp;&amp; (index &lt; aString.length())) {
+<FONT ID="LN">87</FONT><A NAME="87"></A>                index++;
+<FONT ID="LN">88</FONT><A NAME="88"></A>            }
+<FONT ID="LN">89</FONT><A NAME="89"></A>
+<FONT ID="LN">90</FONT><A NAME="90"></A>            <FONT ID="SingleLineComment">// Create attr name string
+<FONT ID="LN">91</FONT><A NAME="91"></A></FONT>            attrName = aString.substring(<FONT ID="IntegerLiteral">0</FONT>, index).trim();
+<FONT ID="LN">92</FONT><A NAME="92"></A>
+<FONT ID="LN">93</FONT><A NAME="93"></A>            <FONT ID="SingleLineComment">// remove the attributeName and the '=' from the string
+<FONT ID="LN">94</FONT><A NAME="94"></A></FONT>            aString = aString.substring(index + <FONT ID="IntegerLiteral">1</FONT>).trim();
+<FONT ID="LN">95</FONT><A NAME="95"></A>            index = <FONT ID="IntegerLiteral">1</FONT>;  <FONT ID="SingleLineComment">// read past the first wrapping "\""
+<FONT ID="LN">96</FONT><A NAME="96"></A></FONT>
+<FONT ID="LN">97</FONT><A NAME="97"></A>            <FONT ID="SingleLineComment">// Parse attribute value
+<FONT ID="LN">98</FONT><A NAME="98"></A></FONT>            <FONT ID="While">while</FONT> ((aString.charAt(index) != <FONT ID="CharacerLiteral">'\"'</FONT>)
+<FONT ID="LN">99</FONT><A NAME="99"></A>                    &amp;&amp; (index &lt; aString.length())) {
+<FONT ID="LN">00</FONT><A NAME="100"></A>
+<FONT ID="LN">01</FONT><A NAME="101"></A>                <FONT ID="SingleLineComment">// bypass the special characters '\' and '"' inside the
+<FONT ID="LN">02</FONT><A NAME="102"></A></FONT>                <FONT ID="SingleLineComment">// attributevalue itself which are deliniated with a preceding
+<FONT ID="LN">03</FONT><A NAME="103"></A></FONT>                <FONT ID="SingleLineComment">// '\'
+<FONT ID="LN">04</FONT><A NAME="104"></A></FONT>                <FONT ID="If">if</FONT> (aString.charAt(index) == <FONT ID="CharacerLiteral">'\\'</FONT>) {
+<FONT ID="LN">05</FONT><A NAME="105"></A>                    aString = aString.substring(<FONT ID="IntegerLiteral">0</FONT>, index)
+<FONT ID="LN">06</FONT><A NAME="106"></A>                            + aString.substring(index + <FONT ID="IntegerLiteral">1</FONT>); <FONT ID="SingleLineComment">// remove the '\'
+<FONT ID="LN">07</FONT><A NAME="107"></A></FONT>                }
+<FONT ID="LN">08</FONT><A NAME="108"></A>
+<FONT ID="LN">09</FONT><A NAME="109"></A>                index++;
+<FONT ID="LN">10</FONT><A NAME="110"></A>            }
+<FONT ID="LN">11</FONT><A NAME="111"></A>
+<FONT ID="LN">12</FONT><A NAME="112"></A>            <FONT ID="SingleLineComment">// create the attribute value; exclude the wrapping quote-characters
+<FONT ID="LN">13</FONT><A NAME="113"></A></FONT>            attrValue = aString.substring(<FONT ID="IntegerLiteral">1</FONT>, index);
+<FONT ID="LN">14</FONT><A NAME="114"></A>
+<FONT ID="LN">15</FONT><A NAME="115"></A>            <FONT ID="SingleLineComment">// Set the attribute N/V
+<FONT ID="LN">16</FONT><A NAME="116"></A></FONT>            properties.put(attrName, attrValue);
+<FONT ID="LN">17</FONT><A NAME="117"></A>
+<FONT ID="LN">18</FONT><A NAME="118"></A>            aString = aString.substring(index + <FONT ID="IntegerLiteral">1</FONT>).trim();
+<FONT ID="LN">19</FONT><A NAME="119"></A>            index = <FONT ID="IntegerLiteral">0</FONT>;
+<FONT ID="LN">20</FONT><A NAME="120"></A>        }
+<FONT ID="LN">21</FONT><A NAME="121"></A>
+<FONT ID="LN">22</FONT><A NAME="122"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A>(properties);
+<FONT ID="LN">23</FONT><A NAME="123"></A>    }
+<FONT ID="LN">24</FONT><A NAME="124"></A>
+<FONT ID="LN">25</FONT><A NAME="125"></A>    <FONT ID="FormalComment">/**
+<FONT ID="LN">26</FONT><A NAME="126"></A>     * Test method: use files to test.
+<FONT ID="LN">27</FONT><A NAME="127"></A>     */</FONT>
+<FONT ID="LN">28</FONT><A NAME="128"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<FONT ID="LN">29</FONT><A NAME="129"></A>        <FONT ID="Try">try</FONT> {
+<FONT ID="LN">30</FONT><A NAME="130"></A>            <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> event = parse(<FONT ID="New">new</FONT> File(args[<FONT ID="IntegerLiteral">0</FONT>]));
+<FONT ID="LN">31</FONT><A NAME="131"></A>            System.out.println(<FONT ID="StringLiteral">"OK parsed Event file "</FONT> + args[<FONT ID="IntegerLiteral">0</FONT>]);
+<FONT ID="LN">32</FONT><A NAME="132"></A>            System.out.println(event.toXML());
+<FONT ID="LN">33</FONT><A NAME="133"></A>
+<FONT ID="LN">34</FONT><A NAME="134"></A>            event = parse(event.toXML());
+<FONT ID="LN">35</FONT><A NAME="135"></A>            System.out.println(<FONT ID="StringLiteral">"OK parsed Event string"</FONT>);
+<FONT ID="LN">36</FONT><A NAME="136"></A>            System.out.println(event.toXML());
+<FONT ID="LN">37</FONT><A NAME="137"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
+<FONT ID="LN">38</FONT><A NAME="138"></A>            System.out.println(<FONT ID="StringLiteral">"Error parsing event file: "</FONT> + args[<FONT ID="IntegerLiteral">0</FONT>]);
+<FONT ID="LN">39</FONT><A NAME="139"></A>            t.printStackTrace();
+<FONT ID="LN">40</FONT><A NAME="140"></A>        }
+<FONT ID="LN">41</FONT><A NAME="141"></A>    }
+<FONT ID="LN">42</FONT><A NAME="142"></A>}
+<FONT ID="LN">43</FONT><A NAME="143"></A>
+<FONT ID="LN">44</FONT><A NAME="144"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">45</FONT><A NAME="145"></A>  * $Log: EventParser.java,v $
+<FONT ID="LN">46</FONT><A NAME="146"></A>  * Revision 1.3  2007/11/23 14:33:07  justb
+<FONT ID="LN">47</FONT><A NAME="147"></A>  * core classes now configurable through factory
+<FONT ID="LN">48</FONT><A NAME="148"></A>  *
+<FONT ID="LN">49</FONT><A NAME="149"></A>  * Revision 1.2  2006/05/06 00:10:11  justb
+<FONT ID="LN">50</FONT><A NAME="150"></A>  * various chgs but not too serious...
+<FONT ID="LN">51</FONT><A NAME="151"></A>  *
+<FONT ID="LN">52</FONT><A NAME="152"></A>  * Revision 1.1  2005/02/18 10:07:23  justb
+<FONT ID="LN">53</FONT><A NAME="153"></A>  * many renamings of classes (make names compact)
+<FONT ID="LN">54</FONT><A NAME="154"></A>  *
+<FONT ID="LN">55</FONT><A NAME="155"></A>  * Revision 1.3  2004/09/03 22:35:37  justb
+<FONT ID="LN">56</FONT><A NAME="156"></A>  * Almost complete rewrite, just checking in now
+<FONT ID="LN">57</FONT><A NAME="157"></A>  *
+<FONT ID="LN">58</FONT><A NAME="158"></A>  * Revision 1.2  2003/08/15 08:37:40  justb
+<FONT ID="LN">59</FONT><A NAME="159"></A>  * fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">60</FONT><A NAME="160"></A>  *
+<FONT ID="LN">61</FONT><A NAME="161"></A>  * Revision 1.1  2003/05/18 16:12:27  justb
+<FONT ID="LN">62</FONT><A NAME="162"></A>  * adding support for XML encoded Events
+<FONT ID="LN">63</FONT><A NAME="163"></A>  *
+<FONT ID="LN">64</FONT><A NAME="164"></A>  */</FONT>
+<FONT ID="LN">65</FONT><A NAME="165"></A></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">EventParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

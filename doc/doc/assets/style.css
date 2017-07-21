@@ -1,0 +1,61 @@
+BODY {
+	color: white;
+	background: #001E32;
+	margin-left: 4%;
+	margin-right: 15%;
+	font-family: arial, sans-serif;
+	font-size: 10pt;
+}
+
+.BODY-TEXT {
+	margin-left: 5%;
+	margin-right: 15%;
+}
+
+TD, P, LI, UL, OL {
+	color: white;
+	background: #001E32;
+	font-family: arial, sans-serif;
+	font-size: 10pt;
+}
+
+.TITLE {
+	font-size: 32pt;
+}
+
+.CODETABLE {
+	color: black;
+	background: #EEEEEE;
+	font-family: courier, monospace;
+	font-size: 9pt;
+}
+
+H2 {
+	font-size: 16pt;
+}
+
+HR {
+	color: #065
+}
+
+A {
+	color: red;
+	text-decoration: none;
+}
+
+A:visited {
+	color: blue;
+	text-decoration: none;
+}
+
+.FOOTER {
+	font-size: 8pt;
+	font-family: arial, sans-serif;
+	text-decoration: none;
+	color: yellow;
+}
+
+
+
+
+

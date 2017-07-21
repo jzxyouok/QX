@@ -1,0 +1,47 @@
+<!--
+
+  $Id: pushlet-status.html,v 1.9 2006/05/25 10:47:01 justb Exp $
+  author: Just van den Broecke
+-->
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+     <title>pushlet-status</title>
+	<script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+
+     <script type="text/javascript">
+       	// Initialization
+		function init() {
+			p_join_listen('/system/pushlet');
+  		}
+
+		// Event Callback: display all events
+		function onEvent(event) {
+			document.eventDisplay.event.value = event.toString();
+		}
+	</script>
+
+</head>
+<body bgcolor="#cccccc" onLoad="init()">
+
+<h4>Event Monitor</h4>
+
+<form name="eventDisplay">
+  <table border="2" bordercolor="white" cellpadding="4" cellspacing="0" >
+    <tr>
+     <td>
+       <textarea cols="32" rows="16" name="event">
+        WAITING FOR EVENTS
+       </textarea>
+     </td>
+    </tr>
+  </table>
+</form>
+
+<script type="text/javascript">p_embed()</script>
+
+</body>
+</html>
+
+

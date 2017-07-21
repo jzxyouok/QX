@@ -1,0 +1,82 @@
+<!--
+  
+  $Id: grid-layers.html,v 1.4 2006/05/15 11:52:53 justb Exp $
+  author: Just van den Broecke
+  $Log: grid-layers.html,v $
+  Revision 1.4  2006/05/15 11:52:53  justb
+  updates mainly for AJAX client
+
+  Revision 1.3  2004/10/25 20:32:29  justb
+  *** empty log message ***
+
+  Revision 1.2  2003/04/30 22:13:32  justb
+  revised all examples to use new api.js (support all browsers now!)
+
+  Revision 1.1  2002/07/29 13:16:48  just
+  no message
+
+-->
+<HTML>
+<HEAD>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+   <script type="text/javascript" src="../../assets/api.js"></script>
+  <script type="text/javascript" src="../../assets/layer.js"></script>
+   <script type="text/javascript" src="../../assets/layer-grid.js"></script>
+
+   <TITLE>EXAMPLE LAYER GRID</TITLE>
+
+<script type="text/javascript">
+var layerGrid;
+var gridXSize=3
+var gridYSize=5
+var gridSize=gridXSize*gridYSize;
+var randomText = new Array("I think","therefore","I am")
+var textPre="<font size=3 face=arial color=white><center><b><i>"
+var textPost="</i></b></center></font>"
+var emptyText = textPre+"."+textPost
+
+function init() {
+initDHTML();
+ 	layerGrid = new LayerGrid('L', window, gridXSize, gridYSize, 0, 0, getInsideWindowWidth(), getInsideWindowHeight() );
+ 	for (var i=0; i < gridSize; i++) {
+        	layerGrid.writeCellAtIndex(i, emptyText, '#0000C0'); 
+        }
+        
+        doRandom();
+}
+
+var lastCellNum=-1;
+function doRandom() { 
+	// Pick a random cell and random text
+	var cellNum = Math.round(Math.random()*(gridSize-1));
+	var textNum = Math.round(Math.random()*(randomText.length-1));
+	
+	// Clear the cell written before if any
+	if (lastCellNum > -1) {
+        	layerGrid.writeCellAtIndex(lastCellNum, emptyText, '#0000C0'); 
+        }
+        
+        // Write the text at the random cell
+        layerGrid.writeCellAtIndex(cellNum, textPre+randomText[textNum]+textPost, 'red'); 
+	
+	// Remember last cell
+	lastCellNum = cellNum;
+	
+	// Loop forever
+	setTimeout("doRandom()",1000);
+}
+     
+</script>
+
+</HEAD>
+
+<BODY bgcolor="black" onLoad="init()" >
+<script type="text/javascript">
+	document.write(createMultiLayerHTML('L', gridSize));
+</script>
+
+</BODY>
+
+</HTML>
+

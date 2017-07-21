@@ -1,0 +1,83 @@
+<h1>账户</h1>
+    <fieldset>
+        <div class="row"><div class="registerHeader"><h3>基本信息</h3></div></div>
+        <div class="form-group">
+            <div class="row">
+            	<div class="col-sm-2">
+                	<label>用户名 *</label>
+                </div>
+                <div class="col-sm-4">
+                	<input type="text" class="form-control" name="username" ng-model="username" required/>
+                </div>
+                <div class="col-sm-2">
+                	<label>密码 *</label>
+                </div>
+                <div class="col-sm-4">
+                	<input type="password" class="form-control" name="password" id="password" ng-model="password" required/>
+            	</div>
+           	</div>
+         </div>
+	      <div class="form-group">
+	         <div class="row">
+            	<div class="col-sm-2">
+                	<label>姓名 *</label>
+                </div>
+                <div class="col-sm-4">
+                	<input type="text" class="form-control" name="name" ng-model="name" required/>
+                </div>
+            	<div class="col-sm-2">
+                 	<label>确认密码 *</label>
+                 </div>
+                 <div class="col-sm-4">
+                 	<input type="password" class="form-control" name="rPassword" id="rPassword" ng-model="rPassword" required/>
+				</div>
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="row">
+            	<div class="col-sm-2">
+                	<label>性别 *</label>
+                </div>
+                <div class="col-sm-6">
+                	<div class="radio radio-info radio-inline">
+					    <input type="radio" id="inlineRadio1" value="1" name="sex"  ng-checked="true" ng-model="sex">
+					    <label for="inlineRadio1"> GG </label>
+					</div>
+					<div class="radio radio-inline">
+					    <input type="radio" id="inlineRadio2" value="0" name="sex" ng-model="sex">
+					    <label for="inlineRadio2"> MM </label>
+					</div>
+                </div>
+                <div class="col-sm-4">
+            	</div>
+           	</div>
+         </div>
+    </fieldset>
+    <h1>个人资料</h1>
+    <fieldset>
+    	<div class="row"><div class="registerHeader"><h3>上传头像</h3></div></div>
+    	<div class="row">
+	        <div class="col-sm-8">
+               <div class="image-crop">
+    				<img src="img/user.png">
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="btn-group">
+				    <label class="btn btn-primary"  for="inputImage" title="上传新头像">
+				    	<input type="file" name="file" id="inputImage" class="hide">
+				   	上传新头像</label>
+				    <button class="btn btn-warning" id="zoomOut" type="button">裁剪</button>
+				</div>
+				<h4>图片预览：</h4>
+	         	<div class="img-preview img-preview-sm"></div>
+	        </div>
+		</div>
+    </fieldset>
+
+    <h1>完成</h1>
+    <fieldset>
+        <div class="text-center" style="margin-top: 120px">
+	        <h2>注册成功，感谢你的支持！</h2>
+	    </div>
+	</fieldset>

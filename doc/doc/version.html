@@ -1,0 +1,156 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<meta name="Author" content="JustB">
+	<title>Version Info</title>
+</head>
+
+<body>
+<PRE>
+$Id: version.html,v 1.44 2010/02/05 12:37:11 justb Exp $
+
+v2.0.4 - 5.feb.2010
+- [session mgt] reimplement SessionManager concurrency (previous version was not thread-safe!)
+- [config] logging.class should be logger.class
+- [logging] added log4j and set as default logging method
+- [PushletClient] add more hooks (protected meths etc) to enable extension (Craig M)
+
+v2.0.3 24.nov.2007
+- [examples] fixed ping example (did not work in IE)
+- [protocol] (join-)listen-ack with refresh is returned immediately for poll/pull modes
+- [PushletClient] *listen() calls wait until DataEventListener thread runs (patch: Jeff Nowakowski)
+- [SessionManager] protected constructor to allow constructing derived classes
+- [javascript] fixed XHR memory leak for IE (thanks Julio Santa Cruz)
+- [build] set source/target to java 1.4 (build.properties)
+- [char encoding] add charset=UTF-8 to all returned HTTP content-types (fixes special chars)
+- [property files] pushlet.properties and sources.properties can also be placed under WEB-INF
+- [session-key] can optionally (through config) be generated as UUID
+- [listen-ack] add heartbeat to queue on *listen-ack in stream mode
+- [config] all core classes (and logging) can be overridden by your own classes through pushlet.properties
+- [logging] related to [config]: provide hooks for embedding custom logging like log4j
+
+v2.0.2 may, 2006
+- [javascript] replaced js-pushlet-client.js with pure JS version js-pushlet-client.js
+- [javascript] first version of AJAX client: ajax-pushlet-client.js
+
+v2.0.1 may, 2005 - not officially released
+- [javaclient] stability improvements and POST added
+- [javascript] added param thePushletWebRoot to p_embed() to allow arbitrary (virtual) hosts/paths
+- [protocol] added p_format="xml-strict" to return complete XML docs (pull mode only)
+- [AJAX] added AJAX example to demo XMLHttpRequest as client lib
+- [j2me] added first version of J2ME client (under client/j2me)
+- [flash] added example for Macromedia Flash client (under client/flash and webapps)
+
+v2.0.0 March 2, 2005
+- [documentation] many additions, merged status/roadmap docs
+
+v2.0.0rc5, Feb 28, 2005
+- [versions] as many things like the protocol are rewritten will start with 2.0.0
+- [Pullet] removed and replaced by "pull" mode in Pushlet
+- [postlet] removed: now integrated into pushlet protocol (p_publish() service)
+- [Subscriber] made abstract class and moved common members from derived Subscribers
+- [Publisher] reimplemented using Java Collections and finegrained synchronization
+- [client] renamed all *JavaPushletClient* to *PushletClient*
+- [servlets] all in new servlet package
+- [probe] removed ProbeEventPullSource: probe event is now heartbeat on queue timeout
+- [pullet] complete rewrite and moved Pullet functions to Pushlet servlet see next
+- [pushlet] servlet now supports modes "stream" (classic pushlet) and "pull" (former pullet)
+- [event publishing] Publisher supports unicast, multicast and broadcast
+- [safari] redirect Safari browser to "pull" mode until Safari streaming fixed
+- [iframe] pushlets are now embedded in an HTML page using using an IFRAME
+- [lifecycle] MainServlet.destroy() : halt eventsources (threads) and stop Publisher
+- [lifecycle] publisher broadcasts abort control event to subscribers who then leave
+- [poll mode] added "poll" mode besides "stream" and "pull"
+- [subscription] allow labels, multiple subjects (, separated)
+- [subscription] allow multiple subscriptions (subscribe/unsubscribe)
+- [config] added configurability (Config.java and pushlet.properties)
+- [renamed classes] most classes in core package renamed with compact names
+- [proxy support] added proxy support in PushletClient.java
+- [sessions] introduced SessionManager and leasing
+- [init/exit] now from Pushlet servlet (MainServlet obsoleted)
+- [plugin] factory: Dispatcher and SessionManager classes are configurable
+- [command] introduced Command to wrap request/response/adapter objects
+- [join-listen] new protocol service added for simple e.g. RESTful apps
+
+version 2.0.0rc1-rc4 2004/2005
+- not officially released
+
+version 1.0.0, August 18, 2003
+- [versions] now starting with version numbering at 1.0.0
+- [project] restructuring directories (mainly webapps/pushlet) for move to sourceforge
+- [javascript] completely revised JavaScript api.js to comply with all browsers ;-)
+- [examples] fixed broken webpres teacher/student example
+- [project] added build.xml
+- [project] added thirdparty dir for external libs
+- [javascript] replaced debug.js for debugging JavaScript
+- [protocol] added "format=js|ser|xml" to pushlet servlet request
+- [XML] clients can receive Event as XML stream using format=xml
+- [XML] added XMLPushletAdapter.java and XMLEventParser.java
+- [bug] adding "Connection: close" to HTTP response fixes blocking Java clients
+- [doc] documentation and site generated by XBook (www.justobjects.org/xbook)
+- [examples] fixed broken links to sources in pushlet examples page
+- [javaclient] Java client implementation now receives XML (was: serialized objects)
+- [anyclient] any client (even Telnet) can now receive Events using format=xml !
+- [log] added Log.java to conduct all logging (later use Log4J)
+- [init] explicit initialization through MainServlet (was: lazy/implicit)
+- [servlets] moved all servlets to new package nl.justobjects.pushlet.servlet
+- [javaclient] fixed thread cancellation when stopped
+
+Note: if upgrading from v0.0.7 to v1.0.0 and you have an existing we.xml, be sure
+to change all servlet package names to nl.justobjects.pushlet.servlet and
+add the new MainServlet which is used for explicit initialization (a.o. of the probe).
+
+version 0.0.7 - July 29, 2002
+- mainly fixes for the broken .war file in v0.0.6
+- separate webapps dir containing all DHTML client code (pushlet.html, pushlet.js)
+- sources.properties now always loading from WEB-INF/classes (not in .jar)
+
+version 0.0.6
+In general integrated contributions from
+Lutz Lennemann (classloading)
+David Bernard (.war, pushletclient.jar and relative URIs for JS/CSS assets in examples)
+
+- (bug) nl.justobjects.pushlet.core.EventSourceManager: use its own classloader to load sources.properties
+- (experimental) add J2EE .war file for core and examples in distribution as well
+- modifications to nl.justobjects.pushlet.test.PushletApplet.java and HTML example to use URI by parameter passing
+- added pushletclient.jar for use by pushlet Java clients (apps+applets)
+- small modifications to use relative URIs for JavaScript and CSS assets in examples
+
+version 0.0.5
+- (feature) added example for testing in nl.justobjects.pushlet.test.TestEventPushSources.java
+- (feature) redid stocks example to use real rates from a remote site and publish changed rates
+- (bug) removed MultiPartMime support for Netscape clients since NS was missing events and to reduce code
+- (editorial) added CVS Log and Id tags to files
+
+version 0.0.4
+- mainly repackaging of existing files and introduction of configurable EventSources
+- repackaged nl.justobjects.pushlet into nl.justobjects.pushlet.core and nl.justobjects.pushlet.client
+- replaced nl.justobjects.pushlet.test.EventGenerators with a more flexible event source mechanism
+- introduced EventSource.java and PullEventSource.java
+- introduced ProbePullEventSource.java to make the probe (client ping) a core event
+- introduced EventSourceManager.java
+- Publisher now interacts with EventSourceManager i.s.o. EventGenerators
+- allowing both push (EventSource.java) and pull (EventPullSource.java) for event sources towards Publisher
+- introduced configurable event source objects via EventSourceManager.java and properties file
+- added example with automatic Web Presentation with slides from www.cowcatcher.org
+
+version 0.0.3
+- mainly introduction of Pullet
+- introduced the Pullet servlet, PulletSubscriber and PlainBrowserPulletClientAdapter
+- refactoring of PushletSubscriber into HTTPSubscriber because of Pullet functionality
+- changed name BrowserPushletAdapter to BrowserClientAdapter to also cover Pullets
+- adapted BrowserClientAdapter for creating PlainBrowserPulletClientAdapter
+
+version 0.0.2
+- small fixes here and there
+- fix (hack) to let Pushlets work with IE on PowerMac
+- bugfix in basic JSP example that exhausted threads (PrintWriter never threw IOException after client left)
+
+version 0.0.1
+- basic framework as described in JavaWorld march 2000 article
+
+</PRE>
+</body>
+</html>

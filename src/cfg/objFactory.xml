@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE objects SYSTEM "file://objFactory.dtd">
+<objects>
+	<object className="com.syit.util.Log4jLogger" key="dbLogger" policy="forever">
+	</object>
+	<!--利用服务器的数据源获得数据库链接-->
+	<object className="com.syit.dboperate.GetConnectionImpl" key="GetConnectionImpl" policy="forever">
+		<constructor>
+			<parameter>java:comp/env/JDBC/QX</parameter>
+			<parameter>QX</parameter>
+			<parameter>MYSQL</parameter>
+			<parameter>1</parameter> <!-- transaction mode refrence:ConnectionCfg.ctrlTransMode   1 没事务 2 jdbc事务 3 jta事务-->
+			<parameter>4</parameter> <!-- j2ee server type refrence:ConnectionCfg.j2eeServerType  1 websphere 2 weblogic 3 jboss 4 未知-->
+		</constructor>
+		<initMethods>
+
+			<initMethod methodName="setAllQueryTimeout">
+				<parameter>300</parameter>
+			</initMethod>
+			<initMethod methodName="setAllLogger">
+				<parameter>#dbLogger#</parameter>
+			</initMethod>
+		</initMethods>	
+	</object>
+	
+	<object className="com.syit.dboperate.DBOperImpl" key="DBOper" policy="forever">
+		<constructor>
+			<parameter>#GetConnectionImpl#</parameter>
+		</constructor>
+		<initMethods>
+			<initMethod methodName="setSelfCtrlTrans">
+				<parameter>false</parameter>
+			</initMethod>
+		</initMethods>		
+	</object>
+	
+	<object className="com.syit.dboperate.temp.DBOperTemplate" key="DBOperTemplate" policy="forever">
+		<constructor>
+			<parameter>#GetConnectionImpl#</parameter>
+		</constructor>
+		<initMethods>
+			<initMethod methodName="setSelfCtrlTrans">
+				<parameter>false</parameter>
+			</initMethod>
+		</initMethods>		
+	</object>		
+	
+	<object className="com.syit.dboperate.dbtable.define.DBTableDefineCfg" key="TableDefineCfg" policy="forever">
+		<constructor>
+			<parameter>#GetConnectionImpl#</parameter>
+		</constructor>
+		<initMethods>
+			<initMethod methodName="setLoadCfgFromDB">
+				<parameter>false</parameter>
+			</initMethod>
+		</initMethods>		
+	</object>	
+	
+	<object className="com.syit.dboperate.dbtable.define.GetDBTableInfor" key="GetDBTableInfor" policy="forever">
+		<constructor>
+			<parameter>#TableDefineCfg#</parameter>
+		</constructor>		
+	</object>	
+	
+	<object className="com.syit.dboperate.dbtable.DBTableOperImpl" key="DBTableOper" policy="forever">
+		<constructor>
+			<parameter>#GetDBTableInfor#</parameter>
+		</constructor>
+		<initMethods>
+			<initMethod methodName="setSelfCtrlTrans">
+				<parameter>false</parameter>
+			</initMethod>
+		</initMethods>			
+	</object>
+	
+	<object className="com.syit.dboperate.dbtable.keygenerator.IdentifierGeneratorFactory" key="IdentifierGeneratorFactory" policy="forever">		
+	</object>
+	
+</objects>

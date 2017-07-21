@@ -1,0 +1,102 @@
+<div class="container">
+	<div class="navbar-static-side-qx">
+		<ul class="nav nav-head-qx">
+			<li class="nav-header-qx">
+				<div class="row">
+					<div class="col-sm-12">
+						<span class="user-menu">
+							<img alt="image" data-toggle="dropdown" class="img-rounded-qx" src="/QX/chatAction.do?method=getSmallPhotoByUserId&&userId={{userId}}" />
+							<ul class="dropdown-menu nav-user-menu-qx animated fadeIn">
+	                            <li>
+	                            	<img alt="image" src="/QX/chatAction.do?method=getBigPhotoByUserId&&userId={{userId}}">
+	                            </li>
+	                            <li class="divider-inner"></li>
+	                            <li class="nav-user-menu-name">
+	                            	{{name}}<i ng-class="{true:'fa fa-venus venus',false:'fa fa-mars mars'}[sex==1]"></i>
+	                            </li>
+	                            <li class="divider-inner"></li>
+	                            <li><a href="contacts.html"><i class="fa fa-volume-up"></i>关闭声音</a>
+	                            </li>
+	                            <li class="divider-inner"></li>
+	                            <li><a href="mailbox.html"><i class="fa fa-power-off"></i>退出</a>
+	                            </li>
+	                        </ul>
+                        </span>
+						<strong class="nav-header-name-qx">{{name}}</strong>
+						<a data-toggle="dropdown">
+							<span class="nav-header-menufont-qx">
+								<i class="fa fa-bars"></i>
+								<i class="fa fa-angle-down"></i>
+							</span>
+						</a>
+						<ul class="dropdown-menu nav-header-menu-qx animated fadeIn">
+                            <li><a href="form_avatar.html"><i class="fa fa-commenting-o"></i>发起聊天</a>
+                            </li>
+                            <li class="divider-inner"></li>
+                            <li><a href="profile.html"><i class="fa fa-bell-o"></i>关闭桌面通知</a>
+                            </li>
+                            <li class="divider-inner"></li>
+                            <li><a href="contacts.html"><i class="fa fa-volume-up"></i>关闭声音</a>
+                            </li>
+                            <li class="divider-inner"></li>
+                            <li><a href="mailbox.html"><i class="fa fa-power-off"></i>退出</a>
+                            </li>
+                        </ul>
+					</div>
+				</div>
+				<!--头部检索框 -->
+				<div class="row row-n-r-qx">
+					<div class="col-sm-12">
+						<div class="input-group m-b-n-xxs">
+							<span class="input-group-addon search-qx"><i class="fa fa-search"></i></span>
+                            <input type="text" placeholder="搜索" class="form-control search-qx input-sm">
+                        </div>
+                    <div>
+                </div>
+				<!--头部toolbar-->
+				<div class="row row-n-r-qx">
+					<div class="col-xs-4 b-r-toolbar-qx">
+						<div class="nav-header-toolbar-qx" ng-click="toolbarSelect(0)" ui-sref=".children"><i ng-class="{true:'fa fa-comments',false:'fa fa-comments-o'}[recentSelected]"></i></div>
+					</div>
+					<div class="col-xs-4 b-r-toolbar-qx">
+						<div class="nav-header-toolbar-qx" ng-click="toolbarSelect(1)" ui-sref=".children"><i ng-class="{true:'fa fa-file-text',false:'fa fa-file-text-o'}[newsSelected]"></i></div>
+					</div>
+					<div class="col-xs-4">
+						<div class="nav-header-toolbar-qx" ng-click="toolbarSelect(2)" ui-sref=".children"><i ng-class="{true:'fa fa-user',false:'fa fa-user-o'}[directorySelected]"></i></div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<!-- toolbar  -->
+		<div class="nav-list-qx" ui-view="recentList"></div>
+	</div>
+
+	<div class="content-main-qx">
+		<div class="content-head-qx content-headname-qx">
+			<a data-toggle="dropdown" ng-hide="clickUser.NAME==null">{{clickUser.NAME}}<i class="fa fa-angle-down"></i></a>
+			<div class="dropdown-menu dropdown-userlist animated fadeInDown">
+                dfadsfdsfsdf
+                asdfds
+                sdf
+            </div>
+		</div>
+		<div class="content-chart-qx">
+            <div class="content-line"></div>
+            <div ui-view="content" class="content"></div>
+		</div>
+		<div class="content-chart-input-qx" ng-show="showChat">
+			<div class="content-line"></div>
+			<span class="content-chart-input-toolbar-qx">
+				<i class="fa fa-smile-o"></i>
+				<i class="fa fa-cut"></i>
+				<i class="fa fa-file-o"></i>
+			</span>
+			<div class="form-horizontal">
+				<textarea class="form-control" ng-model="userMessage">{{userMessage}}</textarea>
+			</div>
+			<span class="content-chart-sendmsg-qx pull-right">
+				按下Ctrl+Enter换行<a class="btn btn-white btn-bitbucket" ng-click="sendMessage()">发送</a>
+			</span>
+		</div>
+	</div>
+</div>

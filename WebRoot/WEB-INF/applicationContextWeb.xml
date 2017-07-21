@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>   
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee" 	   
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"	   
+	   xsi:schemaLocation=" 
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context-2.5.xsd
+   http://www.springframework.org/schema/beans 
+   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+   http://www.springframework.org/schema/tx 
+   http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+   http://www.springframework.org/schema/aop 
+   http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+ <context:annotation-config/>
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
+			<value>java:comp/env/JDBC/QX</value>
+		</property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 登录 -->
+	<bean id="loginDao" class="com.cn.qx.web.dao.impl.LoginDaoImpl"></bean>
+	<bean id="loginService" class="com.cn.qx.web.service.impl.LoginServiceImpl"></bean>
+	<!-- 注册 -->
+	<bean id="registerDao" class="com.cn.qx.web.dao.impl.RegisterDaoImpl"></bean>
+	<bean id="registerService" class="com.cn.qx.web.service.impl.RegisterServiceImpl"></bean>
+	<!-- 聊天主页面 -->
+	<bean id="chatDao" class="com.cn.qx.web.dao.impl.ChatDaoImpl"></bean>
+	<bean id="chatService" class="com.cn.qx.web.service.impl.ChatServiceImpl"></bean>
+</beans>

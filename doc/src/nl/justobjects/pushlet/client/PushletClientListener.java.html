@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.3.1">
+<TITLE>nl.justobjects.pushlet.client.PushletClientListener (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PushletClientListener.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<FONT ID="LN">1 </FONT><A NAME="1"></A><FONT ID="SingleLineComment">// Copyright (c) 2000 Just Objects B.V. &lt;just@justobjects.nl&gt;
+<FONT ID="LN">2 </FONT><A NAME="2"></A></FONT><FONT ID="SingleLineComment">// Distributable under LGPL license. See terms of license at gnu.org.
+<FONT ID="LN">3 </FONT><A NAME="3"></A></FONT>
+<FONT ID="LN">4 </FONT><A NAME="4"></A><FONT ID="Package">package</FONT> <A HREF="../../../../nl.justobjects.pushlet.client.index.html" target="packageFrame">nl.justobjects.pushlet.client</A>;
+<FONT ID="LN">5 </FONT><A NAME="5"></A>
+<FONT ID="LN">6 </FONT><A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">nl.justobjects.pushlet.core.Event</A>;
+<FONT ID="LN">7 </FONT><A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">nl.justobjects.pushlet.core.Protocol</A>;
+<FONT ID="LN">8 </FONT><A NAME="8"></A>
+<FONT ID="LN">9 </FONT><A NAME="9"></A><FONT ID="FormalComment">/**
+<FONT ID="LN">10</FONT><A NAME="10"></A> * Interface for listener of the PushletClient object.
+<FONT ID="LN">11</FONT><A NAME="11"></A> *
+<FONT ID="LN">12</FONT><A NAME="12"></A> * @version $Id: PushletClientListener.java,v 1.5 2005/02/21 11:50:37 justb Exp $
+<FONT ID="LN">13</FONT><A NAME="13"></A> * @author Just van den Broecke - Just Objects &amp;copy;
+<FONT ID="LN">14</FONT><A NAME="14"></A> **/</FONT>
+<FONT ID="LN">15</FONT><A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> PushletClientListener <FONT ID="Extends">extends</FONT> <A HREF="../../../../nl/justobjects/pushlet/core/Protocol.java.html">Protocol</A> {
+<FONT ID="LN">16</FONT><A NAME="16"></A>    <FONT ID="FormalComment">/** Abort event from server. */</FONT>
+<FONT ID="LN">17</FONT><A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> onAbort(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> theEvent);
+<FONT ID="LN">18</FONT><A NAME="18"></A>
+<FONT ID="LN">19</FONT><A NAME="19"></A>    <FONT ID="FormalComment">/** Data event from server. */</FONT>
+<FONT ID="LN">20</FONT><A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> onData(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> theEvent);
+<FONT ID="LN">21</FONT><A NAME="21"></A>
+<FONT ID="LN">22</FONT><A NAME="22"></A>    <FONT ID="FormalComment">/** Heartbeat event from server. */</FONT>
+<FONT ID="LN">23</FONT><A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> onHeartbeat(<A HREF="../../../../nl/justobjects/pushlet/core/Event.java.html">Event</A> theEvent);
+<FONT ID="LN">24</FONT><A NAME="24"></A>
+<FONT ID="LN">25</FONT><A NAME="25"></A>    <FONT ID="FormalComment">/** Error occurred. */</FONT>
+<FONT ID="LN">26</FONT><A NAME="26"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> onError(String message);
+<FONT ID="LN">27</FONT><A NAME="27"></A>}
+<FONT ID="LN">28</FONT><A NAME="28"></A>
+<FONT ID="LN">29</FONT><A NAME="29"></A><FONT ID="MultiLineComment">/*
+<FONT ID="LN">30</FONT><A NAME="30"></A>* $Log: PushletClientListener.java,v $
+<FONT ID="LN">31</FONT><A NAME="31"></A>* Revision 1.5  2005/02/21 11:50:37  justb
+<FONT ID="LN">32</FONT><A NAME="32"></A>* ohase1 of refactoring Subscriber into Session/Controller/Subscriber
+<FONT ID="LN">33</FONT><A NAME="33"></A>*
+<FONT ID="LN">34</FONT><A NAME="34"></A>* Revision 1.4  2005/02/15 15:46:31  justb
+<FONT ID="LN">35</FONT><A NAME="35"></A>* client API improves
+<FONT ID="LN">36</FONT><A NAME="36"></A>*
+<FONT ID="LN">37</FONT><A NAME="37"></A>* Revision 1.3  2004/10/24 12:58:18  justb
+<FONT ID="LN">38</FONT><A NAME="38"></A>* revised client and test classes for new protocol
+<FONT ID="LN">39</FONT><A NAME="39"></A>*
+<FONT ID="LN">40</FONT><A NAME="40"></A>* Revision 1.2  2004/09/03 22:35:37  justb
+<FONT ID="LN">41</FONT><A NAME="41"></A>* Almost complete rewrite, just checking in now
+<FONT ID="LN">42</FONT><A NAME="42"></A>*
+<FONT ID="LN">43</FONT><A NAME="43"></A>* Revision 1.1  2004/03/10 20:14:17  justb
+<FONT ID="LN">44</FONT><A NAME="44"></A>* renamed all *JavaPushletClient* to *PushletClient*
+<FONT ID="LN">45</FONT><A NAME="45"></A>*
+<FONT ID="LN">46</FONT><A NAME="46"></A>* Revision 1.3  2003/08/15 08:37:40  justb
+<FONT ID="LN">47</FONT><A NAME="47"></A>* fix/add Copyright+LGPL file headers and footers
+<FONT ID="LN">48</FONT><A NAME="48"></A>*
+<FONT ID="LN">49</FONT><A NAME="49"></A>*
+<FONT ID="LN">50</FONT><A NAME="50"></A>*/</FONT></pre><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PushletClientListener.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+
+</BODY>
+</HTML>

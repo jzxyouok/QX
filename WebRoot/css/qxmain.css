@@ -1,0 +1,503 @@
+/** 共通 */
+textarea{
+	resize : none;
+}
+
+h1,h2,h3,h4,h5{
+	font-family: "微软雅黑";
+}
+
+.container{
+	padding-left: 20px;
+	padding-right: 20px;
+	position: relative;
+	height: 100%;
+}
+/** 初始化滚动条边界 */
+.slimScrollDiv{
+	padding : 0;
+	margin : 0;
+}
+
+/* 左侧样式 */
+.navbar-static-side-qx {
+   	float: left;
+    width: 260px;
+    z-index: 2001;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: #2f4050;
+}
+
+.nav-header-qx {
+	position: relative;
+    padding: 15px 15px 15px 15px;
+    background: url("patterns/header-profile.png") no-repeat;
+}
+
+/* 登录人头像  */
+.img-rounded-qx {
+    border-radius: 2px;
+    width: 45px;
+    height: 45px;
+}
+
+.nav-head-qx{
+	position: absolute;
+	height: 160px;
+	width: 260px;
+}
+
+.nav-list-qx{
+	padding-top: 159px;
+	height: 100%;
+}
+/** 去除原始样式 */
+.nav-list-qx ul > li > a:hover{
+	background-color: transparent;
+}
+.nav-list-qx ul > li > a:focus
+{
+	background-color: #293846;
+}
+
+/* 登录人姓名字体 */
+.nav-header-name-qx {
+    font-family: "微软雅黑";
+    font-weight: 600;
+    padding-left: 10px;
+    font-size:16px;
+    color: #F8F8F8;
+}
+
+/** 登录人菜单字体 **/
+.nav-header-menufont-qx{
+	font-family: "微软雅黑";
+	font-size:15px;
+	font-weight: 300;
+	color: #F8F8F8;
+	position: relative;
+	padding-top: 10px;
+    float: right;
+}
+/** 头部toolbar **/
+.nav-header-toolbar-qx{
+	font-family: "微软雅黑";
+	font-size:22px;
+	color: #A7B1C2;
+	position: relative;
+	padding-left: 13px;
+	margin: -6px 0 -5px 0;
+    float:none;
+}
+/** 列间隔 **/
+.row-n-r-qx{
+	padding-top: 15px;
+}
+
+/** 头部toolbar分割线 **/
+.b-r-toolbar-qx {
+    border-right: 1px solid #293846;
+}
+
+/** 行分割线 **/
+.hr-line-solid-qx{
+	border-bottom: 1px solid #293846;
+}
+
+/** 搜索框样式 **/
+.search-qx {
+    background-color: #293846;
+    border: 1px solid transparent;
+    color: #E9E9E9;
+}
+
+.nav > li > a {
+	padding : 10px 15px 10px 15px;
+}
+
+/** 通讯录-姓名 **/
+.nav-list-name-qx {
+	font-family: "微软雅黑";
+	font-weight: 500;
+    padding-left: 12px;
+    padding-top: 3px;
+    font-size: 12px;
+    color: #F8F8F8;
+}
+/** 通讯录-时间 **/
+.nav-list-time-qx {
+	font-family: "微软雅黑";
+	font-weight: 500;
+    padding-top: 3px;
+    font-size: 12px;
+	color: #9EA6B9;
+}
+
+/** 通讯录-信息 **/
+.nav-list-msg-qx {
+	font-family: "微软雅黑";
+	font-weight: 500;
+    padding-left: 12px;
+    padding-top: 7px;
+    font-size: 12px;
+    color: #999C9E;
+}
+
+/** 通讯录-标记 **/
+.nav-list-warn-qx {
+	font-family: "微软雅黑";
+	font-weight: 500;
+    padding-top: 7px;
+    font-size: 14px;
+	color: #3D4D5D;
+}
+/** 主面板 **/
+.content-main-qx{
+	position: relative;
+	margin-left: 260px;
+	height: 100%;
+	min-width: 500px;
+	background-color: #DADADA;
+}
+/** 主面板头部居中 **/
+.content-head-qx{
+	position: absolute;
+	padding-top: 13px;
+	padding-bottom: 15px;
+	height: 46px;
+	width: 100%;
+	z-index: 100;
+	text-indent:2px;
+	text-align: center;
+}
+
+.content-headname-qx > a{
+	z-index: 100;
+	font-family: "微软雅黑";
+	font-size: 13px;
+	color: #122B40;
+}
+
+/** 主面板头部聊天人下拉标签 **/
+.content-head-qx .content-headname-qx > a > i{
+	padding-left: 2px;
+}
+/** 主面板输入区域 **/
+.content-chart-qx{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	padding-top: 48px;
+	padding-bottom: 160px;
+	padding-left: 1px;
+	padding-right: 1px;
+	z-index: 10;
+}
+
+.content-chart-qx.ng-small-chat {
+    display: block;
+}
+
+.body-small .content-chart-qx {
+    bottom: 70px;
+    right: 20px;
+}
+
+.content-chart-qx.active {
+    display: block;
+}
+
+.content-chart-qx .heading {
+    background: #2f4050;
+    padding: 8px 15px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.content-chart-qx .chat-date {
+    opacity: 0.6;
+    font-size: 14px;
+    font-weight: normal;
+    padding-left : 5px;
+}
+
+.content-chart-qx .nocontent {
+	height: 100%;
+	font-family: "微软雅黑";
+	width: 100%;
+    padding-top: 120px;
+    text-align: center;
+    font-size: 14px;
+    color:#C2C2C2
+}
+
+.content-chart-qx .nocontent .nomessage{
+	padding-top: 5px;
+	font-size: 12px;
+}
+
+.content-chart-qx .content {
+	height: 100%;
+	width: 100%;
+}
+
+.content-chart-qx .content .slimScrollDiv {
+	padding : 0;
+	margin : 0;
+}
+
+.content-chart-qx .content .in{
+	padding-left : 10px;
+	padding-right : 10px;
+}
+
+
+.content-chart-qx .content .author-name {
+    font-weight: bold;
+    margin-bottom: 3px;
+    font-size: 13px;
+}
+
+.content-chart-qx .content > div {
+    padding-bottom: 20px;
+}
+
+.content-chart-qx .content .chat-message {
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 16px;
+    max-width: 80%;
+    background: #f3f3f4;
+    margin-bottom: 10px;
+}
+
+.content-chart-qx .content .chat-message.active {
+    background: #1ab394;
+    color: #fff;
+}
+
+.content-chart-qx .content .left {
+    text-align: left;
+    clear: both;
+}
+
+.content-chart-qx .content .left .chat-message {
+    float: left;
+}
+
+.content-chart-qx .content .right {
+    text-align: right;
+    clear: both;
+}
+
+.content-chart-qx .content .right .chat-message {
+    float: right;
+}
+
+.content-chart-qx .form-chat {
+    padding: 10px 10px;
+}
+/** 输入区域 **/
+.content-chart-input-qx {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 160px;
+	width: 100%;
+	padding-left: 20px;
+	padding-right: 20px;
+	z-index : 1000;
+}
+
+.content-line{
+	border-top: 1px solid #C1C3C4;
+	height: 1px;
+}
+
+/** 输入区域toolbar **/
+.content-chart-input-qx .content-chart-input-toolbar-qx {
+	font-family: "微软雅黑";
+	font-size: 22px;
+	color: #777777;
+	line-height: 35px;
+}
+.content-chart-input-qx .content-chart-input-toolbar-qx > i{
+	margin-right: 6px;
+	margin-left: 2px;
+}
+.content-chart-input-qx .form-horizontal .form-control{
+	font-family: "微软雅黑";
+	font-size: 14px;
+	letter-spacing: 1px;
+	color: #333333;
+	border: none;
+	padding: 0;
+	height:80px;
+	background:transparent;
+}
+
+.content-chart-sendmsg-qx{
+	font-family: "微软雅黑";
+	color: #9B9B9B;
+	cursor:pointer;
+}
+
+.content-chart-sendmsg-qx a{
+	font-family: "微软雅黑";
+	color: #333333;
+	border: 1px #717171;
+}
+
+.content-chart-sendmsg-qx > a,
+.content-chart-sendmsg-qx > a:hover,
+.content-chart-sendmsg-qx > a:focus
+{
+	font-family: "微软雅黑";
+	color: #333333;
+	border: 1px #717171;
+	width: 80px;
+	margin-left: 10px;
+}
+
+/** 下拉菜单 **/
+.dropdown-menu {
+    border: medium none;
+    display: none;
+    left: 0;
+    padding: 0;
+    position: absolute;
+    z-index: 1000;
+    border-radius: 3px;
+    box-shadow: 0 0 3px rgba(86, 96, 117, 0.3);
+}
+
+.dropdown-menu .divider-inner{
+	border-top: #F1F1F1 1px solid;
+	
+}
+
+.dropdown-menu > li > a {
+    border-radius: 3px;
+    color: inherit;
+    line-height: 40px;
+    margin: 0px;
+    text-align: left;
+    font-family: "微软雅黑";
+    font-size: 16px;
+}
+
+.dropdown-menu > li > a > i {
+	margin-right: 10px;
+	font-size: 20px;
+}
+
+.dropdown-menu > li > a.font-bold {
+    font-weight: 600;
+}
+/** 人员头像手型显示 */
+.user-menu {
+	cursor: pointer;
+}
+
+.user-menu > .dropdown-menu {
+	min-width : 200px;
+}
+
+/** 登录人信息加编辑菜单 **/
+.nav-user-menu-qx {
+	margin-left: 30px;
+}
+
+.nav-user-menu-qx > li > img {
+	width : 220px;
+	height : 247px;
+	border-radius: 3px;
+}
+
+.nav-user-menu-qx .nav-user-menu-name {
+	float : left;
+	padding : 20px;
+	font-size: 16px;
+}
+
+.nav-user-menu-qx .nav-user-menu-name > i {
+	padding : 8px 10px 0px 10px;
+}
+
+.venus{
+	font-weight: 900;
+	font-size: 12px;
+	color : #FF0088;
+}
+
+.mars{
+	font-weight: 900;
+	font-size: 12px;
+	color : #0066FF;
+}
+/** 登录人菜单按钮 **/
+.nav-header-menu-qx {
+	margin-left: 80px;
+}
+
+/** 下拉菜单 **/
+.dropdown-userlist {
+	position: absolute;
+    display: none;
+    border-radius : initial;
+    height: 100px;
+    width: 100%;
+    background-color: #DADADA;
+    z-index: 11;
+    border-top: 1px solid #C1C3C4;
+    border-bottom: 1px solid #C1C3C4;
+    padding: 5px;
+    box-shadow: none;
+}
+
+.dropdown-userlist .animated {
+	z-index: 11;
+}
+
+/** ========================================================= **/
+/** 登录页面 **/
+.validate-login-qx{
+	padding-top: 6px;
+	padding-bottom: 25px;
+	float: left;
+	font-family: "微软雅黑";
+	color: #CC0000;
+	font-size: small;
+}
+
+#loginForm .col-sm-3{
+	padding: 0;
+	margin: 0;
+}
+
+/** ========================================================= **/
+/** 注册页面 **/
+.image-crop {
+	height : 250px;
+	padding : 0;
+	margin : 0;
+}
+
+.image-crop > img {
+	height : 350px;
+}
+
+.middle-box-qx {
+	max-width: 800px;
+    z-index: 100;
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+.registerHeader {
+	padding-left : 10px;
+	padding-bottom : 10px;
+}

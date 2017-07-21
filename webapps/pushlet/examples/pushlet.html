@@ -1,0 +1,277 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+   <meta name="Author" content="Just van den Broecke">
+   
+   <link href="../assets/style.css" rel="stylesheet">
+   <script type="text/javascript" src="../assets/util.js"></script>
+    <script type="text/javascript">
+    function viewSource(uri) {
+		var cvsURLprefix='http://pushlets.cvs.sourceforge.net/pushlets/pushlets/';
+		var cvsURLpostfix='?view=markup';
+		var url = cvsURLprefix + uri + cvsURLpostfix;
+
+		window.open(url, 'cvs');
+    }
+    </script>
+
+   <title>Pushlet Examples</title>
+</head>
+<body>
+
+<H2>Pushlet Demos</H2>
+<p>
+These show some examples of live events pushed by the server.
+In each example we subscribe to
+different subjects.
+Try the "ping" example first to see if Pushlets work for your browser.
+The last column contains links to the source code of the examples.
+</p>
+
+<a href="../version.jsp">Version info</a>.
+<P>
+<table border=1 cellpadding=8 width="90%">
+<tr>
+<td><b>Name</b></td><td><b>Description</b></td><td><b>Run</b></td><td><b>Source</b></td>
+</tr>
+
+<tr>
+<td>Ping</td>
+<td>
+Test if Pushlets work for your browser/platform.
+You can test if either the "stream" (default) or
+"pull" mode works.
+</td>
+<td><a href="javascript:openBareWindow('ping', 'ping/ping.html', 400, 400)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/ping/ping.html')">ping.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/ping/pingok.jsp')">pingok.jsp</a>
+<p>Common JS pushlet lib:</p>
+<a href="javascript:viewSource('webapps/pushlet/lib/js-pushlet-client.js')">js-pushlet-client.js</a><br>
+<a href="javascript:viewSource('webapps/pushlet/lib/js-pushlet-net.html')">js-pushlet-net.html</a><br>
+<p>Common AJAX pushlet lib (XmlHttpRequest)</p>
+<a href="javascript:viewSource('webapps/pushlet/lib/ajax-pushlet-client.js')">ajax-pushlet-client.js</a>
+</td>
+</tr>
+
+<tr>
+<td>Basics</td>
+<td>Illustrates page embedding, control events with subscribe/unsubscribe etc</td>
+<td><a href="raw/raw.html">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/raw/raw.html')">raw.html</a><P>
+</td>
+</tr>
+
+<tr>
+<td>Basics with AJAX</td>
+<td>Same as Basics but using AJAX client.</td>
+<td><a href="raw/raw-ajax.html">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/raw/raw-ajax.html')">raw-ajax.html</a><P>
+<a href="javascript:viewSource('webapps/pushlet/lib/ajax-pushlet-client.js')">ajax-pushlet-client.js</a>
+</td>
+</tr>
+
+<tr>
+<td>Temperature (Basic)</td>
+<td>Basic monitor of the temperatures in The Netherlands.</td>
+<td><a href="javascript:openBareWindow('temperature1', 'weather/nl-temperature.html', 300, 300)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/weather/nl-temperature.html')">nl-temperature.html</a><P>
+</td> 
+</tr>
+
+<tr>
+<td>Temperature (Map)</td>
+<td>Graphic display of the temperatures in The Netherlands using a graphic map with superimposed
+layers that are dynamically updated through the pushlet.</td>
+<td><a href="javascript:openBareWindow('temperature2', 'weather/nl-weather.html', 500, 560)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/weather/nl-weather.html')">nl-weather.html</a><br>
+</td>
+</tr>
+
+<tr>
+<td>Stocks</td>
+<td>The following example illustrates
+how stock rates can be pushed from the server. Note: these are <b>faked rates</b>.
+A real application would use something
+like a Reuters live stockfeed at the back-end.
+
+<!-- This shows a live stockfeed with REAL
+rates from the Amsterdam Exchange (AEX). On the server, a <i>push</i> EventSource
+regularly polls an HTML page and publishes only the stocks with changed rates
+since the last poll. This page will be most active during the Dutch exchange hours (MET+1).
+The way this is done (parsing an HTML page) is a bit messy. A real application would use something
+like a Reuters live stockfeed. -->
+</td>
+<td><a href="javascript:openBareWindow('aex', 'stock/aex.html', 170, 380)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/stock/aex.html')">aex.html</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/test/TestEventPullSources.java')">TestEventPullSources.java</a><br>
+</td>
+</tr>
+
+<tr>
+<td>Chat</td>
+<td>Here you are able to publish text
+events to the server
+who will dispatch them to others who have joined the chat. Try it with more users
+to see the effect. This is the AJAX version.
+</td>
+<td><a href="javascript:openBareWindow('chat', 'chat/enter.html', 480, 440)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/chat/enter.html')">enter.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/chat/chat.html')">chat.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/chat/contents.html')">contents.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/lib/ajax-pushlet-client.js')">ajax-pushlet-client.js</a><br>
+</td>
+</tr>
+
+<tr>
+<td>AJAX</td>
+<td>Proof of concept to use <a href="http://adaptivepath.com/publications/essays/archives/000385.php">
+						AJAX  technology
+					</a> through the <a href="http://www.xml.com/pub/a/2005/02/09/xml-http-request.html">
+						XMLHttpRequest</a>
+</td>
+<td><a href="ajax/ajax-2.html">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/ajax/ajax-2.html')">ajax-2.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/lib/ajax-pushlet-client.js')">ajax-pushlet-client.js</a><br>
+</td>
+</tr>
+
+<tr>
+<td>Flash</td>
+<td>
+Simple Macromedia Flash client. For now in "pull" mode with strict XML.
+</td>
+<td><a href="flash/flash-1.html">run</a></td>
+<td>
+.fla source in client/flash in distro 2.0.1+
+</td>
+</tr>
+
+<tr>
+<td>WCQ - ICQ/MSN-like IM app</td>
+<td>This example illustrates using both
+publishing and subscribing. Presence is completely
+arranged by the
+clients who publish each other regular 'presence' events. There is no state on the
+server. When a user is entering/leaving the list a short sound is played.
+You can thus minimize the window and hear when users are entering/leaving.
+By clicking on a user you may send him/her with a short message.</td>
+<td><a href="javascript:openBareWindow('wcq', 'wcq/wcq.html', 80, 280)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/wcq/wcq.html')">wcq.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/wcq/wcqjoin.html')">wcqjoin.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/wcq/wcqalert.html')">wcqalert.html</a><br>
+</td>
+</tr>
+
+<tr>
+<td>System Resources</td>
+<td>Monitor aspects of the server's JVM.</td>
+<td><a href="javascript:openBareWindow('system3', 'system/system.html', 300, 300)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/system/system.html')">system.html</a><br>
+</td> 
+</tr>
+
+
+
+<tr>
+<td>Application Monitoring</td>
+<td>Monitor status of the pushlets themselves</td>
+<td><a href="javascript:openBareWindow('pushlet1', 'status/pushlet-status.html', 500, 500)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/status/pushlet-status.htm')">pushlet-status.html</a><br>
+</td> 
+</tr>
+
+<tr>
+<td>Web Presentation</td>
+<td>Automatically present webpages to multiple users. Normally this is done
+using a Teacher and Student roles as I use in classrooms. This is now emulated. 
+Just sit back and relax. See also <a href="http://www.justobjects.org/cowcatcher" target="_new">www.justobjects.org/cowcatcher</a>.
+</td>
+<td><a href="javascript:openBareWindow('webpresauto', 'webpres/webpres-student.html?subject=/webpres/auto', screen.width, screen.height)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-student.html')">webpres-student.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-student-content.html')">webpres-student-content.html</a><br>
+</td> 
+</tr>
+
+<tr>
+<td>Web Presentation2</td>
+<td>Here a teacher pushes slides to multiple students.
+The student version of the HTML/pushet is the same as above.
+See also
+<a href="http://www.justobjects.org/cowcatcher"  target="_new">www.justobjects.org/cowcatcher</a>.
+The trick here is that a JavaScript timer loop in teacher top frame is listening
+for URL changes in the teacher content iframe. If it detects a URL
+switch it calls p_publish() to publish the current URL.
+</td>
+<td>
+<a href="javascript:openBareWindow('wpteacher', 'webpres/webpres-teacher.html', screen.width, screen.height)">teacher</a><br>
+<a href="javascript:openBareWindow('wpstudent', 'webpres/webpres-student.html?subject=/webpres/cow', screen.width, screen.height)">student</a>
+</td> 
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-teacher.html')">webpres-teacher.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-teacher-content.html')">webpres-teacher-content.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-student.html')">webpres-student.html</a><br>
+<a href="javascript:viewSource('webapps/pushlet/examples/webpres/webpres-student-content.html')">webpres-student-content.html</a><br>
+</td> 
+</tr>
+
+<tr>
+<td>Catch all</td>
+<td>This busy page merely subscribes to all events coming from the server. This is
+done by subscribing to the subject "/".</td>
+<td><a href="javascript:openBareWindow('all2', 'all/all.html', 500, 350)">run</a></td>
+<td>
+<a href="/javascript:viewSource('webapps/pushlet/examples/all/all.html')">all.html</a><br>
+</td> 
+</tr>
+
+<tr>
+<td>Java Applet client</td>
+<td>The Pushlet Java client API (PushletClient.java) can be used
+in Java applications or Applets to control all services of a Pushlet session, including
+publishing events.
+Here is a very basic example
+of a Java Applet displaying temperature events.</td>
+<td><a href="javascript:openBareWindow('applet1', 'applet/pushlet-applet.html', 650, 450)">run</a></td>
+<td>
+<a href="javascript:viewSource('webapps/pushlet/examples/applet/pushlet-applet.html')">pushlet-applet.html</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/test/PushletApplet.java')">PushletApplet.java</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/client/PushletClient.java')">PushletClient.java</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/client/PushletClientListener.java')">PushletClientListener.java</a><br>
+</td> 
+</tr>
+
+<tr>
+<td>Java Application client</td>
+<td>This is another example of the Puhslet client Java API.
+The
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/test/PushletPingApplication.java')">PushletPingApplication</a>
+publishes a small event to the server every few seconds.
+At the same time that client is receiving that event within the same Pushlet session.
+
+</td>
+<td></td> 
+<td>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/test/PushletPingApplication.java')">PushletPingApplication.java</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/client/PushletClient.java')">PushletClient.java</a><br>
+<a href="javascript:viewSource('src/nl/justobjects/pushlet/client/PushletClientListener.java')">PushletClientListener.java</a><br>
+</td>
+</tr>
+
+
+</table>
+</body>
+</html>

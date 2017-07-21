@@ -1,0 +1,63 @@
+<!-- 
+  
+  $Id: nl-weather.html,v 1.7 2006/05/25 10:47:04 justb Exp $
+  author: Just van den Broecke
+
+-->
+<HTML>
+<HEAD>
+   <TITLE>NL Weather</TITLE>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Pragma" content="no-cache">
+ 	<script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+   <script type="text/javascript" src="../../assets/layer.js"></script>
+     <script type="text/javascript" src="../../assets/util.js"></script>
+   <script type="text/javascript" src="../../assets/api.js"></script>
+
+<script type="text/javascript">
+
+var pageStart="<table border=1 cellpadding=2 width=30 height=20><tr><td bgcolor=black><font color=white face=arial><center><b>"
+var pageEnd="</b></center></td></tr></table>"
+var cityMap = new Map();
+var ready = false;
+
+// init method called by display frame
+function init() {
+   initDHTML();
+   cityMap.put('rotterdam', new Layer('rotterdam', self));
+   cityMap.put('leeuwarden', new Layer('leeuwarden', self));
+   cityMap.put('amsterdam', new Layer('amsterdam', self));
+   cityMap.put('twente', new Layer('twente', self));
+   cityMap.put('limburg', new Layer('limburg', self));
+   p_join_listen('/temperature');
+
+   ready = true;
+}
+
+// Overridden PushletClient.onData method
+function onData(pushletEvent) {
+	if (!ready) {
+		return;
+	}
+	
+       if (pushletEvent.getSubject() == '/temperature') {
+		var page = pageStart+pushletEvent.get('value')+pageEnd
+		//	alert(event.get('city'))
+		cityMap.get(pushletEvent.get('city')).write(page);
+       }
+}
+
+</script>
+</HEAD>
+       <BODY BGCOLOR="#2e3d51" onLoad="parent.init()">
+       <DIV ID="rotterdam" STYLE="position:absolute; left: 131; top: 318;"></DIV>
+         <DIV ID="leeuwarden" STYLE="position:absolute; left: 318; top: 92;"></DIV>
+         <DIV ID="amsterdam" STYLE="position:absolute; left: 210; top: 245;"></DIV>
+         <DIV ID="twente" STYLE="position:absolute; left: 410; top: 250;"></DIV>
+         <DIV ID="limburg" STYLE="position:absolute; left: 313; top: 519;"></DIV>
+        <IMG SRC="nl-satellite.gif" border=0>
+
+<script type="text/javascript">p_embed()</script>
+    </BODY>
+</HTML>
+

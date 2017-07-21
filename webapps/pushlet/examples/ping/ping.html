@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<!-- $Id: ping.html,v 1.15 2006/09/20 12:58:42 justb Exp $
+     author: Just van den Broecke
+-->
+<head>
+  <title>Ping Test</title>
+  <link href="../../assets/style.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Pragma" content="no-cache" />
+
+  <script type="text/javascript" src="../../lib/js-pushlet-client.js"></script>
+
+  <script type="text/javascript">
+
+	var pushMode;
+    var subject = '/pushlet/ping';
+
+	// Join server in default "stream" mode
+	function join() {
+		p_join_listen(subject);
+	}
+
+	// Join server in "pull" mode
+	function joinInPullMode() {
+		p_join_listen(subject, 'pull');
+	}
+
+	// join-ack Callback
+	function onJoinAck(event) {
+        showEvent(event);
+	}
+
+	// join-ack Callback
+	function onListenAck(event) {
+	  	pushMode = event.get('p_mode');
+        showEvent(event);
+	}
+
+	// Data Event Callback
+	function onData(event) {
+	    showEvent(event);
+		// NOTE: We need to use the webroot of our lib since the upcall came
+		// from the pushlet frame
+		var url = window.location.href;
+		var index = url.indexOf("ping.html");
+	 	var okUri = url.substring(0, index) + 'pingok.jsp';
+
+	    // Refresh into "It Works" page.
+		window.location.href = okUri + '?mode=' + pushMode;
+	}
+
+	function showEvent(event) {
+		document.eventDisplay.EVENT.value = event.toString();
+	}
+
+  </script>
+</head>
+<body bgcolor="#cccccc" onload="join()">
+<script type="text/javascript">p_embed()</script>
+<h2>Pushlet Ping Test</h2>
+<p>
+The event monitor should display raw incoming events from the server.
+If this does not work <a href="#" onclick="javascript:joinInPullMode()">try the Pushlet "pull" mode</a>.
+</p>
+<p>
+If nothing works <a href="mailto:justATjustobjects.nl">mail me</a>.
+</p>
+<h4>Pushed Events</h4>
+<form name="eventDisplay" action="#" >
+  <table border="2" cellpadding="4" cellspacing="0" >
+    <tr>
+     <td>
+       <textarea cols="20" rows="8" name="EVENT">
+        WAITING...
+       </textarea>
+     </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>
+
+
